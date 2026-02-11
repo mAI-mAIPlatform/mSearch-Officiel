@@ -1,4 +1,6 @@
 var webviews = require('webviews.js')
+var settings = require('util/settings/settings.js')
+var browserUI = require('browserUI.js')
 
 var webviewGestures = {
   showBackArrow: function () {
@@ -67,6 +69,16 @@ var initialSecondaryKeyState = null
 
 var webviewMinZoom = 0.5
 var webviewMaxZoom = 3.0
+var gestureShortcutsEnabled = false
+var gestureWorkspaceSwipeEnabled = true
+
+settings.listen('gestureShortcutsEnabled', function (value) {
+  gestureShortcutsEnabled = value === true
+})
+
+settings.listen('gestureWorkspaceSwipeEnabled', function (value) {
+  gestureWorkspaceSwipeEnabled = value !== false
+})
 
 function resetDistanceCounters () {
   horizontalMouseMove = 0
@@ -117,6 +129,61 @@ function onSwipeGestureLowVelocity () {
   })
 }
 
+function tryHandleMouseGesture (e) {
+  if (!gestureShortcutsEnabled || !e || !e.buttons || (e.buttons & 2) === 0) {
+    return false
+  }
+
+  const horizontalAbs = Math.abs(horizontalMouseMove)
+  const verticalAbs = Math.abs(verticalMouseMove)
+  if (horizontalAbs < 260 && verticalAbs < 260) {
+    return false
+  }
+
+  const currentTask = tasks.getSelected()
+  if (!currentTask) {
+    return false
+  }
+
+  if (verticalMouseMove > 300 && verticalAbs > horizontalAbs * 1.35) {
+    browserUI.closeTab(tabs.getSelected())
+    resetDistanceCounters()
+    return true
+  }
+
+  if (horizontalAbs > verticalAbs * 1.35) {
+    if (horizontalMouseMove < 0) {
+      const currentIndex = tabs.getIndex(tabs.getSelected())
+      const nextTab = tabs.getAtIndex(currentIndex + 1)
+      if (nextTab) {
+        browserUI.switchToTab(nextTab.id)
+      }
+      resetDistanceCounters()
+      return true
+    }
+
+    const previousTab = tabs.getAtIndex(tabs.getIndex(tabs.getSelected()) - 1)
+    if (previousTab) {
+      browserUI.switchToTab(previousTab.id)
+    }
+    resetDistanceCounters()
+    return true
+  }
+
+  if (gestureWorkspaceSwipeEnabled && verticalMouseMove < -320 && verticalAbs > horizontalAbs * 1.2) {
+    const orderedTasks = tasks.slice().sort((a, b) => tasks.getLastActivity(b.id) - tasks.getLastActivity(a.id))
+    const idx = orderedTasks.findIndex(task => task.id === currentTask.id)
+    const nextTask = orderedTasks[idx + 1]
+    if (nextTask) {
+      browserUI.switchToTask(nextTask.id)
+    }
+    resetDistanceCounters()
+    return true
+  }
+
+  return false
+}
+
 webviews.bindIPC('wheel-event', function (tabId, e) {
   e = JSON.parse(e)
 
@@ -130,6 +197,10 @@ webviews.bindIPC('wheel-event', function (tabId, e) {
     leftMouseMove += e.deltaX
   } else {
     rightMouseMove += e.deltaX * -1
+  }
+
+  if (tryHandleMouseGesture(e)) {
+    return
   }
 
   var platformZoomKey = ((navigator.platform === 'MacIntel') ? e.metaKey : e.ctrlKey)

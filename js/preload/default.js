@@ -61,4 +61,12 @@ window.addEventListener('message', function (e) {
   if (e.data?.message === 'downloadFile') {
     ipc.send('downloadFile', e.data.url)
   }
+
+  if (e.data?.message === 'open-ephemeral-tab') {
+    ipc.send('open-ephemeral-tab', { url: e.data.url, openInBackground: e.data.openInBackground })
+  }
+
+  if (e.data?.message === 'toggle-multi-view') {
+    ipc.send('toggle-multi-view', { tabId: e.data.tabId })
+  }
 })

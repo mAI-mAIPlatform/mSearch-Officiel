@@ -264,6 +264,31 @@ function destroyAllViews () {
   }
 }
 
+
+function setViews (ids, boundsList, senderContents, focusFirst = true) {
+  const win = windows.windowFromContents(senderContents).win
+  win.getContentView().children.slice(1).forEach(child => win.getContentView().removeChildView(child))
+
+  ids.forEach(function (id, index) {
+    if (!viewMap[id] || !viewStateMap[id] || !viewStateMap[id].loadedInitialURL) {
+      return
+    }
+    if (boundsList[index]) {
+      viewMap[id].setBounds(boundsList[index])
+    }
+    win.getContentView().addChildView(viewMap[id])
+  })
+
+  windows.getState(win).selectedView = ids[0] || null
+
+  if (focusFirst && ids[0] && BrowserWindow.fromWebContents(senderContents) && BrowserWindow.fromWebContents(senderContents).isFocused()) {
+    const couldFocus = focusView(ids[0])
+    if (!couldFocus) {
+      senderContents.focus()
+    }
+  }
+}
+
 function setView (id, senderContents) {
   const win = windows.windowFromContents(senderContents).win
 
@@ -303,7 +328,7 @@ function hideCurrentView (senderContents) {
   const win = windows.windowFromContents(senderContents).win
   const currentId = windows.getState(win).selectedView
   if (currentId) {
-    win.getContentView().removeChildView(viewMap[currentId])
+    win.getContentView().children.slice(1).forEach(child => win.getContentView().removeChildView(child))
     windows.getState(win).selectedView = null
     if (win.isFocused()) {
       getWindowWebContents(win).focus()
@@ -349,6 +374,10 @@ ipc.on('setView', function (e, args) {
       e.sender.focus()
     }
   }
+})
+
+ipc.on('setViews', function (e, args) {
+  setViews(args.ids || [], args.bounds || [], e.sender, args.focus !== false)
 })
 
 ipc.on('setBounds', function (e, args) {

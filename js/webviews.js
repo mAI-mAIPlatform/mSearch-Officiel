@@ -8,6 +8,8 @@ var placeholderImg = document.getElementById('webview-placeholder')
 var hasSeparateTitlebar = settings.get('useSeparateTitlebar')
 var windowIsMaximized = false // affects navbar height on Windows
 var windowIsFullscreen = false
+var multiViewMaxViews = 3
+
 
 function captureCurrentTab (options) {
   if (tabs.get(tabs.getSelected()).private) {
@@ -101,6 +103,7 @@ function setAudioMutedOnCreate (tabId, muted) {
 const webviews = {
   viewFullscreenMap: {}, // tabId, isFullscreen
   selectedId: null,
+  selectedIds: [],
   placeholderRequests: [],
   asyncCallbacks: {},
   internalPages: {
@@ -176,6 +179,112 @@ const webviews = {
       return position
     }
   },
+  getActiveTabIds: function () {
+    const ids = webviews.selectedIds.filter(id => id && webviews.hasViewForTab(id))
+    if (ids.length === 0 && webviews.selectedId && webviews.hasViewForTab(webviews.selectedId)) {
+      ids.push(webviews.selectedId)
+    }
+    return ids
+  },
+  getViewBoundsForLayout: function (index, total) {
+    const base = webviews.getViewBounds()
+    if (total <= 1) {
+      return base
+    }
+
+    if (total === 2) {
+      const width = Math.floor(base.width / 2)
+      return {
+        x: base.x + (index * width),
+        y: base.y,
+        width: (index === total - 1 ? base.width - width : width),
+        height: base.height
+      }
+    }
+
+    const topHeight = Math.floor(base.height * 0.58)
+    if (index === 0) {
+      return {
+        x: base.x,
+        y: base.y,
+        width: base.width,
+        height: topHeight
+      }
+    }
+
+    const bottomCount = total - 1
+    const bottomWidth = Math.floor(base.width / bottomCount)
+    const bottomIndex = index - 1
+    return {
+      x: base.x + (bottomIndex * bottomWidth),
+      y: base.y + topHeight,
+      width: (bottomIndex === bottomCount - 1 ? base.width - (bottomWidth * bottomIndex) : bottomWidth),
+      height: base.height - topHeight
+    }
+  },
+  applyLayout: function (options = {}) {
+    const ids = webviews.getActiveTabIds()
+    webviews.selectedIds = ids.slice(0, multiViewMaxViews)
+
+    if (webviews.selectedIds.length <= 1) {
+      if (webviews.selectedIds[0]) {
+        webviews.selectedId = webviews.selectedIds[0]
+      }
+      if (webviews.selectedId) {
+        ipc.send('setView', {
+          id: webviews.selectedId,
+          bounds: webviews.getViewBounds(),
+          focus: options.focus !== false
+        })
+      }
+      return
+    }
+
+    const bounds = webviews.selectedIds.map(function (id, index) {
+      return webviews.getViewBoundsForLayout(index, webviews.selectedIds.length)
+    })
+
+    ipc.send('setViews', {
+      ids: webviews.selectedIds,
+      bounds,
+      focus: options.focus !== false
+    })
+  },
+  setLayoutTabs: function (ids) {
+    const sanitizedIds = (ids || []).filter(id => id && webviews.hasViewForTab(id))
+    if (sanitizedIds.length === 0) {
+      sanitizedIds.push(webviews.selectedId)
+    }
+    webviews.selectedIds = sanitizedIds.slice(0, multiViewMaxViews)
+    if (webviews.selectedIds[0]) {
+      webviews.selectedId = webviews.selectedIds[0]
+    }
+    webviews.applyLayout({ focus: true })
+  },
+  removeFromLayout: function (id) {
+    if (!id) {
+      return
+    }
+    webviews.selectedIds = webviews.selectedIds.filter(item => item !== id)
+    if (webviews.selectedIds.length === 0 && webviews.selectedId && webviews.selectedId !== id) {
+      webviews.selectedIds = [webviews.selectedId]
+    }
+  },
+  toggleComparisonView: function (primaryId, secondaryId) {
+    if (!primaryId || !secondaryId || primaryId === secondaryId) {
+      return
+    }
+    if (!webviews.hasViewForTab(primaryId) || !webviews.hasViewForTab(secondaryId)) {
+      return
+    }
+
+    const hasSecondary = webviews.selectedIds.includes(secondaryId)
+    if (hasSecondary) {
+      webviews.setLayoutTabs([primaryId])
+    } else {
+      webviews.setLayoutTabs([primaryId, secondaryId])
+    }
+  },
   add: function (tabId, existingViewId) {
     var tabData = tabs.get(tabId)
 
@@ -233,11 +342,11 @@ const webviews = {
       return
     }
 
-    ipc.send('setView', {
-      id: id,
-      bounds: webviews.getViewBounds(),
-      focus: !options || options.focus !== false
-    })
+    if (!webviews.selectedIds.includes(id)) {
+      webviews.selectedIds = [id]
+    }
+
+    webviews.applyLayout({ focus: !options || options.focus !== false })
     webviews.emitEvent('view-shown', id)
   },
   update: function (id, url) {
@@ -255,8 +364,9 @@ const webviews = {
     ipc.send('destroyView', id)
 
     delete webviews.viewFullscreenMap[id]
+    webviews.removeFromLayout(id)
     if (webviews.selectedId === id) {
-      webviews.selectedId = null
+      webviews.selectedId = webviews.selectedIds[0] || null
     }
   },
   requestPlaceholder: function (reason) {
@@ -294,11 +404,7 @@ const webviews = {
     if (webviews.placeholderRequests.length === 0) {
       // multiple things can request a placeholder at the same time, but we should only show the view again if nothing requires a placeholder anymore
       if (webviews.hasViewForTab(webviews.selectedId)) {
-        ipc.send('setView', {
-          id: webviews.selectedId,
-          bounds: webviews.getViewBounds(),
-          focus: true
-        })
+        webviews.applyLayout({ focus: true })
         webviews.emitEvent('view-shown', webviews.selectedId)
       }
       // wait for the view to be visible before removing the placeholder
@@ -318,7 +424,10 @@ const webviews = {
     }
   },
   resize: function () {
-    ipc.send('setBounds', { id: webviews.selectedId, bounds: webviews.getViewBounds() })
+    if (webviews.placeholderRequests.length > 0) {
+      return
+    }
+    webviews.applyLayout({ focus: false })
   },
   goBackIgnoringRedirects: async function (id) {
     const navHistory = await webviews.getNavigationHistory(id)
@@ -486,6 +595,27 @@ webviews.bindIPC('scroll-position-change', function (tabId, args) {
 webviews.bindIPC('downloadFile', function (tabId, args) {
   if (tabs.get(tabId).url.startsWith('min://')) {
     webviews.callAsync(tabId, 'downloadURL', [args[0]])
+  }
+})
+
+webviews.bindIPC('toggle-multi-view', function (tabId, args) {
+  if (!urlParser.isInternalURL(tabs.get(tabId).url)) {
+    throw new Error()
+  }
+
+  const targetTabId = args[0] && args[0].tabId
+  webviews.toggleComparisonView(tabs.getSelected(), targetTabId)
+})
+
+settings.listen('multiViewMaxViews', function (value) {
+  const parsed = parseInt(value)
+  if (!isNaN(parsed) && parsed >= 1 && parsed <= 3) {
+    multiViewMaxViews = parsed
+    webviews.selectedIds = webviews.selectedIds.slice(0, multiViewMaxViews)
+    if (webviews.selectedIds.length === 0 && webviews.selectedId) {
+      webviews.selectedIds = [webviews.selectedId]
+    }
+    webviews.applyLayout({ focus: false })
   }
 })
 

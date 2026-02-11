@@ -1,10 +1,16 @@
+:root {
+  --ui-font-scale: 1;
+  --ui-letter-spacing: 0px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: calc(16px * var(--ui-font-scale));
   font-family: ".SFNSText-Regular", "BlinkMacSystemFont", "Helvetica Neue",
     "Segoe UI", "Arial", sans-serif;
+  letter-spacing: var(--ui-letter-spacing);
 }
 /* TODO figure out why the default focus color in Electron is orange */
 *:focus {
@@ -110,4 +116,42 @@ a {
 }
 .dark-theme .has-thin-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.6);
+}
+
+
+body.comfort-reading {
+  line-height: 1.58;
+}
+
+body.liquid-glass-animations button,
+body.liquid-glass-animations .tab-item,
+body.liquid-glass-animations input,
+body.liquid-glass-animations select {
+  transition: background-color 140ms ease, transform 140ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+body.liquid-glass-animations button:hover,
+body.liquid-glass-animations .tab-item:hover {
+  transform: translateY(-1px);
+}
+
+body.liquid-glass-animations button:active,
+body.liquid-glass-animations .tab-item:active {
+  transform: translateY(0);
+}
+
+body.dynamic-theme-enabled.dynamic-theme-morning {
+  background: linear-gradient(180deg, #f9f3e5 0%, #ffffff 35%);
+}
+
+body.dynamic-theme-enabled.dynamic-theme-day {
+  background: linear-gradient(180deg, #edf5ff 0%, #ffffff 40%);
+}
+
+body.dynamic-theme-enabled.dynamic-theme-evening {
+  background: linear-gradient(180deg, #f8ece3 0%, #fffdf8 38%);
+}
+
+body.dynamic-theme-enabled.dynamic-theme-night {
+  background: linear-gradient(180deg, #1d2533 0%, #21252b 52%);
 }
