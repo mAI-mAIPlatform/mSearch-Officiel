@@ -9,6 +9,8 @@ var userscriptsShowDirectorySection = document.getElementById('userscripts-show-
 var separateTitlebarCheckbox = document.getElementById('checkbox-separate-titlebar')
 var openTabsInForegroundCheckbox = document.getElementById('checkbox-open-tabs-in-foreground')
 var autoPlayCheckbox = document.getElementById('checkbox-enable-autoplay')
+var searchSuggestionsCheckbox = document.getElementById('checkbox-search-suggestions')
+var searchSuggestionsCountInput = document.getElementById('input-search-suggestions-count')
 var userAgentCheckbox = document.getElementById('checkbox-user-agent')
 var userAgentInput = document.getElementById('input-user-agent')
 
@@ -348,6 +350,47 @@ settings.get('enableAutoplay', function (value) {
 
 autoPlayCheckbox.addEventListener('change', function (e) {
   settings.set('enableAutoplay', this.checked)
+})
+
+/* search suggestions settings */
+
+settings.get('searchSuggestionsEnabled', function (value) {
+  if (value === false) {
+    searchSuggestionsCheckbox.checked = false
+  } else {
+    searchSuggestionsCheckbox.checked = true
+  }
+})
+
+searchSuggestionsCheckbox.addEventListener('change', function () {
+  settings.set('searchSuggestionsEnabled', this.checked)
+})
+
+settings.get('searchSuggestionsCount', function (value) {
+  var parsedValue = Number.parseInt(value, 10)
+
+  if (!Number.isInteger(parsedValue) || parsedValue < 1 || parsedValue > 8) {
+    parsedValue = 3
+  }
+
+  searchSuggestionsCountInput.value = parsedValue
+
+  if (parsedValue !== value) {
+    settings.set('searchSuggestionsCount', parsedValue)
+  }
+})
+
+searchSuggestionsCountInput.addEventListener('change', function () {
+  var parsedValue = Number.parseInt(this.value, 10)
+
+  if (!Number.isInteger(parsedValue) || parsedValue < 1) {
+    parsedValue = 1
+  } else if (parsedValue > 8) {
+    parsedValue = 8
+  }
+
+  this.value = parsedValue
+  settings.set('searchSuggestionsCount', parsedValue)
 })
 
 /* user agent settting */
