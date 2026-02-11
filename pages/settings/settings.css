@@ -187,3 +187,30 @@ html {
   vertical-align: middle;
   margin-bottom: 0.2em;
 }
+
+
+#font-preferences-section input[type="range"],
+.setting-section input[type="range"] {
+  max-width: 18em;
+  vertical-align: middle;
+}
+
+#font-size-value,
+#font-spacing-value {
+  display: inline-block;
+  min-width: 3.5em;
+  margin-left: 0.5em;
+  opacity: 0.75;
+}
+
+.settings-action-button {
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  padding: 0.4em 0.75em;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+body.dark-mode .settings-action-button {
+  background: rgba(39, 45, 56, 0.8);
+  border-color: #5f6b7d;
+}

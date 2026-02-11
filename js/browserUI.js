@@ -33,6 +33,8 @@ options
   options.openInBackground - whether to open the tab without switching to it. Defaults to false.
 */
 function addTab (tabId = tabs.add(), options = {}) {
+  const tabData = tabs.get(tabId)
+  const isEphemeral = tabData && tabData.ephemeral
   /*
   adding a new tab should destroy the current one if either:
   * The current tab is an empty, non-private tab, and the new tab is private
@@ -41,6 +43,10 @@ function addTab (tabId = tabs.add(), options = {}) {
 
   if (!options.openInBackground && !tabs.get(tabs.getSelected()).url && ((!tabs.get(tabs.getSelected()).private && tabs.get(tabId).private) || tabs.get(tabId).url)) {
     destroyTab(tabs.getSelected())
+  }
+
+  if (isEphemeral) {
+    options.enterEditMode = false
   }
 
   tabBar.addTab(tabId)
@@ -119,10 +125,19 @@ function closeTask (taskId) {
 /* destroys a tab, and either switches to the next tab or creates a new one */
 
 function closeTab (tabId) {
+  if (!tabs.has(tabId)) {
+    return
+  }
   /* disabled in focus mode */
   if (focusMode.enabled()) {
     focusMode.warn()
     return
+  }
+
+  const tabData = tabs.get(tabId)
+
+  if (tabData.ephemeral && tabData.url) {
+    statistics.incrementValue('ephemeralTabs.closed')
   }
 
   if (tabId === tabs.getSelected()) {
@@ -300,6 +315,35 @@ tabBar.events.on('tab-closed', function (id) {
   closeTab(id)
 })
 
+function openEphemeralTab (url, options = {}) {
+  const baseTab = tabs.get(tabs.getSelected())
+  const tabId = tabs.add({
+    url: url || '',
+    private: options.private || (baseTab && baseTab.private) || false,
+    ephemeral: true
+  })
+
+  addTab(tabId, {
+    enterEditMode: false,
+    openInBackground: !!options.openInBackground
+  })
+
+  statistics.incrementValue('ephemeralTabs.opened')
+  return tabId
+}
+
+webviews.bindIPC('open-ephemeral-tab', function (tabId, args) {
+  if (!urlParser.isInternalURL(tabs.get(tabId).url)) {
+    throw new Error()
+  }
+
+  const config = args[0] || {}
+  openEphemeralTab(config.url, {
+    openInBackground: config.openInBackground,
+    private: tabs.get(tabId).private
+  })
+})
+
 module.exports = {
   addTask,
   addTab,
@@ -307,6 +351,7 @@ module.exports = {
   destroyTab,
   closeTask,
   closeTab,
+  openEphemeralTab,
   switchToTask,
   switchToTab,
   moveTabLeft,

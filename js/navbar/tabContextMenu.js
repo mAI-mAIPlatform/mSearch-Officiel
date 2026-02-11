@@ -19,6 +19,20 @@ const tabContextMenu = {
           }
         },
         {
+          label: 'Ouvrir en onglet éphémère',
+          click: function () {
+            browserUI.openEphemeralTab(tabs.get(tabId).url, {
+              private: tabs.get(tabId).private
+            })
+          }
+        },
+        {
+          label: 'Comparer en multi-vue',
+          click: function () {
+            webviews.toggleComparisonView(tabs.getSelected(), tabId)
+          }
+        },
+        {
           label: l('tabMenuNewWindow'),
           click: function () {
             // insert after current task

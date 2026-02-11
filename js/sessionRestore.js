@@ -27,7 +27,7 @@ const sessionRestore = {
 
     for (var i = 0; i < data.state.tasks.length; i++) {
       data.state.tasks[i].tabs = data.state.tasks[i].tabs.filter(function (tab) {
-        return !tab.private
+        return !tab.private && !tab.ephemeral
       })
     }
 
@@ -105,6 +105,10 @@ const sessionRestore = {
 
       // add the saved tasks
 
+      if (!data.state || !Array.isArray(data.state.tasks)) {
+        throw new Error('Invalid session restore payload')
+      }
+
       data.state.tasks.forEach(function (task) {
         // restore the task item
         tasks.add(task)
@@ -122,12 +126,16 @@ const sessionRestore = {
       })
       if (mostRecentTasks.length > 0) {
         tasks.setSelected(mostRecentTasks[0].id)
+      } else {
+        tasks.setSelected(tasks.add())
       }
 
       // switch to the previously selected tasks
 
-      if (tasks.getSelected().tabs.isEmpty() || startupConfigOption === 1) {
-        browserUI.switchToTask(mostRecentTasks[0].id)
+      if ((tasks.getSelected() && tasks.getSelected().tabs.isEmpty()) || startupConfigOption === 1) {
+        if (mostRecentTasks[0]) {
+          browserUI.switchToTask(mostRecentTasks[0].id)
+        }
         if (tasks.getSelected().tabs.isEmpty()) {
           tabEditor.show(tasks.getSelected().tabs.getSelected())
         }
@@ -229,7 +237,17 @@ const sessionRestore = {
     }
   },
   initialize: function () {
+    const debouncedSave = debounce(function () {
+      sessionRestore.save()
+    }, 1200)
+
     setInterval(sessionRestore.save, 30000)
+
+    tasks.on('*', function (eventName) {
+      if (eventName === 'tab-selected' || eventName === 'tab-updated' || eventName === 'tab-added' || eventName === 'tab-destroyed' || eventName === 'task-added' || eventName === 'task-destroyed' || eventName === 'task-selected') {
+        debouncedSave()
+      }
+    })
 
     window.onbeforeunload = function (e) {
       sessionRestore.save(true, true)

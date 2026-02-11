@@ -135,6 +135,32 @@
         <label for="setting-language-picker" data-string="settingsLanguageSelection"></label>
         <select id="setting-language-picker"></select>
       </div>
+
+
+      <div class="setting-section" id="dynamic-theme-section">
+        <input type="checkbox" id="checkbox-dynamic-theme" />
+        <label for="checkbox-dynamic-theme">Activer les thèmes dynamiques (heure, météo, site)</label>
+      </div>
+
+      <div class="setting-section" id="liquid-glass-section">
+        <input type="checkbox" id="checkbox-liquid-glass-animations" />
+        <label for="checkbox-liquid-glass-animations">Animations micro-interactives Liquid Glass</label>
+      </div>
+
+      <div class="setting-section" id="font-preferences-section">
+        <label for="font-size-slider">Taille du texte</label>
+        <input type="range" id="font-size-slider" min="85" max="130" step="1" />
+        <span id="font-size-value"></span>
+      </div>
+      <div class="setting-section">
+        <label for="font-spacing-slider">Espacement</label>
+        <input type="range" id="font-spacing-slider" min="0" max="1.2" step="0.05" />
+        <span id="font-spacing-value"></span>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-comfort-reading" />
+        <label for="checkbox-comfort-reading">Mode lecture confortable</label>
+      </div>
     </div>
 
     <div class="settings-container" id="additional-settings-container">
@@ -158,6 +184,25 @@
           <option 
           value="2" data-string="settingsNewWindowPickTask"></option>
         </select>
+      </div>
+
+
+      <div class="setting-section">
+        <label for="multi-view-max-views">Multi-vue (nombre de sites visibles)</label>
+        <select id="multi-view-max-views" name="multiViewMaxViews">
+          <option value="1">1 vue</option>
+          <option value="2">2 vues (comparaison)</option>
+          <option value="3">3 vues</option>
+        </select>
+      </div>
+
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-gesture-shortcuts" />
+        <label for="checkbox-gesture-shortcuts">Raccourcis gestuels (swipe/souris)</label>
+      </div>
+      <div class="setting-section setting-secondary-label">
+        <input type="checkbox" id="checkbox-gesture-workspace" />
+        <label for="checkbox-gesture-workspace">Autoriser le changement de workspace par geste</label>
       </div>
 
       <div class="setting-section">
@@ -231,6 +276,12 @@
           data-string="settingsUsageStatisticsToggle"
           data-allowHTML
         ></label>
+      </div>
+
+
+      <div class="setting-section">
+        <button id="button-open-ephemeral-tab" class="settings-action-button">Ouvrir un onglet éphémère</button>
+        <span class="settings-info-subheading" style="margin-left: 0.5em;">Sera fermé automatiquement en fin de session.</span>
       </div>
     </div>
 

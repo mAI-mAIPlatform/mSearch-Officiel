@@ -12,6 +12,18 @@ var autoPlayCheckbox = document.getElementById('checkbox-enable-autoplay')
 var userAgentCheckbox = document.getElementById('checkbox-user-agent')
 var userAgentInput = document.getElementById('input-user-agent')
 
+var dynamicThemeCheckbox = document.getElementById('checkbox-dynamic-theme')
+var liquidGlassAnimationsCheckbox = document.getElementById('checkbox-liquid-glass-animations')
+var comfortReadingCheckbox = document.getElementById('checkbox-comfort-reading')
+var fontSizeSlider = document.getElementById('font-size-slider')
+var fontSizeValue = document.getElementById('font-size-value')
+var fontSpacingSlider = document.getElementById('font-spacing-slider')
+var fontSpacingValue = document.getElementById('font-spacing-value')
+var multiViewMaxViewsInput = document.getElementById('multi-view-max-views')
+var gestureShortcutsCheckbox = document.getElementById('checkbox-gesture-shortcuts')
+var gestureWorkspaceCheckbox = document.getElementById('checkbox-gesture-workspace')
+var openEphemeralTabButton = document.getElementById('button-open-ephemeral-tab')
+
 function showRestartRequiredBanner () {
   banner.hidden = false
   settings.set('restartNow', true)
@@ -370,6 +382,90 @@ userAgentInput.addEventListener('input', function (e) {
   }
   showRestartRequiredBanner()
 })
+
+
+/* multi-view and gesture settings */
+
+settings.get('multiViewMaxViews', function (value) {
+  multiViewMaxViewsInput.value = String(value || 1)
+})
+
+multiViewMaxViewsInput.addEventListener('change', function () {
+  settings.set('multiViewMaxViews', parseInt(this.value) || 1)
+})
+
+settings.get('gestureShortcutsEnabled', function (value) {
+  gestureShortcutsCheckbox.checked = value === true
+})
+
+gestureShortcutsCheckbox.addEventListener('change', function () {
+  settings.set('gestureShortcutsEnabled', this.checked)
+})
+
+settings.get('gestureWorkspaceSwipeEnabled', function (value) {
+  gestureWorkspaceCheckbox.checked = value !== false
+})
+
+gestureWorkspaceCheckbox.addEventListener('change', function () {
+  settings.set('gestureWorkspaceSwipeEnabled', this.checked)
+})
+
+openEphemeralTabButton.addEventListener('click', function () {
+  postMessage({ message: 'open-ephemeral-tab', url: 'min://newtab' })
+})
+
+/* dynamic theme, animations and font preferences */
+
+function updateFontDisplay () {
+  fontSizeValue.textContent = (parseInt(fontSizeSlider.value) || 100) + '%'
+  fontSpacingValue.textContent = (parseFloat(fontSpacingSlider.value) || 0).toFixed(2) + 'px'
+}
+
+settings.get('dynamicThemeEnabled', function (value) {
+  dynamicThemeCheckbox.checked = value === true
+})
+
+dynamicThemeCheckbox.addEventListener('change', function () {
+  settings.set('dynamicThemeEnabled', this.checked)
+})
+
+settings.get('liquidGlassAnimations', function (value) {
+  liquidGlassAnimationsCheckbox.checked = value !== false
+})
+
+liquidGlassAnimationsCheckbox.addEventListener('change', function () {
+  settings.set('liquidGlassAnimations', this.checked)
+})
+
+settings.get('comfortReadingMode', function (value) {
+  comfortReadingCheckbox.checked = value === true
+})
+
+comfortReadingCheckbox.addEventListener('change', function () {
+  settings.set('comfortReadingMode', this.checked)
+})
+
+settings.get('uiFontScale', function (value) {
+  fontSizeSlider.value = String(value || 100)
+  updateFontDisplay()
+})
+
+fontSizeSlider.addEventListener('input', function () {
+  settings.set('uiFontScale', parseInt(this.value) || 100)
+  updateFontDisplay()
+})
+
+settings.get('uiLetterSpacing', function (value) {
+  var parsed = typeof value === 'number' ? value : 0
+  fontSpacingSlider.value = String(parsed)
+  updateFontDisplay()
+})
+
+fontSpacingSlider.addEventListener('input', function () {
+  settings.set('uiLetterSpacing', parseFloat(this.value) || 0)
+  updateFontDisplay()
+})
+
 
 /* update notifications setting */
 
