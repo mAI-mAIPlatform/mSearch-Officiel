@@ -279,3 +279,23 @@ body.dark-mode #newtab-settings-container {
     margin-right: 1em;
   }
 }
+
+
+#search-engine-settings-container {
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  border-radius: 14px;
+  background: rgba(240, 249, 255, 0.5);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+#search-engine-settings-container input {
+  width: min(100%, 34rem);
+}
+
+body.dark-mode #search-engine-settings-container {
+  background: rgba(15, 23, 42, 0.35);
+  border-color: rgba(56, 189, 248, 0.6);
+}

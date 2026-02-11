@@ -13,6 +13,10 @@ var searchSuggestionsCheckbox = document.getElementById('checkbox-search-suggest
 var searchSuggestionsCountInput = document.getElementById('input-search-suggestions-count')
 var userAgentCheckbox = document.getElementById('checkbox-user-agent')
 var userAgentInput = document.getElementById('input-user-agent')
+var searchRegionSelect = document.getElementById('search-region')
+var searchLanguageSelect = document.getElementById('search-language')
+var searchSafeModeSelect = document.getElementById('search-safe-mode')
+var searchExtraParamsInput = document.getElementById('search-extra-params')
 
 var dynamicThemeCheckbox = document.getElementById('checkbox-dynamic-theme')
 var liquidGlassAnimationsCheckbox = document.getElementById('checkbox-liquid-glass-animations')
@@ -600,6 +604,35 @@ usageStatisticsCheckbox.addEventListener('change', function (e) {
 var searchEngineDropdown = document.getElementById('default-search-engine')
 var searchEngineInput = document.getElementById('custom-search-engine')
 
+function normalizeSearchEngineOptions (value) {
+  var defaults = {
+    region: 'fr-FR',
+    language: 'fr',
+    safeMode: 'moderate',
+    extraParams: ''
+  }
+
+  if (!value || typeof value !== 'object') {
+    return defaults
+  }
+
+  return {
+    region: value.region || defaults.region,
+    language: value.language || defaults.language,
+    safeMode: value.safeMode || defaults.safeMode,
+    extraParams: typeof value.extraParams === 'string' ? value.extraParams.trim() : ''
+  }
+}
+
+function saveSearchEngineOptions () {
+  settings.set('searchEngineOptions', {
+    region: searchRegionSelect.value,
+    language: searchLanguageSelect.value,
+    safeMode: searchSafeModeSelect.value,
+    extraParams: (searchExtraParamsInput.value || '').trim()
+  })
+}
+
 searchEngineInput.setAttribute('placeholder', l('customSearchEngineDescription'))
 
 settings.onLoad(function () {
@@ -621,14 +654,23 @@ settings.onLoad(function () {
 
   // add custom option
   item = document.createElement('option')
-  item.textContent = 'custom'
+  item.value = 'custom'
+  item.textContent = 'Personnalisé'
   if (currentSearchEngine.custom) {
     item.setAttribute('selected', 'true')
   }
   searchEngineDropdown.appendChild(item)
 })
 
-searchEngineDropdown.addEventListener('change', function (e) {
+settings.get('searchEngineOptions', function (value) {
+  var safeOptions = normalizeSearchEngineOptions(value)
+  searchRegionSelect.value = safeOptions.region
+  searchLanguageSelect.value = safeOptions.language
+  searchSafeModeSelect.value = safeOptions.safeMode
+  searchExtraParamsInput.value = safeOptions.extraParams
+})
+
+searchEngineDropdown.addEventListener('change', function () {
   if (this.value === 'custom') {
     searchEngineInput.hidden = false
   } else {
@@ -637,9 +679,14 @@ searchEngineDropdown.addEventListener('change', function (e) {
   }
 })
 
-searchEngineInput.addEventListener('input', function (e) {
+searchEngineInput.addEventListener('input', function () {
   settings.set('searchEngine', { url: this.value })
 })
+
+searchRegionSelect.addEventListener('change', saveSearchEngineOptions)
+searchLanguageSelect.addEventListener('change', saveSearchEngineOptions)
+searchSafeModeSelect.addEventListener('change', saveSearchEngineOptions)
+searchExtraParamsInput.addEventListener('input', saveSearchEngineOptions)
 
 /* key map settings */
 
