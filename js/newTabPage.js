@@ -58,6 +58,9 @@ const newTabPage = {
   historyList: document.getElementById('ntp-history-list'),
   searchForm: document.getElementById('ntp-search-form'),
   searchInput: document.getElementById('ntp-search-input'),
+  subtitle: document.getElementById('ntp-subtitle'),
+  dateOutput: document.getElementById('ntp-date'),
+  timeOutput: document.getElementById('ntp-time'),
   shortcutsList: document.getElementById('ntp-shortcuts-list'),
   shortcutAddButton: document.getElementById('ntp-shortcut-add'),
   actionButtons: document.querySelectorAll('[data-ntp-action]'),
@@ -66,6 +69,8 @@ const newTabPage = {
   reminders: [],
   shortcuts: [],
   maxShortcuts: settings.get('ntpMaxShortcuts') || DEFAULT_MAX_SHORTCUTS,
+  clockTimer: null,
+  historyRefreshTimer: null,
   getSelectedTheme: function () {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
     if (storedTheme && themes[storedTheme]) {
@@ -261,21 +266,21 @@ const newTabPage = {
     newTabPage.historyList.textContent = ''
 
     try {
-      const items = await places.getAllItems()
-      const sortedByVisit = items.slice().sort((a, b) => (b.lastVisit || 0) - (a.lastVisit || 0))
       const showFavorites = settings.get('ntpShowFavorites') !== false
       const showHistory = settings.get('ntpShowHistory') !== false
-      const favorites = showFavorites ? sortedByVisit.filter(item => item.isBookmarked).slice(0, 8) : []
-      const historyItems = showHistory ? sortedByVisit.filter(item => !item.isBookmarked).slice(0, 8) : []
-
       const favoritesPanel = document.getElementById('ntp-favorites-panel')
       const historyPanel = document.getElementById('ntp-history-panel')
+
       if (favoritesPanel) {
         favoritesPanel.hidden = !showFavorites
       }
       if (historyPanel) {
         historyPanel.hidden = !showHistory
       }
+
+      const favorites = showFavorites ? await places.searchPlaces('', { limit: 8, searchBookmarks: true }) : []
+      const historyItems = showHistory ? await places.searchPlaces('', { limit: 8 }) : []
+      const historyWithoutBookmarks = historyItems.filter(item => !item.isBookmarked).slice(0, 8)
 
       if (favorites.length === 0) {
         const emptyFavorites = document.createElement('li')
@@ -288,13 +293,13 @@ const newTabPage = {
         })
       }
 
-      if (historyItems.length === 0) {
+      if (historyWithoutBookmarks.length === 0) {
         const emptyHistory = document.createElement('li')
         emptyHistory.className = 'ntp-empty-state'
         emptyHistory.textContent = 'Votre historique récent apparaîtra ici.'
         newTabPage.historyList.appendChild(emptyHistory)
       } else {
-        historyItems.forEach(item => {
+        historyWithoutBookmarks.forEach(item => {
           newTabPage.historyList.appendChild(newTabPage.createPageListItem(item))
         })
       }
@@ -304,6 +309,32 @@ const newTabPage = {
       errorState.textContent = 'Impossible de charger les éléments.'
       newTabPage.favoritesList.appendChild(errorState.cloneNode(true))
       newTabPage.historyList.appendChild(errorState)
+    }
+  },
+  scheduleHistoryRefresh: function () {
+    clearTimeout(newTabPage.historyRefreshTimer)
+    newTabPage.historyRefreshTimer = setTimeout(function () {
+      newTabPage.renderHistoryAndFavorites()
+    }, 180)
+  },
+  updateLiveHeader: function () {
+    if (!newTabPage.dateOutput || !newTabPage.timeOutput) {
+      return
+    }
+
+    var now = new Date()
+    newTabPage.dateOutput.textContent = now.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long'
+    })
+    newTabPage.timeOutput.textContent = now.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+
+    if (newTabPage.subtitle) {
+      newTabPage.subtitle.textContent = 'Accueil intelligent Liquid Glass • ' + now.toLocaleDateString('fr-FR')
     }
   },
   applyRandomBackground: function () {
@@ -447,6 +478,7 @@ const newTabPage = {
       document.body.classList.remove('has-overlay-ntp-title')
     }
     newTabPage.maxShortcuts = settings.get('ntpMaxShortcuts') || DEFAULT_MAX_SHORTCUTS
+    document.body.classList.toggle('ntp-reduced-motion', settings.get('liquidGlassAnimations') === false)
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
@@ -457,6 +489,10 @@ const newTabPage = {
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
     newTabPage.bindShortcutControls()
+
+    settings.listen('liquidGlassAnimations', function (value) {
+      document.body.classList.toggle('ntp-reduced-motion', value === false)
+    })
 
     if (newTabPage.picker) {
       newTabPage.picker.addEventListener('click', async function () {
@@ -528,8 +564,12 @@ const newTabPage = {
     }
 
     searchbar.events.on('url-selected', function () {
-      newTabPage.renderHistoryAndFavorites()
+      newTabPage.scheduleHistoryRefresh()
     })
+
+    newTabPage.updateLiveHeader()
+    clearInterval(newTabPage.clockTimer)
+    newTabPage.clockTimer = setInterval(newTabPage.updateLiveHeader, 60000)
 
     statistics.registerGetter('ntpHasBackground', function () {
       return newTabPage.hasBackground

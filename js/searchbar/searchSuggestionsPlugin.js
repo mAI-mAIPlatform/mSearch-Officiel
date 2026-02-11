@@ -19,7 +19,7 @@ function showSearchSuggestions (text, input, inputFlags) {
     return
   }
 
-  const suggestionsURL = searchEngine.getCurrent().suggestionsURL
+  const suggestionsURL = searchEngine.buildSuggestionsURL(text)
 
   if (!suggestionsURL) {
     searchbarPlugins.reset('searchSuggestions')
@@ -33,7 +33,7 @@ function showSearchSuggestions (text, input, inputFlags) {
 
   var suggestionCount = normalizeSuggestionCount(settings.get('searchSuggestionsCount'))
 
-  fetch(suggestionsURL.replace('%s', encodeURIComponent(text)), {
+  fetch(suggestionsURL, {
     cache: 'force-cache'
   })
     .then(function (response) {

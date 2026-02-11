@@ -90,7 +90,7 @@ var urlParser = {
     }
 
     // else, do a search
-    return searchEngine.getCurrent().searchURL.replace('%s', encodeURIComponent(url))
+    return searchEngine.buildSearchURL(url)
   },
   basicURL: function (url) {
     return removeWWW(urlParser.removeProtocol(removeTrailingSlash(url)))

@@ -60,6 +60,28 @@ body:not(.is-ntp) #ntp-content {
     opacity: 0.94;
 }
 
+#ntp-subtitle {
+    max-width: min(760px, 95%);
+    margin-inline: auto;
+}
+
+#ntp-meta {
+    margin-top: 0.45rem;
+    display: inline-flex;
+    gap: 0.45rem;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.88rem;
+    background: rgba(11, 16, 33, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+#ntp-meta span {
+    white-space: nowrap;
+}
+
 #ntp-search-form {
     align-self: center;
     width: min(820px, 94%);
@@ -327,4 +349,18 @@ body:not(.is-ntp) #ntp-content {
     #ntp-shortcuts-panel {
         width: 100%;
     }
+}
+
+
+body.ntp-reduced-motion #ntp-search-form,
+body.ntp-reduced-motion .ntp-action,
+body.ntp-reduced-motion .ntp-panel,
+body.ntp-reduced-motion #ntp-background-controls button,
+body.ntp-reduced-motion #ntp-theme-selector {
+    transition: none !important;
+}
+
+body.ntp-reduced-motion #ntp-gradient-overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }

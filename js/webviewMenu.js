@@ -164,7 +164,7 @@ const webviewMenu = {
           label: l('searchWith').replace('%s', searchEngine.getCurrent().name),
           click: function () {
             var newTab = tabs.add({
-              url: searchEngine.getCurrent().searchURL.replace('%s', encodeURIComponent(selection)),
+              url: searchEngine.buildSearchURL(selection),
               private: currentTab.private
             })
             browserUI.addTab(newTab, {
