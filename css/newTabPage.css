@@ -141,7 +141,7 @@ body:not(.is-ntp) #ntp-content {
 
 .ntp-shortcut-item {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 0.35rem;
     align-items: center;
 }
@@ -153,6 +153,7 @@ body:not(.is-ntp) #ntp-content {
     color: #fff;
     padding: 0.45rem 0.55rem;
     text-align: left;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -263,9 +264,9 @@ body:not(.is-ntp) #ntp-content {
 }
 
 .ntp-list-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
     gap: 0.4rem;
     border-radius: 10px;
     background: rgba(8, 13, 31, 0.35);
@@ -276,6 +277,7 @@ body:not(.is-ntp) #ntp-content {
 .ntp-link-button {
     color: inherit;
     text-align: left;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -410,6 +412,9 @@ body:not(.is-ntp) #ntp-content {
     font-size: 0.78rem;
     opacity: 0.74;
     white-space: nowrap;
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
