@@ -105,6 +105,18 @@ body.linux #menu-button {
   opacity: 0.1;
 }
 
+
+@media (max-width: 1280px) {
+  #navbar-brand {
+    display: none;
+  }
+}
+
+body.is-edit-mode #navbar-brand,
+body.ntp-fix-title-overlap #navbar-brand {
+  display: none;
+}
+
 /* tab layout */
 
 #navbar #tabs {

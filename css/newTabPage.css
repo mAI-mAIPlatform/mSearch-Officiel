@@ -7,6 +7,11 @@
     transition: opacity 0.18s ease;
     overflow: hidden;
     padding: 1.25rem;
+    --ntp-glass-blur: 16px;
+    --ntp-glass-saturation: 160%;
+    --ntp-glass-bg: rgba(15, 20, 38, 0.45);
+    --ntp-glass-border: rgba(255, 255, 255, 0.22);
+    --ntp-glass-shadow: 0 8px 30px rgba(9, 12, 21, 0.25);
 }
 
 body:not(.is-ntp) #ntp-content {
@@ -177,11 +182,11 @@ body:not(.is-ntp) #ntp-content {
 .ntp-panel,
 #ntp-background-controls button,
 #ntp-theme-selector {
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    background: rgba(15, 20, 38, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 8px 30px rgba(9, 12, 21, 0.25);
+    backdrop-filter: blur(var(--ntp-glass-blur)) saturate(var(--ntp-glass-saturation));
+    -webkit-backdrop-filter: blur(var(--ntp-glass-blur)) saturate(var(--ntp-glass-saturation));
+    background: var(--ntp-glass-bg);
+    border: 1px solid var(--ntp-glass-border);
+    box-shadow: var(--ntp-glass-shadow);
 }
 
 .ntp-action {
@@ -465,6 +470,50 @@ body:not(.is-ntp) #ntp-content {
     background: rgba(0, 0, 0, 0.16);
 }
 
+
+
+
+body.ntp-compact-layout #ntp-main-shell {
+    gap: 0.72rem;
+    padding: clamp(0.65rem, 2vw, 1.1rem);
+}
+
+body.ntp-compact-layout #ntp-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+body.ntp-compact-layout #ntp-grid {
+    gap: 0.72rem;
+}
+
+body.ntp-compact-layout .ntp-panel {
+    min-height: 220px;
+    padding: 0.8rem;
+}
+
+body.ntp-glass-soft #ntp-content {
+    --ntp-glass-blur: 11px;
+    --ntp-glass-saturation: 135%;
+    --ntp-glass-bg: rgba(15, 20, 38, 0.34);
+    --ntp-glass-border: rgba(255, 255, 255, 0.18);
+    --ntp-glass-shadow: 0 6px 24px rgba(9, 12, 21, 0.2);
+}
+
+body.ntp-glass-balanced #ntp-content {
+    --ntp-glass-blur: 16px;
+    --ntp-glass-saturation: 160%;
+    --ntp-glass-bg: rgba(15, 20, 38, 0.45);
+    --ntp-glass-border: rgba(255, 255, 255, 0.22);
+    --ntp-glass-shadow: 0 8px 30px rgba(9, 12, 21, 0.25);
+}
+
+body.ntp-glass-strong #ntp-content {
+    --ntp-glass-blur: 22px;
+    --ntp-glass-saturation: 190%;
+    --ntp-glass-bg: rgba(10, 15, 30, 0.58);
+    --ntp-glass-border: rgba(255, 255, 255, 0.3);
+    --ntp-glass-shadow: 0 16px 38px rgba(5, 10, 20, 0.38);
+}
 
 body.ntp-reduced-motion #ntp-search-form,
 body.ntp-reduced-motion .ntp-action,

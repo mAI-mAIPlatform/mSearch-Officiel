@@ -205,6 +205,26 @@
         <input type="checkbox" id="checkbox-ntp-fix-title-overlap" />
         <label for="checkbox-ntp-fix-title-overlap">Forcer la correction du chevauchement “mSearch / Nouvel onglet”</label>
       </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-show-widgets" />
+        <label for="checkbox-ntp-show-widgets">Afficher les widgets rapides (Météo, News, Agenda, Notes)</label>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-show-clock" />
+        <label for="checkbox-ntp-show-clock">Afficher la date/heure sur l'accueil</label>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-compact-layout" />
+        <label for="checkbox-ntp-compact-layout">Mode compact (plus d'éléments visibles)</label>
+      </div>
+      <div class="setting-section">
+        <label for="select-ntp-glass-strength">Intensité Liquid Glass</label>
+        <select id="select-ntp-glass-strength">
+          <option value="soft">Douce</option>
+          <option value="balanced">Équilibrée</option>
+          <option value="strong">Renforcée</option>
+        </select>
+      </div>
     </div>
 
     <div class="settings-container" id="additional-settings-container">
@@ -489,6 +509,11 @@
         class="settings-info-subheading"
         data-string="settingsKeyboardShortcutsHelp"
       ></div>
+
+      <div class="setting-section keymap-toolbar">
+        <input id="keymap-filter" type="search" placeholder="Filtrer une action (ex: tab, history, zoom)" />
+        <button id="keymap-reset-button" class="settings-action-button" type="button">Réinitialiser les raccourcis</button>
+      </div>
 
       <div class="setting-section">
         <ul id="key-map-list"></ul>

@@ -34,6 +34,10 @@ var ntpShortcutsSizeSelect = document.getElementById('select-ntp-shortcuts-size'
 var ntpShowHistoryCheckbox = document.getElementById('checkbox-ntp-show-history')
 var ntpShowFavoritesCheckbox = document.getElementById('checkbox-ntp-show-favorites')
 var ntpFixTitleOverlapCheckbox = document.getElementById('checkbox-ntp-fix-title-overlap')
+var ntpShowWidgetsCheckbox = document.getElementById('checkbox-ntp-show-widgets')
+var ntpShowClockCheckbox = document.getElementById('checkbox-ntp-show-clock')
+var ntpCompactLayoutCheckbox = document.getElementById('checkbox-ntp-compact-layout')
+var ntpGlassStrengthSelect = document.getElementById('select-ntp-glass-strength')
 
 function showRestartRequiredBanner () {
   banner.hidden = false
@@ -514,6 +518,40 @@ ntpFixTitleOverlapCheckbox.addEventListener('change', function () {
   settings.set('ntpFixTitleOverlap', this.checked)
 })
 
+settings.get('ntpShowWidgets', function (value) {
+  ntpShowWidgetsCheckbox.checked = value !== false
+})
+
+ntpShowWidgetsCheckbox.addEventListener('change', function () {
+  settings.set('ntpShowWidgets', this.checked)
+})
+
+settings.get('ntpShowClock', function (value) {
+  ntpShowClockCheckbox.checked = value !== false
+})
+
+ntpShowClockCheckbox.addEventListener('change', function () {
+  settings.set('ntpShowClock', this.checked)
+})
+
+settings.get('ntpCompactLayout', function (value) {
+  ntpCompactLayoutCheckbox.checked = value === true
+})
+
+ntpCompactLayoutCheckbox.addEventListener('change', function () {
+  settings.set('ntpCompactLayout', this.checked)
+})
+
+settings.get('ntpGlassStrength', function (value) {
+  var safe = ['soft', 'balanced', 'strong'].includes(value) ? value : 'balanced'
+  ntpGlassStrengthSelect.value = safe
+})
+
+ntpGlassStrengthSelect.addEventListener('change', function () {
+  var safe = ['soft', 'balanced', 'strong'].includes(this.value) ? this.value : 'balanced'
+  settings.set('ntpGlassStrength', safe)
+})
+
 /* dynamic theme, animations and font preferences */
 
 function updateFontDisplay () {
@@ -690,16 +728,48 @@ searchExtraParamsInput.addEventListener('input', saveSearchEngineOptions)
 
 /* key map settings */
 
-settings.get('keyMap', function (keyMapSettings) {
-  var keyMap = userKeyMap(keyMapSettings)
+function renderKeyMapList (filterText) {
+  settings.get('keyMap', function (keyMapSettings) {
+    var keyMap = userKeyMap(keyMapSettings)
+    var keyMapList = document.getElementById('key-map-list')
+    if (!keyMapList) {
+      return
+    }
 
-  var keyMapList = document.getElementById('key-map-list')
+    var normalizedFilter = ((filterText || '') + '').trim().toLowerCase()
+    var fragment = document.createDocumentFragment()
+    keyMapList.textContent = ''
 
-  Object.keys(keyMap).forEach(function (action) {
-    var li = createKeyMapListItem(action, keyMap)
-    keyMapList.appendChild(li)
+    Object.keys(keyMap).forEach(function (action) {
+      var value = formatKeyValue(keyMap[action])
+      if (normalizedFilter && action.toLowerCase().indexOf(normalizedFilter) === -1 && value.toLowerCase().indexOf(normalizedFilter) === -1) {
+        return
+      }
+      var li = createKeyMapListItem(action, keyMap)
+      fragment.appendChild(li)
+    })
+
+    keyMapList.appendChild(fragment)
   })
-})
+}
+
+renderKeyMapList('')
+
+var keymapFilterInput = document.getElementById('keymap-filter')
+if (keymapFilterInput) {
+  keymapFilterInput.addEventListener('input', function () {
+    renderKeyMapList(this.value)
+  })
+}
+
+var keymapResetButton = document.getElementById('keymap-reset-button')
+if (keymapResetButton) {
+  keymapResetButton.addEventListener('click', function () {
+    settings.set('keyMap', {})
+    renderKeyMapList(keymapFilterInput ? keymapFilterInput.value : '')
+    showRestartRequiredBanner()
+  })
+}
 
 function formatCamelCase (text) {
   var result = text.replace(/([a-z])([A-Z])/g, '$1 $2')

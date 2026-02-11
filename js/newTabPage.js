@@ -34,7 +34,16 @@ const curatedBackgrounds = [
   'https://picsum.photos/seed/msearch-bg-12/1920/1080',
   'https://picsum.photos/seed/msearch-bg-13/1920/1080',
   'https://picsum.photos/seed/msearch-bg-14/1920/1080',
-  'https://picsum.photos/seed/msearch-bg-15/1920/1080'
+  'https://picsum.photos/seed/msearch-bg-15/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-16/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-17/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-18/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-19/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-20/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-21/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-22/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-23/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-24/1920/1080'
 ]
 
 const defaultShortcuts = [
@@ -65,6 +74,11 @@ const newTabPage = {
   shortcutsList: document.getElementById('ntp-shortcuts-list'),
   shortcutAddButton: document.getElementById('ntp-shortcut-add'),
   actionButtons: document.querySelectorAll('[data-ntp-action]'),
+  widgetsPanel: document.getElementById('ntp-widgets-panel'),
+  headerMeta: document.getElementById('ntp-meta'),
+  quickActionsBound: false,
+  searchBound: false,
+  shortcutsBound: false,
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
@@ -141,6 +155,33 @@ const newTabPage = {
 
     return trimmed
   },
+  applyUISettings: function () {
+    const showWidgets = settings.get('ntpShowWidgets') !== false
+    const showClock = settings.get('ntpShowClock') !== false
+    const compactLayout = settings.get('ntpCompactLayout') === true
+    const glassStrength = settings.get('ntpGlassStrength') || 'balanced'
+
+    if (newTabPage.widgetsPanel) {
+      newTabPage.widgetsPanel.hidden = !showWidgets
+    }
+    if (newTabPage.headerMeta) {
+      newTabPage.headerMeta.hidden = !showClock
+    }
+
+    document.body.classList.toggle('ntp-compact-layout', compactLayout)
+    document.body.classList.remove('ntp-glass-soft', 'ntp-glass-balanced', 'ntp-glass-strong')
+    if (['soft', 'balanced', 'strong'].indexOf(glassStrength) !== -1) {
+      document.body.classList.add('ntp-glass-' + glassStrength)
+    } else {
+      document.body.classList.add('ntp-glass-balanced')
+    }
+
+    if (settings.get('ntpFixTitleOverlap') !== false) {
+      document.body.classList.add('ntp-fix-title-overlap')
+    } else {
+      document.body.classList.remove('ntp-fix-title-overlap')
+    }
+  },
   renderReminders: function () {
     if (!newTabPage.reminderList) {
       return
@@ -155,6 +196,8 @@ const newTabPage = {
       newTabPage.reminderList.appendChild(emptyState)
       return
     }
+
+    const fragment = document.createDocumentFragment()
 
     newTabPage.reminders.forEach(function (reminder, index) {
       const item = document.createElement('li')
@@ -174,8 +217,10 @@ const newTabPage = {
 
       item.appendChild(content)
       item.appendChild(removeButton)
-      newTabPage.reminderList.appendChild(item)
+      fragment.appendChild(item)
     })
+
+    newTabPage.reminderList.appendChild(fragment)
   },
   renderShortcuts: function () {
     if (!newTabPage.shortcutsList) {
@@ -191,6 +236,8 @@ const newTabPage = {
       newTabPage.shortcutsList.appendChild(empty)
       return
     }
+
+    const fragment = document.createDocumentFragment()
 
     newTabPage.shortcuts.forEach(function (item, index) {
       const listItem = document.createElement('li')
@@ -239,8 +286,10 @@ const newTabPage = {
       listItem.appendChild(openButton)
       listItem.appendChild(editButton)
       listItem.appendChild(deleteButton)
-      newTabPage.shortcutsList.appendChild(listItem)
+      fragment.appendChild(listItem)
     })
+
+    newTabPage.shortcutsList.appendChild(fragment)
   },
   createPageListItem: function (item) {
     const listItem = document.createElement('li')
@@ -436,6 +485,11 @@ const newTabPage = {
     })
   },
   bindQuickActions: function () {
+    if (newTabPage.quickActionsBound) {
+      return
+    }
+    newTabPage.quickActionsBound = true
+
     newTabPage.actionButtons.forEach((button) => {
       button.addEventListener('click', function () {
         const action = button.getAttribute('data-ntp-action')
@@ -478,9 +532,11 @@ const newTabPage = {
     })
   },
   bindSearch: function () {
-    if (!newTabPage.searchForm || !newTabPage.searchInput) {
+    if (newTabPage.searchBound || !newTabPage.searchForm || !newTabPage.searchInput) {
       return
     }
+
+    newTabPage.searchBound = true
 
     newTabPage.searchForm.addEventListener('submit', function (e) {
       e.preventDefault()
@@ -495,9 +551,11 @@ const newTabPage = {
     })
   },
   bindShortcutControls: function () {
-    if (!newTabPage.shortcutAddButton) {
+    if (newTabPage.shortcutsBound || !newTabPage.shortcutAddButton) {
       return
     }
+
+    newTabPage.shortcutsBound = true
 
     newTabPage.shortcutAddButton.addEventListener('click', function () {
       if (newTabPage.shortcuts.length >= newTabPage.maxShortcuts) {
@@ -524,11 +582,9 @@ const newTabPage = {
       return
     }
 
-    if (settings.get('ntpFixTitleOverlap') !== false) {
-      document.body.classList.remove('has-overlay-ntp-title')
-    }
     newTabPage.maxShortcuts = settings.get('ntpMaxShortcuts') || DEFAULT_MAX_SHORTCUTS
     document.body.classList.toggle('ntp-reduced-motion', settings.get('liquidGlassAnimations') === false)
+    newTabPage.applyUISettings()
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
@@ -542,6 +598,12 @@ const newTabPage = {
 
     settings.listen('liquidGlassAnimations', function (value) {
       document.body.classList.toggle('ntp-reduced-motion', value === false)
+    })
+
+    ;['ntpShowWidgets', 'ntpShowClock', 'ntpCompactLayout', 'ntpGlassStrength', 'ntpFixTitleOverlap'].forEach(function (settingKey) {
+      settings.listen(settingKey, function () {
+        newTabPage.applyUISettings()
+      })
     })
 
     if (newTabPage.picker) {
