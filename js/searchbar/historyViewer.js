@@ -6,15 +6,66 @@ var places = require('places/places.js')
 var urlParser = require('util/urlParser.js')
 var formatRelativeDate = require('util/relativeDate.js')
 
+function parseHistoryFilters (text) {
+  const tokens = (text || '').toLowerCase().split(' ').filter(Boolean)
+  const filters = {
+    type: null,
+    date: null,
+    context: []
+  }
+
+  tokens.forEach(function (token) {
+    if (token.startsWith('type:')) {
+      filters.type = token.replace('type:', '')
+      return
+    }
+
+    if (token.startsWith('date:')) {
+      filters.date = token.replace('date:', '')
+      return
+    }
+
+    filters.context.push(token)
+  })
+
+  return filters
+}
+
+function matchesSmartFilters (result, filters) {
+  const haystack = ((result.title || '') + ' ' + (result.url || '')).toLowerCase()
+  const isPDF = haystack.includes('.pdf') || haystack.includes('pdf')
+
+  if (filters.type === 'pdf' && !isPDF) {
+    return false
+  }
+
+  if (filters.type === 'video' && !(haystack.includes('youtube') || haystack.includes('vimeo'))) {
+    return false
+  }
+
+  if (filters.date === 'today') {
+    const visitDate = new Date(result.lastVisit || 0)
+    if (visitDate.toDateString() !== new Date().toDateString()) {
+      return false
+    }
+  }
+
+  return filters.context.every(function (part) {
+    return haystack.includes(part)
+  })
+}
+
+
 module.exports = {
   initialize: function () {
     bangsPlugin.registerCustomBang({
       phrase: '!history',
-      snippet: l('searchHistory'),
+      snippet: l('searchHistory') + ' (type:pdf date:today contexte)',
       icon: 'carbon:recently-viewed',
       isAction: false,
       showSuggestions: async function (text, input, event) {
         const results = await places.searchPlaces(text, { limit: Infinity })
+        const filters = parseHistoryFilters(text)
 
         searchbarPlugins.reset('bangs')
 
@@ -48,7 +99,7 @@ module.exports = {
 
         var lastRelativeDate = '' // used to generate headings
 
-        results.sort(function (a, b) {
+        results.filter(function (result) { return matchesSmartFilters(result, filters) }).sort(function (a, b) {
           // order by last visit
           return b.lastVisit - a.lastVisit
         }).slice(0, 1000).forEach(function (result, index) {
@@ -59,7 +110,7 @@ module.exports = {
           }
           var data = {
             title: result.title,
-            secondaryText: urlParser.basicURL(urlParser.getSourceURL(result.url)),
+            secondaryText: urlParser.basicURL(urlParser.getSourceURL(result.url)) + ' · ' + (matchesSmartFilters(result, { type: 'pdf', date: null, context: [] }) ? 'PDF' : 'Web'),
             fakeFocus: index === 0 && text,
             icon: (result.isBookmarked ? 'carbon:star' : ''),
             click: function (e) {

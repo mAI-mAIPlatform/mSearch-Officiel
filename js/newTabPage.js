@@ -3,10 +3,12 @@ const statistics = require('js/statistics.js')
 const places = require('places/places.js')
 const searchbar = require('searchbar/searchbar.js')
 const tabEditor = require('navbar/tabEditor.js')
+const formatRelativeDate = require('util/relativeDate.js')
 
 const REMINDER_STORAGE_KEY = 'msearch.ntp.reminders'
 const THEME_STORAGE_KEY = 'msearch.ntp.theme'
 const MAX_REMINDERS = 12
+const MAX_SMART_HISTORY_ITEMS = 8
 
 const themes = {
   aurora: 'linear-gradient(120deg, rgba(49, 87, 255, 0.45), rgba(65, 230, 180, 0.25), rgba(203, 124, 255, 0.35))',
@@ -27,6 +29,7 @@ const newTabPage = {
   favoritesList: document.getElementById('ntp-favorites-list'),
   historyList: document.getElementById('ntp-history-list'),
   actionButtons: document.querySelectorAll('[data-ntp-action]'),
+  widgetButtons: document.querySelectorAll('#ntp-widget-grid .ntp-widget'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
@@ -101,6 +104,33 @@ const newTabPage = {
       newTabPage.reminderList.appendChild(item)
     })
   },
+  classifyHistoryEntry: function (item) {
+    const url = (item.url || '').toLowerCase()
+    const title = (item.title || '').toLowerCase()
+
+    if (url.includes('.pdf') || title.includes('pdf') || title.includes('document')) {
+      return 'PDF'
+    }
+
+    if (url.startsWith('file://')) {
+      return 'Fichier'
+    }
+
+    if (url.includes('youtube.com') || url.includes('vimeo.com')) {
+      return 'Vidéo'
+    }
+
+    if (url.includes('news') || title.includes('actualité') || title.includes('news')) {
+      return 'News'
+    }
+
+    return 'Web'
+  },
+  getHistoryContext: function (item) {
+    const relative = item.lastVisit ? formatRelativeDate(item.lastVisit) : 'inconnu'
+    const category = newTabPage.classifyHistoryEntry(item)
+    return category + ' · ' + relative
+  },
   createPageListItem: function (item) {
     const listItem = document.createElement('li')
     listItem.className = 'ntp-list-item'
@@ -114,7 +144,12 @@ const newTabPage = {
       searchbar.events.emit('url-selected', { url: item.url, background: false })
     })
 
+    const meta = document.createElement('span')
+    meta.className = 'ntp-item-meta'
+    meta.textContent = item.isBookmarked ? 'Favori' : newTabPage.getHistoryContext(item)
+
     listItem.appendChild(link)
+    listItem.appendChild(meta)
     return listItem
   },
   renderHistoryAndFavorites: async function () {
@@ -129,7 +164,7 @@ const newTabPage = {
       const items = await places.getAllItems()
       const sortedByVisit = items.slice().sort((a, b) => (b.lastVisit || 0) - (a.lastVisit || 0))
       const favorites = sortedByVisit.filter(item => item.isBookmarked).slice(0, 6)
-      const historyItems = sortedByVisit.filter(item => !item.isBookmarked).slice(0, 6)
+      const historyItems = sortedByVisit.filter(item => !item.isBookmarked).slice(0, MAX_SMART_HISTORY_ITEMS)
 
       if (favorites.length === 0) {
         const emptyFavorites = document.createElement('li')
@@ -206,6 +241,26 @@ const newTabPage = {
 
         if (action === 'open-favorites') {
           tabEditor.show(tabId, '!bookmarks ')
+          return
+        }
+
+        if (action === 'open-weather') {
+          searchbar.events.emit('url-selected', { url: 'https://wttr.in/?lang=fr', background: false })
+          return
+        }
+
+        if (action === 'open-news') {
+          searchbar.events.emit('url-selected', { url: 'https://news.google.com/topstories?hl=fr&gl=FR&ceid=FR:fr', background: false })
+        }
+      })
+    })
+  },
+  bindWidgets: function () {
+    newTabPage.widgetButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        const url = button.getAttribute('data-url')
+        if (url) {
+          searchbar.events.emit('url-selected', { url, background: false })
         }
       })
     })
@@ -217,6 +272,7 @@ const newTabPage = {
     newTabPage.renderReminders()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
+    newTabPage.bindWidgets()
 
     newTabPage.picker.addEventListener('click', async function () {
       const filePath = await ipc.invoke('showOpenDialog', {

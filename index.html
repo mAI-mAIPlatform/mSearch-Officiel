@@ -223,9 +223,41 @@
                 <i class="i carbon:search"></i>
                 <span>Nouvelle recherche</span>
               </button>
+              <button class="ntp-action" data-ntp-action="open-weather">
+                <i class="i carbon:partly-cloudy"></i>
+                <span>Météo</span>
+              </button>
+              <button class="ntp-action" data-ntp-action="open-news">
+                <i class="i carbon:news"></i>
+                <span>News</span>
+              </button>
             </section>
 
             <div id="ntp-grid">
+              <section class="ntp-panel" id="ntp-widgets-panel">
+                <div class="ntp-panel-title-row">
+                  <h2>Widgets rapides</h2>
+                </div>
+                <div id="ntp-widget-grid">
+                  <button class="ntp-widget" data-url="https://wttr.in/?lang=fr">
+                    <i class="i carbon:partly-cloudy"></i>
+                    <span>Météo locale</span>
+                  </button>
+                  <button class="ntp-widget" data-url="https://news.google.com/topstories?hl=fr&gl=FR&ceid=FR:fr">
+                    <i class="i carbon:news"></i>
+                    <span>Top actualités</span>
+                  </button>
+                  <button class="ntp-widget" data-url="https://calendar.google.com/">
+                    <i class="i carbon:calendar"></i>
+                    <span>Agenda</span>
+                  </button>
+                  <button class="ntp-widget" data-url="https://www.notion.so/">
+                    <i class="i carbon:note"></i>
+                    <span>Prise de notes</span>
+                  </button>
+                </div>
+              </section>
+
               <section class="ntp-panel" id="ntp-reminders-panel">
                 <div class="ntp-panel-title-row">
                   <h2>Rappels</h2>
@@ -251,7 +283,7 @@
 
               <section class="ntp-panel" id="ntp-history-panel">
                 <div class="ntp-panel-title-row">
-                  <h2>Historique récent</h2>
+                  <h2>Historique intelligent</h2>
                 </div>
                 <ul id="ntp-history-list"></ul>
               </section>
@@ -309,8 +341,25 @@
     </div>
 
     <div id="download-bar" hidden>
+      <div id="download-toolbar">
+        <span id="download-summary">Téléchargements intelligents</span>
+        <span id="download-smart-suggestion" aria-live="polite"></span>
+      </div>
       <div id="download-container" role="list" class="has-thin-scrollbar"></div>
       <button id="download-close-button" class="i carbon:close"></button>
+    </div>
+
+    <button id="floating-notes-toggle" title="Notes flottantes" aria-label="Ouvrir les notes flottantes">
+      <i class="i carbon:note"></i>
+    </button>
+
+    <div id="floating-notes-panel" hidden>
+      <div id="floating-notes-header">
+        <strong>Notes flottantes</strong>
+        <button id="floating-notes-close" class="i carbon:close" aria-label="Fermer"></button>
+      </div>
+      <div id="floating-notes-list"></div>
+      <button id="floating-notes-add">Nouvelle note</button>
     </div>
 
     <div class="modal" id="manager-setup-dialog" hidden>

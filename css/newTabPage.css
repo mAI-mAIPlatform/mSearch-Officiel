@@ -66,7 +66,10 @@ body:not(.is-ntp) #ntp-content {
 .ntp-action,
 .ntp-panel,
 #ntp-background-controls button,
-#ntp-theme-selector {
+#ntp-theme-selector,
+.ntp-widget,
+#floating-notes-panel,
+#floating-notes-toggle {
     backdrop-filter: blur(16px) saturate(160%);
     -webkit-backdrop-filter: blur(16px) saturate(160%);
     background: rgba(15, 20, 38, 0.45);
@@ -84,14 +87,16 @@ body:not(.is-ntp) #ntp-content {
     transition: transform 0.15s ease, background 0.15s ease;
 }
 
-.ntp-action:hover {
+.ntp-action:hover,
+.ntp-widget:hover,
+#floating-notes-toggle:hover {
     transform: translateY(-1px);
     background: rgba(23, 30, 57, 0.6);
 }
 
 #ntp-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
     gap: 1rem;
     margin-top: 0.25rem;
 }
@@ -115,6 +120,28 @@ body:not(.is-ntp) #ntp-content {
     color: #fff;
 }
 
+#ntp-widget-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.ntp-widget {
+    border-radius: 12px;
+    color: #fff;
+    min-height: 88px;
+    padding: 0.7rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.15s ease;
+}
+
+.ntp-widget i {
+    font-size: 1.1rem;
+}
+
 #ntp-reminder-form {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -124,7 +151,9 @@ body:not(.is-ntp) #ntp-content {
 
 #ntp-reminder-form input,
 #ntp-reminder-form button,
-#ntp-theme-selector {
+#ntp-theme-selector,
+#floating-notes-add,
+.floating-note textarea {
     border-radius: 10px;
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.25);
@@ -132,11 +161,13 @@ body:not(.is-ntp) #ntp-content {
     padding: 0.55rem 0.75rem;
 }
 
-#ntp-reminder-form input::placeholder {
+#ntp-reminder-form input::placeholder,
+.floating-note textarea::placeholder {
     color: rgba(255, 255, 255, 0.72);
 }
 
-#ntp-reminder-form button {
+#ntp-reminder-form button,
+#floating-notes-add {
     cursor: pointer;
 }
 
@@ -168,7 +199,13 @@ body:not(.is-ntp) #ntp-content {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100%;
+    width: 65%;
+}
+
+.ntp-item-meta {
+    opacity: 0.75;
+    font-size: 0.79rem;
+    white-space: nowrap;
 }
 
 .ntp-inline-delete {
@@ -220,7 +257,64 @@ body:not(.is-ntp) #ntp-content {
     opacity: 0;
 }
 
-@media (max-width: 1200px) {
+#floating-notes-toggle {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 12;
+    border-radius: 999px;
+    color: #fff;
+    width: 2.35rem;
+    height: 2.35rem;
+}
+
+#floating-notes-panel {
+    position: absolute;
+    left: 1rem;
+    bottom: 3.9rem;
+    z-index: 12;
+    width: min(340px, calc(100vw - 2rem));
+    border-radius: 14px;
+    padding: 0.65rem;
+    color: #fff;
+}
+
+#floating-notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.2rem 0.2rem 0.6rem;
+}
+
+#floating-notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 240px;
+    overflow: auto;
+    margin-bottom: 0.6rem;
+}
+
+.floating-note {
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 0.4rem;
+    background: rgba(8, 13, 31, 0.45);
+}
+
+.floating-note textarea {
+    width: 100%;
+    min-height: 82px;
+    resize: vertical;
+}
+
+@media (max-width: 1280px) {
+    #ntp-grid {
+        grid-template-columns: repeat(3, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 960px) {
     #ntp-grid {
         grid-template-columns: repeat(2, minmax(200px, 1fr));
     }
@@ -229,5 +323,11 @@ body:not(.is-ntp) #ntp-content {
 @media (max-width: 760px) {
     #ntp-grid {
         grid-template-columns: 1fr;
+    }
+
+    #floating-notes-panel {
+        left: 0.75rem;
+        right: 0.75rem;
+        width: auto;
     }
 }

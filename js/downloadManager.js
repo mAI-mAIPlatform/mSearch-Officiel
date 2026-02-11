@@ -20,10 +20,23 @@ const downloadManager = {
   bar: document.getElementById('download-bar'),
   container: document.getElementById('download-container'),
   closeButton: document.getElementById('download-close-button'),
+  summaryLabel: document.getElementById('download-summary'),
   height: 40,
   lastDownloadCompleted: null,
   downloadItems: {},
   downloadBarElements: {},
+
+  updateSummary: function () {
+    if (!downloadManager.summaryLabel) {
+      return
+    }
+
+    const items = Object.values(downloadManager.downloadItems)
+    const activeCount = items.filter(item => item.status === 'progressing').length
+    const doneCount = items.filter(item => item.status === 'completed').length
+
+    downloadManager.summaryLabel.textContent = 'Téléchargements intelligents · ' + activeCount + ' en cours · ' + doneCount + ' terminés'
+  },
   show: function () {
     if (!downloadManager.isShown) {
       downloadManager.isShown = true
@@ -52,6 +65,8 @@ const downloadManager = {
 
     delete downloadManager.downloadBarElements[path]
     delete downloadManager.downloadItems[path]
+
+    downloadManager.updateSummary()
 
     if (Object.keys(downloadManager.downloadItems).length === 0) {
       downloadManager.hide()
@@ -145,6 +160,7 @@ const downloadManager = {
 
     downloadManager.container.appendChild(container)
     downloadManager.downloadBarElements[downloadItem.path] = { container, title, infoBox, detailedInfoBox, progress, dropdown, openFolder }
+    downloadManager.updateSummary()
   },
   updateItem: function (downloadItem) {
     const elements = downloadManager.downloadBarElements[downloadItem.path]
@@ -175,7 +191,8 @@ const downloadManager = {
       elements.detailedInfoBox.textContent = getFileSizeString(downloadItem.size.received) + ' / ' + getFileSizeString(downloadItem.size.total)
 
       // the progress bar has a minimum width so that it's visible even if there's 0 download progress
-      const adjustedProgress = 0.025 + ((downloadItem.size.received / downloadItem.size.total) * 0.975)
+      const safeTotal = Math.max(downloadItem.size.total || 0, 1)
+      const adjustedProgress = 0.025 + ((downloadItem.size.received / safeTotal) * 0.975)
       elements.progress.style.transform = 'scaleX(' + adjustedProgress + ')'
     }
   },
@@ -206,6 +223,7 @@ const downloadManager = {
       downloadManager.updateItem(info)
 
       downloadManager.downloadItems[info.path] = info
+      downloadManager.updateSummary()
     })
   }
 }

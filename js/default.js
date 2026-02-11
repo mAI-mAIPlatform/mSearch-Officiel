@@ -166,6 +166,7 @@ require('taskOverlay/taskOverlay.js').initialize()
 require('sessionRestore.js').initialize()
 require('bookmarkConverter.js').initialize()
 require('newTabPage.js').initialize()
+require('productivityHub.js').initialize()
 require('macHandoff.js').initialize()
 
 // default searchbar plugins
