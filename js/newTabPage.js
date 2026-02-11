@@ -482,7 +482,7 @@ const newTabPage = {
     })
 
     if (newTabPage.subtitle) {
-      newTabPage.subtitle.textContent = 'Accueil intelligent Liquid Glass • ' + now.toLocaleDateString('fr-FR')
+      newTabPage.subtitle.textContent = 'Accueil • ' + now.toLocaleDateString('fr-FR')
     }
   },
   applyRandomBackground: function () {
