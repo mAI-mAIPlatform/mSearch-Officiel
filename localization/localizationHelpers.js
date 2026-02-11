@@ -12,7 +12,7 @@ var languages = {
 function getCurrentLanguage () {
   // TODO add a setting to change the language to something other than the default
 
-  var language = 'en-US' // default
+  var language = 'fr' // default
 
   if (typeof navigator !== 'undefined') { // renderer process
     language = navigator.language

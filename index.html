@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
 
-    <title>Min</title>
+    <title>mSearch</title>
 
     <link rel="stylesheet" href="dist/bundle.css" />
     <link rel="stylesheet" href="ext/icons/iconfont.css" />
@@ -140,6 +140,7 @@
         </div>
         <div id="tabs-inner" role="tablist" class="has-thin-scrollbar"></div>
       </div>
+      <div id="navbar-brand" aria-hidden="true">mSearch</div>
       <div class="navbar-right-actions">
         <button
           id="add-tab-button"
@@ -202,7 +203,66 @@
       <img id="webview-placeholder" hidden aria-hidden="true" />
       <div id="ntp-content">
           <img id="ntp-background" hidden>
+          <div id="ntp-gradient-overlay"></div>
+          <div id="ntp-main-shell">
+            <header id="ntp-header">
+              <h1>mSearch</h1>
+              <p>Votre navigateur moderne, fluide et productif.</p>
+            </header>
+
+            <section id="ntp-quick-actions" aria-label="Actions rapides">
+              <button class="ntp-action" data-ntp-action="open-favorites">
+                <i class="i carbon:star-filled"></i>
+                <span>Favoris</span>
+              </button>
+              <button class="ntp-action" data-ntp-action="open-history">
+                <i class="i carbon:recently-viewed"></i>
+                <span>Historique</span>
+              </button>
+              <button class="ntp-action" data-ntp-action="open-search">
+                <i class="i carbon:search"></i>
+                <span>Nouvelle recherche</span>
+              </button>
+            </section>
+
+            <div id="ntp-grid">
+              <section class="ntp-panel" id="ntp-reminders-panel">
+                <div class="ntp-panel-title-row">
+                  <h2>Rappels</h2>
+                </div>
+                <form id="ntp-reminder-form">
+                  <input
+                    id="ntp-reminder-input"
+                    type="text"
+                    maxlength="140"
+                    placeholder="Ajouter un rappel…"
+                  >
+                  <button type="submit">Ajouter</button>
+                </form>
+                <ul id="ntp-reminder-list"></ul>
+              </section>
+
+              <section class="ntp-panel" id="ntp-favorites-panel">
+                <div class="ntp-panel-title-row">
+                  <h2>Favoris</h2>
+                </div>
+                <ul id="ntp-favorites-list"></ul>
+              </section>
+
+              <section class="ntp-panel" id="ntp-history-panel">
+                <div class="ntp-panel-title-row">
+                  <h2>Historique récent</h2>
+                </div>
+                <ul id="ntp-history-list"></ul>
+              </section>
+            </div>
+          </div>
           <div id="ntp-background-controls">
+            <select id="ntp-theme-selector" aria-label="Thème de la page d'accueil">
+              <option value="aurora">Aurora</option>
+              <option value="ocean">Océan</option>
+              <option value="sunset">Coucher de soleil</option>
+            </select>
             <button id="ntp-image-remove"><i class="i carbon:trash-can"></i></button>
             <button id="ntp-image-picker"><i class="i carbon:camera"></i></button>
           </div>
