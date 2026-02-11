@@ -3,10 +3,14 @@ const statistics = require('js/statistics.js')
 const places = require('places/places.js')
 const searchbar = require('searchbar/searchbar.js')
 const tabEditor = require('navbar/tabEditor.js')
+const settings = require('util/settings/settings.js')
 
 const REMINDER_STORAGE_KEY = 'msearch.ntp.reminders'
 const THEME_STORAGE_KEY = 'msearch.ntp.theme'
+const SHORTCUTS_STORAGE_KEY = 'msearch.ntp.shortcuts'
+const RANDOM_BG_STORAGE_KEY = 'msearch.ntp.randomBackground'
 const MAX_REMINDERS = 12
+const DEFAULT_MAX_SHORTCUTS = 8
 
 const themes = {
   aurora: 'linear-gradient(120deg, rgba(49, 87, 255, 0.45), rgba(65, 230, 180, 0.25), rgba(203, 124, 255, 0.35))',
@@ -14,11 +18,37 @@ const themes = {
   sunset: 'linear-gradient(120deg, rgba(232, 124, 32, 0.5), rgba(222, 80, 130, 0.35), rgba(103, 34, 167, 0.4))'
 }
 
+const curatedBackgrounds = [
+  'https://picsum.photos/seed/msearch-bg-1/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-2/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-3/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-4/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-5/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-6/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-7/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-8/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-9/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-10/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-11/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-12/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-13/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-14/1920/1080',
+  'https://picsum.photos/seed/msearch-bg-15/1920/1080'
+]
+
+const defaultShortcuts = [
+  { title: 'GitHub', url: 'https://github.com' },
+  { title: 'YouTube', url: 'https://youtube.com' },
+  { title: 'Wikipedia', url: 'https://wikipedia.org' },
+  { title: 'Météo', url: 'https://meteofrance.com' }
+]
+
 const newTabPage = {
   background: document.getElementById('ntp-background'),
   backgroundOverlay: document.getElementById('ntp-gradient-overlay'),
   hasBackground: false,
   picker: document.getElementById('ntp-image-picker'),
+  randomBackgroundButton: document.getElementById('ntp-image-random'),
   deleteBackground: document.getElementById('ntp-image-remove'),
   themeSelector: document.getElementById('ntp-theme-selector'),
   reminderForm: document.getElementById('ntp-reminder-form'),
@@ -26,10 +56,16 @@ const newTabPage = {
   reminderList: document.getElementById('ntp-reminder-list'),
   favoritesList: document.getElementById('ntp-favorites-list'),
   historyList: document.getElementById('ntp-history-list'),
+  searchForm: document.getElementById('ntp-search-form'),
+  searchInput: document.getElementById('ntp-search-input'),
+  shortcutsList: document.getElementById('ntp-shortcuts-list'),
+  shortcutAddButton: document.getElementById('ntp-shortcut-add'),
   actionButtons: document.querySelectorAll('[data-ntp-action]'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
+  shortcuts: [],
+  maxShortcuts: settings.get('ntpMaxShortcuts') || DEFAULT_MAX_SHORTCUTS,
   getSelectedTheme: function () {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
     if (storedTheme && themes[storedTheme]) {
@@ -64,6 +100,40 @@ const newTabPage = {
   },
   saveReminders: function () {
     localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(newTabPage.reminders.slice(0, MAX_REMINDERS)))
+  },
+  loadShortcuts: function () {
+    try {
+      const raw = localStorage.getItem(SHORTCUTS_STORAGE_KEY)
+      const parsed = raw ? JSON.parse(raw) : defaultShortcuts
+      if (Array.isArray(parsed)) {
+        newTabPage.shortcuts = parsed
+          .filter(item => item && typeof item.title === 'string' && typeof item.url === 'string')
+          .slice(0, newTabPage.maxShortcuts)
+      } else {
+        newTabPage.shortcuts = defaultShortcuts.slice()
+      }
+    } catch (e) {
+      newTabPage.shortcuts = defaultShortcuts.slice()
+    }
+  },
+  saveShortcuts: function () {
+    localStorage.setItem(SHORTCUTS_STORAGE_KEY, JSON.stringify(newTabPage.shortcuts.slice(0, newTabPage.maxShortcuts)))
+  },
+  normalizeURL: function (value) {
+    const trimmed = (value || '').trim()
+    if (!trimmed) {
+      return ''
+    }
+
+    if (trimmed.includes('://') || trimmed.startsWith('about:') || trimmed.startsWith('min:')) {
+      return trimmed
+    }
+
+    if (/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmed)) {
+      return 'https://' + trimmed
+    }
+
+    return trimmed
   },
   renderReminders: function () {
     if (!newTabPage.reminderList) {
@@ -101,6 +171,71 @@ const newTabPage = {
       newTabPage.reminderList.appendChild(item)
     })
   },
+  renderShortcuts: function () {
+    if (!newTabPage.shortcutsList) {
+      return
+    }
+
+    newTabPage.shortcutsList.textContent = ''
+
+    if (newTabPage.shortcuts.length === 0) {
+      const empty = document.createElement('li')
+      empty.className = 'ntp-empty-state'
+      empty.textContent = 'Ajoutez un raccourci pour démarrer plus vite.'
+      newTabPage.shortcutsList.appendChild(empty)
+      return
+    }
+
+    newTabPage.shortcuts.forEach(function (item, index) {
+      const listItem = document.createElement('li')
+      listItem.className = 'ntp-shortcut-item'
+
+      const openButton = document.createElement('button')
+      openButton.className = 'ntp-shortcut-open'
+      openButton.textContent = item.title
+      openButton.title = item.url
+      openButton.addEventListener('click', function () {
+        searchbar.events.emit('url-selected', { url: item.url, background: false })
+      })
+
+      const editButton = document.createElement('button')
+      editButton.className = 'ntp-inline-icon i carbon:edit'
+      editButton.setAttribute('aria-label', 'Modifier le raccourci')
+      editButton.addEventListener('click', function () {
+        const title = window.prompt('Nom du raccourci :', item.title)
+        if (title === null) {
+          return
+        }
+        const url = window.prompt('URL du raccourci :', item.url)
+        if (url === null) {
+          return
+        }
+
+        const safeURL = newTabPage.normalizeURL(url)
+        if (!safeURL) {
+          return
+        }
+
+        newTabPage.shortcuts[index] = { title: title.trim() || safeURL, url: safeURL }
+        newTabPage.saveShortcuts()
+        newTabPage.renderShortcuts()
+      })
+
+      const deleteButton = document.createElement('button')
+      deleteButton.className = 'ntp-inline-icon i carbon:trash-can'
+      deleteButton.setAttribute('aria-label', 'Supprimer le raccourci')
+      deleteButton.addEventListener('click', function () {
+        newTabPage.shortcuts.splice(index, 1)
+        newTabPage.saveShortcuts()
+        newTabPage.renderShortcuts()
+      })
+
+      listItem.appendChild(openButton)
+      listItem.appendChild(editButton)
+      listItem.appendChild(deleteButton)
+      newTabPage.shortcutsList.appendChild(listItem)
+    })
+  },
   createPageListItem: function (item) {
     const listItem = document.createElement('li')
     listItem.className = 'ntp-list-item'
@@ -128,8 +263,19 @@ const newTabPage = {
     try {
       const items = await places.getAllItems()
       const sortedByVisit = items.slice().sort((a, b) => (b.lastVisit || 0) - (a.lastVisit || 0))
-      const favorites = sortedByVisit.filter(item => item.isBookmarked).slice(0, 6)
-      const historyItems = sortedByVisit.filter(item => !item.isBookmarked).slice(0, 6)
+      const showFavorites = settings.get('ntpShowFavorites') !== false
+      const showHistory = settings.get('ntpShowHistory') !== false
+      const favorites = showFavorites ? sortedByVisit.filter(item => item.isBookmarked).slice(0, 8) : []
+      const historyItems = showHistory ? sortedByVisit.filter(item => !item.isBookmarked).slice(0, 8) : []
+
+      const favoritesPanel = document.getElementById('ntp-favorites-panel')
+      const historyPanel = document.getElementById('ntp-history-panel')
+      if (favoritesPanel) {
+        favoritesPanel.hidden = !showFavorites
+      }
+      if (historyPanel) {
+        historyPanel.hidden = !showHistory
+      }
 
       if (favorites.length === 0) {
         const emptyFavorites = document.createElement('li')
@@ -160,7 +306,47 @@ const newTabPage = {
       newTabPage.historyList.appendChild(errorState)
     }
   },
+  applyRandomBackground: function () {
+    if (!newTabPage.background || !newTabPage.deleteBackground || !newTabPage.backgroundOverlay) {
+      return
+    }
+
+    const current = localStorage.getItem(RANDOM_BG_STORAGE_KEY)
+    let next = curatedBackgrounds[Math.floor(Math.random() * curatedBackgrounds.length)]
+
+    if (curatedBackgrounds.length > 1) {
+      while (next === current) {
+        next = curatedBackgrounds[Math.floor(Math.random() * curatedBackgrounds.length)]
+      }
+    }
+
+    localStorage.setItem(RANDOM_BG_STORAGE_KEY, next)
+    newTabPage.background.src = next
+    newTabPage.background.hidden = false
+    newTabPage.hasBackground = true
+    document.body.classList.add('ntp-has-background')
+    newTabPage.deleteBackground.hidden = false
+    newTabPage.backgroundOverlay.style.backgroundImage = 'linear-gradient(120deg, rgba(11, 14, 23, 0.35), rgba(17, 24, 39, 0.58))'
+  },
+  clearBackground: function () {
+    localStorage.removeItem(RANDOM_BG_STORAGE_KEY)
+  },
   reloadBackground: function () {
+    if (!newTabPage.background || !newTabPage.deleteBackground || !newTabPage.backgroundOverlay) {
+      return
+    }
+
+    const randomBg = localStorage.getItem(RANDOM_BG_STORAGE_KEY)
+    if (randomBg && settings.get('ntpRandomBackgroundEnabled') !== false) {
+      newTabPage.background.src = randomBg
+      newTabPage.background.hidden = false
+      newTabPage.hasBackground = true
+      document.body.classList.add('ntp-has-background')
+      newTabPage.deleteBackground.hidden = false
+      newTabPage.backgroundOverlay.style.backgroundImage = 'linear-gradient(120deg, rgba(11, 14, 23, 0.35), rgba(17, 24, 39, 0.58))'
+      return
+    }
+
     fs.readFile(newTabPage.imagePath, function (err, data) {
       if (newTabPage.blobInstance) {
         URL.revokeObjectURL(newTabPage.blobInstance)
@@ -210,65 +396,136 @@ const newTabPage = {
       })
     })
   },
+  bindSearch: function () {
+    if (!newTabPage.searchForm || !newTabPage.searchInput) {
+      return
+    }
+
+    newTabPage.searchForm.addEventListener('submit', function (e) {
+      e.preventDefault()
+      const query = newTabPage.searchInput.value.trim()
+
+      if (!query) {
+        return
+      }
+
+      const value = newTabPage.normalizeURL(query)
+      searchbar.events.emit('url-selected', { url: value, background: false })
+    })
+  },
+  bindShortcutControls: function () {
+    if (!newTabPage.shortcutAddButton) {
+      return
+    }
+
+    newTabPage.shortcutAddButton.addEventListener('click', function () {
+      if (newTabPage.shortcuts.length >= newTabPage.maxShortcuts) {
+        return
+      }
+
+      const title = window.prompt('Nom du raccourci :')
+      if (!title) {
+        return
+      }
+      const url = window.prompt('URL du raccourci :')
+      const safeURL = newTabPage.normalizeURL(url)
+      if (!safeURL) {
+        return
+      }
+
+      newTabPage.shortcuts.push({ title: title.trim(), url: safeURL })
+      newTabPage.saveShortcuts()
+      newTabPage.renderShortcuts()
+    })
+  },
   initialize: function () {
+    if (!document.body) {
+      return
+    }
+
+    if (settings.get('ntpFixTitleOverlap') !== false) {
+      document.body.classList.remove('has-overlay-ntp-title')
+    }
+    newTabPage.maxShortcuts = settings.get('ntpMaxShortcuts') || DEFAULT_MAX_SHORTCUTS
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
+    newTabPage.loadShortcuts()
     newTabPage.renderReminders()
+    newTabPage.renderShortcuts()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
+    newTabPage.bindSearch()
+    newTabPage.bindShortcutControls()
 
-    newTabPage.picker.addEventListener('click', async function () {
-      const filePath = await ipc.invoke('showOpenDialog', {
-        filters: [
-          { name: 'Image files', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'] }
-        ]
-      })
+    if (newTabPage.picker) {
+      newTabPage.picker.addEventListener('click', async function () {
+        const filePath = await ipc.invoke('showOpenDialog', {
+          filters: [
+            { name: 'Image files', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'] }
+          ]
+        })
 
-      if (!filePath) {
-        return
-      }
-
-      await fs.promises.copyFile(filePath[0], newTabPage.imagePath)
-      newTabPage.reloadBackground()
-    })
-
-    newTabPage.deleteBackground.addEventListener('click', async function () {
-      try {
-        await fs.promises.unlink(newTabPage.imagePath)
-      } catch (e) {
-        if (e.code !== 'ENOENT') {
-          throw e
+        if (!filePath) {
+          return
         }
-      }
-      newTabPage.reloadBackground()
-    })
 
-    newTabPage.themeSelector.addEventListener('change', function () {
-      newTabPage.applyTheme(newTabPage.themeSelector.value)
-    })
-
-    newTabPage.reminderForm.addEventListener('submit', function (e) {
-      e.preventDefault()
-      const reminderText = newTabPage.reminderInput.value.trim()
-
-      if (!reminderText) {
-        return
-      }
-
-      newTabPage.reminders.unshift({
-        id: Date.now(),
-        text: reminderText
+        localStorage.removeItem(RANDOM_BG_STORAGE_KEY)
+        await fs.promises.copyFile(filePath[0], newTabPage.imagePath)
+        newTabPage.reloadBackground()
       })
+    }
 
-      if (newTabPage.reminders.length > MAX_REMINDERS) {
-        newTabPage.reminders = newTabPage.reminders.slice(0, MAX_REMINDERS)
-      }
+    if (newTabPage.deleteBackground) {
+      newTabPage.deleteBackground.addEventListener('click', async function () {
+        try {
+          await fs.promises.unlink(newTabPage.imagePath)
+        } catch (e) {
+          if (e.code !== 'ENOENT') {
+            throw e
+          }
+        }
+        newTabPage.clearBackground()
+        newTabPage.reloadBackground()
+      })
+    }
 
-      newTabPage.saveReminders()
-      newTabPage.renderReminders()
-      newTabPage.reminderInput.value = ''
-    })
+    if (newTabPage.randomBackgroundButton) {
+      newTabPage.randomBackgroundButton.hidden = settings.get('ntpRandomBackgroundEnabled') === false
+      newTabPage.randomBackgroundButton.addEventListener('click', function () {
+        newTabPage.applyRandomBackground()
+      })
+    }
+
+    if (newTabPage.themeSelector) {
+      newTabPage.themeSelector.addEventListener('change', function () {
+        newTabPage.applyTheme(newTabPage.themeSelector.value)
+      })
+    }
+
+    if (newTabPage.reminderForm) {
+      newTabPage.reminderForm.addEventListener('submit', function (e) {
+        e.preventDefault()
+        const reminderText = newTabPage.reminderInput.value.trim()
+
+        if (!reminderText) {
+          return
+        }
+
+        newTabPage.reminders.unshift({
+          id: Date.now(),
+          text: reminderText
+        })
+
+        if (newTabPage.reminders.length > MAX_REMINDERS) {
+          newTabPage.reminders = newTabPage.reminders.slice(0, MAX_REMINDERS)
+        }
+
+        newTabPage.saveReminders()
+        newTabPage.renderReminders()
+        newTabPage.reminderInput.value = ''
+      })
+    }
 
     searchbar.events.on('url-selected', function () {
       newTabPage.renderHistoryAndFavorites()

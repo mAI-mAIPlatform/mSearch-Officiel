@@ -207,8 +207,25 @@
           <div id="ntp-main-shell">
             <header id="ntp-header">
               <h1>mSearch</h1>
-              <p>Votre navigateur moderne, fluide et productif.</p>
+              <p>Nouvel onglet personnalisable en style Liquid Glass.</p>
             </header>
+
+            <form id="ntp-search-form" aria-label="Recherche rapide">
+              <i class="i carbon:search"></i>
+              <input id="ntp-search-input" type="text" placeholder="Rechercher ou entrer une adresse" autocomplete="off">
+              <button type="submit">Rechercher</button>
+            </form>
+
+            <section id="ntp-shortcuts-panel" class="ntp-panel" aria-label="Raccourcis personnalisables">
+              <div class="ntp-panel-title-row">
+                <h2>Raccourcis personnalisés</h2>
+                <button id="ntp-shortcut-add" type="button" class="ntp-subtle-button">
+                  <i class="i carbon:add"></i>
+                  <span>Ajouter</span>
+                </button>
+              </div>
+              <ul id="ntp-shortcuts-list"></ul>
+            </section>
 
             <section id="ntp-quick-actions" aria-label="Actions rapides">
               <button class="ntp-action" data-ntp-action="open-favorites">
@@ -264,6 +281,7 @@
               <option value="sunset">Coucher de soleil</option>
             </select>
             <button id="ntp-image-remove"><i class="i carbon:trash-can"></i></button>
+            <button id="ntp-image-random"><i class="i carbon:shuffle"></i></button>
             <button id="ntp-image-picker"><i class="i carbon:camera"></i></button>
           </div>
       </div>
