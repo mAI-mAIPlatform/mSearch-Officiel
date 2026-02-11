@@ -328,6 +328,20 @@ openTabsInForegroundCheckbox.addEventListener('change', function (e) {
   settings.set('openTabsInForeground', this.checked)
 })
 
+/* clock setting */
+
+var clockCheckbox = document.getElementById('checkbox-show-clock')
+
+settings.get('showClock', function (value) {
+  if (value === true) {
+    clockCheckbox.checked = true
+  }
+})
+
+clockCheckbox.addEventListener('change', function (e) {
+  settings.set('showClock', this.checked)
+})
+
 /* media autoplay setting */
 
 settings.get('enableAutoplay', function (value) {

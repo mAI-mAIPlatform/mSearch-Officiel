@@ -1,9 +1,9 @@
 {
-  "name": "min",
-  "productName": "Min",
+  "name": "msearch",
+  "productName": "mSearch",
   "author": "PalmerAL",
   "version": "1.35.3",
-  "description": "A fast, minimal browser that protects your privacy",
+  "description": "mSearch is a fast, minimal browser that protects your privacy",
   "electronVersion": "40.0.0",
   "main": "main.build.js",
   "standard": {

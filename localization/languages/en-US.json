@@ -107,16 +107,16 @@
     "crashErrorSubtitle": "A problem has occurred while displaying this page.",
     "errorPagePrimaryAction": "Try again",
     "serverNotFoundTitle": "Server not found",
-    "serverNotFoundSubtitle": "Min couldn't find this website.",
+    "serverNotFoundSubtitle": "mSearch couldn't find this website.",
     "archiveSearchAction": "Search on archive.org",
     "sslErrorTitle": "This website is not available",
-    "sslErrorMessage": "Min couldn't connect securely to this website.",
+    "sslErrorMessage": "mSearch couldn't connect securely to this website.",
     "dnsErrorTitle": "Website not found",
     "dnsErrorMessage": "A DNS error occurred.",
     "offlineErrorTitle": "You are offline",
     "offlineErrorMessage": "Reconnect to the internet and try again.",
-    "genericConnectionFail": "Min couldn't connect to the website.",
-    "sslTimeErrorMessage": "Min couldn't connect securely to this website. Please make sure your computer's clock is set correctly.",
+    "genericConnectionFail": "mSearch couldn't connect to the website.",
+    "sslTimeErrorMessage": "mSearch couldn't connect securely to this website. Please make sure your computer's clock is set correctly.",
     "addressInvalidTitle": "This address is invalid.",
     "genericError": "An error occurred",
     /* pages/phishing/index.html */
@@ -125,7 +125,7 @@
     "phishingErrorVisitAnyway": "Visit site anyway",
     "phishingErrorLeave": "Leave this site",
     /* multiple instances alert */
-    "multipleInstancesErrorMessage": "An error occurred. Please close any other open instances and restart Min.",
+    "multipleInstancesErrorMessage": "An error occurred. Please close any other open instances and restart mSearch.",
     /* pages/sessionRestoreError/index.html */
     "sessionRestoreErrorTitle": "An error occurred",
     "sessionRestoreErrorExplanation": "Your saved tabs couldn't be restored correctly.",
@@ -144,7 +144,7 @@
     "settingsBlockScriptsToggle": "Block scripts",
     "settingsBlockImagesToggle": "Block images",
     "settingsBlockedRequestCount": {
-      "unsafeHTML": "So far, Min has blocked <strong></strong> ads and trackers."
+      "unsafeHTML": "So far, mSearch has blocked <strong></strong> ads and trackers."
     },
     "settingsCustomBangs": "Custom Commands",
     "settingsCustomBangsAdd": "Add new command",
@@ -166,6 +166,7 @@
     "settingsSeparateTitlebarToggle": "Use separate title bar",
     "settingsAutoplayToggle": "Enable Autoplay",
     "settingsOpenTabsInForegroundToggle": "Open new tabs in the foreground",
+    "settingsShowClockToggle": "Show clock in navbar",
     "settingsUserscriptsExplanation": {
       "unsafeHTML": "User scripts allow you to modify the behavior of websites - <a href=\"https://github.com/minbrowser/min/wiki/userscripts\">learn more</a>."
     },
@@ -175,7 +176,7 @@
     "settingsUsageStatisticsToggle": {
       "unsafeHTML": "Send usage statistics (<a href=\"https://github.com/minbrowser/min/blob/master/docs/statistics.md\">More info</a>)"
     },
-    "settingsStartupOptions": "When Min starts: ",
+    "settingsStartupOptions": "When mSearch starts: ",
     "settingsStartupCreateTask": "Re-open previous tabs",
     "settingsStartupNewTaskandBackground": "Move previous tabs to a background task",
     "settingsStartupNewTaskOnly": "Open a new blank task",
@@ -265,7 +266,7 @@
     "downloadStateCompleted": "Completed",
     "downloadStateFailed": "Failed",
     /* Update Notifications */
-    "updateNotificationTitle": "A new version of Min is available",
+    "updateNotificationTitle": "A new version of mSearch is available",
     /* Autofill settings */
     "settingsPasswordAutoFillHeadline": "Password Auto-Fill",
     "settingsSelectPasswordManager": "Choose one of the supported password managers:",
@@ -284,7 +285,7 @@
     "passwordManagerSetupDragBox": "Drag the tool here",
     "passwordManagerSetupInstalling": "Installing...",
     "passwordManagerBitwardenSignIn": "To connect your Bitwarden account, go to vault.bitwarden.com/#/settings/account, scroll to the bottom, and choose \"View API Key\". Then paste the values into the fields below.",
-    "passwordManagerSetupSignIn": "Sign in to your password manager to start using autofill. Your credentials won't be stored anywhere inside Min.",
+    "passwordManagerSetupSignIn": "Sign in to your password manager to start using autofill. Your credentials won't be stored anywhere inside mSearch.",
     "disableAutofill": "Disable Autofill",
     "passwordManagerSetupUnlockError": "Failed to unlock the password store: ",
     "passwordManagerSetupRetry": "Make sure you're using the right file and entering a correct password. You can retry by dragging the tool here again.",

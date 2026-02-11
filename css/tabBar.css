@@ -10,6 +10,15 @@
   padding-top: var(--control-space-top);
   padding-left: var(--control-space-left);
   padding-right: var(--control-space-right);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme #navbar {
+  background: rgba(40, 44, 52, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* when the tab-group is white, we need a line to separate it from the webviews */

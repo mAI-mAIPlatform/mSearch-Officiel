@@ -4,7 +4,11 @@
   top: calc(var(--control-space-top) + 36px);
   left: 0;
   width: 100%;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   color: #000;
   padding-left: var(--control-space-left);
   padding-right: calc(82px + var(--control-space-right));

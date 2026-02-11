@@ -30,7 +30,8 @@ button {
 }
 body,
 html {
-  background-color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
   color: #000;
   height: 100%;
   overflow: hidden;
@@ -38,7 +39,8 @@ html {
 }
 
 body.dark-mode {
-  background-color: rgb(33, 37, 43);
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  background-attachment: fixed;
   color: lightgrey;
 }
 
@@ -71,6 +73,16 @@ h1 + h2 {
 }
 .spacer {
   height: 1em;
+}
+
+#navbar-clock {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 0.9em;
+  font-weight: 500;
+  opacity: 0.8;
+  white-space: nowrap;
 }
 
 .light-fade {
