@@ -45,9 +45,9 @@ jobs:
       with:
         node-version: 25
     - run: npm install --omit=optional
-    - name: build package
+    - name: Build
       run: ${{ matrix.cmd }}
-    - name: upload package
+    - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.artifact }}
