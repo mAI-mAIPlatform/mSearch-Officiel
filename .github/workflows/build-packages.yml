@@ -1,5 +1,10 @@
-name: Build Package
-on: [workflow_dispatch]
+name: Windows/macOS/Linux
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch: # Je te conseille de le laisser pour pouvoir le lancer manuellement si besoin ;)
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
