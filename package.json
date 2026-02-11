@@ -2,8 +2,8 @@
   "name": "min",
   "productName": "Min",
   "author": "PalmerAL",
-  "version": "1.35.3",
-  "description": "A fast, minimal browser that protects your privacy",
+  "version": "26.7.0",
+  "description": "Le navigateur qui bloque vraiment les traqueurs.",
   "electronVersion": "40.0.0",
   "main": "main.build.js",
   "standard": {
