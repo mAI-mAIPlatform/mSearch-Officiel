@@ -2,9 +2,11 @@ var webviews = require('webviews.js')
 const remoteMenu = require('remoteMenuRenderer.js')
 
 function getFileSizeString (bytes) {
+  const safeBytes = Number.isFinite(bytes) && bytes > 0 ? bytes : 0
+
   const prefixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
-  let size = bytes
+  let size = safeBytes
   let prefixIndex = 0
 
   while (size > 900) { // prefer "0.9 KB" to "949 bytes"
@@ -13,6 +15,26 @@ function getFileSizeString (bytes) {
   }
 
   return (Math.round(size * 10) / 10) + ' ' + prefixes[prefixIndex]
+}
+
+function getSmartSummary (downloadItem) {
+  const extension = (downloadItem.name || '').split('.').pop().toLowerCase()
+
+  if (downloadItem.status === 'completed') {
+    if (['pdf', 'doc', 'docx', 'txt'].includes(extension)) {
+      return 'Document prêt à classer'
+    }
+    if (['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(extension)) {
+      return 'Image téléchargée'
+    }
+    return 'Téléchargement terminé'
+  }
+
+  if (downloadItem.status === 'interrupted') {
+    return 'Téléchargement interrompu'
+  }
+
+  return 'Téléchargement en cours'
 }
 
 const downloadManager = {
@@ -99,6 +121,11 @@ const downloadManager = {
     detailedInfoBox.className = 'download-info detailed'
     container.appendChild(detailedInfoBox)
 
+    const statusChip = document.createElement('span')
+    statusChip.className = 'download-status-chip'
+    statusChip.textContent = 'En cours'
+    container.appendChild(statusChip)
+
     const progress = document.createElement('div')
     progress.className = 'download-progress'
     container.appendChild(progress)
@@ -144,7 +171,7 @@ const downloadManager = {
     })
 
     downloadManager.container.appendChild(container)
-    downloadManager.downloadBarElements[downloadItem.path] = { container, title, infoBox, detailedInfoBox, progress, dropdown, openFolder }
+    downloadManager.downloadBarElements[downloadItem.path] = { container, title, infoBox, detailedInfoBox, progress, dropdown, openFolder, statusChip }
   },
   updateItem: function (downloadItem) {
     const elements = downloadManager.downloadBarElements[downloadItem.path]
@@ -155,27 +182,40 @@ const downloadManager = {
       elements.progress.hidden = true
       elements.dropdown.hidden = true
       elements.openFolder.hidden = false
-      elements.infoBox.textContent = l('downloadStateCompleted')
+      elements.infoBox.textContent = getSmartSummary(downloadItem)
       elements.detailedInfoBox.textContent = l('downloadStateCompleted')
+      elements.statusChip.textContent = 'Terminé'
+      elements.statusChip.classList.add('done')
+      elements.statusChip.classList.remove('loading')
     } else if (downloadItem.status === 'interrupted') {
       elements.container.classList.remove('loading')
       elements.container.classList.remove('completed')
       elements.progress.hidden = true
       elements.dropdown.hidden = true
       elements.openFolder.hidden = true
-      elements.infoBox.textContent = l('downloadStateFailed')
+      elements.infoBox.textContent = getSmartSummary(downloadItem)
       elements.detailedInfoBox.textContent = l('downloadStateFailed')
+      elements.statusChip.textContent = 'Échec'
+      elements.statusChip.classList.remove('done')
+      elements.statusChip.classList.remove('loading')
     } else {
       elements.container.classList.add('loading')
       elements.container.classList.remove('completed')
       elements.progress.hidden = false
       elements.dropdown.hidden = false
       elements.openFolder.hidden = true
-      elements.infoBox.textContent = getFileSizeString(downloadItem.size.total)
-      elements.detailedInfoBox.textContent = getFileSizeString(downloadItem.size.received) + ' / ' + getFileSizeString(downloadItem.size.total)
+      const sizeInfo = downloadItem.size || {}
+      const totalSize = Number.isFinite(sizeInfo.total) && sizeInfo.total > 0 ? sizeInfo.total : Math.max(sizeInfo.received || 0, 1)
+      const receivedSize = Number.isFinite(sizeInfo.received) ? sizeInfo.received : 0
 
-      // the progress bar has a minimum width so that it's visible even if there's 0 download progress
-      const adjustedProgress = 0.025 + ((downloadItem.size.received / downloadItem.size.total) * 0.975)
+      elements.infoBox.textContent = getSmartSummary(downloadItem)
+      elements.detailedInfoBox.textContent = getFileSizeString(receivedSize) + ' / ' + getFileSizeString(totalSize)
+      elements.statusChip.textContent = 'En cours'
+      elements.statusChip.classList.add('loading')
+      elements.statusChip.classList.remove('done')
+
+      const ratio = Math.min(1, Math.max(0, receivedSize / totalSize))
+      const adjustedProgress = 0.025 + (ratio * 0.975)
       elements.progress.style.transform = 'scaleX(' + adjustedProgress + ')'
     }
   },
