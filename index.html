@@ -320,10 +320,44 @@
               <option value="ocean">Océan</option>
               <option value="sunset">Coucher de soleil</option>
             </select>
-            <button id="ntp-image-remove"><i class="i carbon:trash-can"></i></button>
-            <button id="ntp-image-random"><i class="i carbon:shuffle"></i></button>
-            <button id="ntp-image-picker"><i class="i carbon:camera"></i></button>
+            <button id="ntp-image-remove" aria-label="Supprimer l'image de fond"><i class="i carbon:trash-can"></i></button>
+            <button id="ntp-image-random" aria-label="Image aléatoire"><i class="i carbon:shuffle"></i></button>
+            <button id="ntp-image-picker" aria-label="Choisir une image"><i class="i carbon:camera"></i></button>
           </div>
+          <section id="ntp-personalization-panel" class="ntp-panel" aria-label="Options de personnalisation">
+            <div class="ntp-panel-title-row">
+              <h2>Personnalisation</h2>
+            </div>
+            <div id="ntp-personalization-grid">
+              <label class="ntp-control">
+                <span>Densité</span>
+                <select id="ntp-density-selector" aria-label="Densité d'affichage">
+                  <option value="comfortable">Confort</option>
+                  <option value="compact">Compact</option>
+                </select>
+              </label>
+              <label class="ntp-control">
+                <span>Effet glass</span>
+                <select id="ntp-glass-selector" aria-label="Intensité de l'effet Liquid Glass">
+                  <option value="balanced">Équilibré</option>
+                  <option value="soft">Doux</option>
+                  <option value="strong">Intense</option>
+                </select>
+              </label>
+              <label class="ntp-toggle-control">
+                <input id="ntp-toggle-widgets" type="checkbox" checked>
+                <span>Afficher les widgets</span>
+              </label>
+              <label class="ntp-toggle-control">
+                <input id="ntp-toggle-favorites" type="checkbox" checked>
+                <span>Afficher les favoris</span>
+              </label>
+              <label class="ntp-toggle-control">
+                <input id="ntp-toggle-history" type="checkbox" checked>
+                <span>Afficher l'historique</span>
+              </label>
+            </div>
+          </section>
       </div>
     </div>
 
