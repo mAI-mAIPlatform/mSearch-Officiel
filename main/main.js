@@ -26,8 +26,8 @@ crashReporter.start({
 })
 
 if (process.argv.some(arg => arg === '-v' || arg === '--version')) {
-  console.log('Min: ' + app.getVersion())
-  console.log('Chromium: ' + process.versions.chrome)
+  console.log('mSearch : ' + app.getVersion())
+  console.log('Chromium : ' + process.versions.chrome)
   process.exit()
 }
 
