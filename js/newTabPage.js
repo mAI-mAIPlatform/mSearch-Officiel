@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const statistics = require('js/statistics.js')
 const places = require('places/places.js')
@@ -245,12 +246,41 @@ const newTabPage = {
     link.textContent = item.title || item.url
     link.title = item.url
 
+    const meta = document.createElement('span')
+    meta.className = 'ntp-item-meta'
+    meta.textContent = newTabPage.getHistoryContext(item)
+
     link.addEventListener('click', function () {
       searchbar.events.emit('url-selected', { url: item.url, background: false })
     })
 
     listItem.appendChild(link)
+    if (item.lastVisit) {
+      listItem.appendChild(meta)
+    }
     return listItem
+  },
+
+  getHistoryItemType: function (item) {
+    const sourceURL = (item && item.url) || ''
+    const title = ((item && item.title) || '').toLowerCase()
+    const lowerURL = sourceURL.toLowerCase()
+
+    if (lowerURL.endsWith('.pdf') || lowerURL.includes('/pdf') || title.includes('pdf')) {
+      return 'pdf'
+    }
+
+    if (lowerURL.startsWith('file://')) {
+      return 'fichier'
+    }
+
+    return 'web'
+  },
+  getHistoryContext: function (item) {
+    const visitedAt = item && item.lastVisit ? new Date(item.lastVisit) : null
+    const type = newTabPage.getHistoryItemType(item)
+    const dateLabel = visitedAt ? visitedAt.toLocaleDateString('fr-FR') : 'date inconnue'
+    return `${type} • ${dateLabel}`
   },
   renderHistoryAndFavorites: async function () {
     if (!newTabPage.favoritesList || !newTabPage.historyList) {
@@ -392,6 +422,26 @@ const newTabPage = {
 
         if (action === 'open-favorites') {
           tabEditor.show(tabId, '!bookmarks ')
+          return
+        }
+
+        if (action === 'open-weather') {
+          searchbar.events.emit('url-selected', { url: 'https://www.meteofrance.com/previsions-meteo-france', background: false })
+          return
+        }
+
+        if (action === 'open-news') {
+          searchbar.events.emit('url-selected', { url: 'https://news.google.com/?hl=fr&gl=FR&ceid=FR:fr', background: false })
+          return
+        }
+
+        if (action === 'open-agenda') {
+          searchbar.events.emit('url-selected', { url: 'https://calendar.google.com', background: false })
+          return
+        }
+
+        if (action === 'open-notes') {
+          document.body.dispatchEvent(new CustomEvent('productivityhub:open-notes'))
         }
       })
     })
