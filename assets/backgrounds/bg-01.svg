@@ -1,0 +1,5 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMid slice'>
+<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='#1e3c72'/><stop offset='100%' stop-color='#2a5298'/></linearGradient></defs>
+<rect width='1600' height='900' fill='url(#g)'/><circle cx='78%' cy='56%' r='15%' fill='rgba(255,255,255,0.16)'/><circle cx='45%' cy='45%' r='14%' fill='rgba(255,255,255,0.09)'/><circle cx='35%' cy='79%' r='21%' fill='rgba(255,255,255,0.06)'/><circle cx='59%' cy='52%' r='18%' fill='rgba(255,255,255,0.17)'/><circle cx='86%' cy='72%' r='16%' fill='rgba(255,255,255,0.16)'/>
+<path d='M0 640 C 300 560, 550 760, 900 660 C 1200 580, 1400 700, 1600 620 L1600 900 L0 900 Z' fill='rgba(255,255,255,0.08)'/>
+</svg>

@@ -212,6 +212,19 @@ tasks.on('tab-updated', function (id, key) {
 
 /* switches to a tab - update the webview, state, tabstrip, etc. */
 
+function isDisplayNewTabOverlay (url) {
+  return !url || url === ''
+}
+
+function syncNewTabOverlayState (id) {
+  const selectedTab = tabs.get(id || tabs.getSelected())
+  if (selectedTab && isDisplayNewTabOverlay(selectedTab.url)) {
+    document.body.classList.add('is-ntp')
+  } else {
+    document.body.classList.remove('is-ntp')
+  }
+}
+
 function switchToTab (id, options) {
   options = options || {}
 
@@ -223,16 +236,12 @@ function switchToTab (id, options) {
 
   tabEditor.hide()
 
-  if (!tabs.get(id).url) {
-    document.body.classList.add('is-ntp')
-  } else {
-    document.body.classList.remove('is-ntp')
-  }
+  syncNewTabOverlayState(id)
 }
 
 tasks.on('tab-updated', function (id, key) {
   if (key === 'url' && id === tabs.getSelected()) {
-    document.body.classList.remove('is-ntp')
+    syncNewTabOverlayState(id)
   }
 })
 

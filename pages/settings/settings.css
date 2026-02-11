@@ -187,3 +187,68 @@ html {
   vertical-align: middle;
   margin-bottom: 0.2em;
 }
+
+.settings-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1.2rem;
+  padding: 0 1rem;
+}
+
+.settings-sidebar {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  border: 1px solid rgba(130, 130, 130, 0.35);
+  border-radius: 10px;
+  padding: 0.8rem;
+  background: rgba(110, 130, 170, 0.08);
+}
+
+.settings-sidebar h4 {
+  margin: 0 0 0.65rem;
+}
+
+.settings-nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  padding: 0.45rem 0.55rem;
+  border-radius: 6px;
+  margin-bottom: 0.2rem;
+  background: transparent;
+}
+
+.settings-nav-item:hover,
+.settings-nav-item.is-active {
+  background: rgba(89, 132, 200, 0.22);
+}
+
+.settings-main .settings-container {
+  margin: 1.2rem auto;
+}
+
+.grouped-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.grouped-actions button {
+  border: 1px solid #7a7a7a;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+}
+
+@media all and (max-width: 900px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-sidebar {
+    position: static;
+  }
+}

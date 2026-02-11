@@ -12,6 +12,45 @@ var autoPlayCheckbox = document.getElementById('checkbox-enable-autoplay')
 var userAgentCheckbox = document.getElementById('checkbox-user-agent')
 var userAgentInput = document.getElementById('input-user-agent')
 
+var navItems = Array.from(document.querySelectorAll('.settings-nav-item'))
+var openHistoryManagerButton = document.getElementById('open-history-manager')
+var openFavoritesManagerButton = document.getElementById('open-favorites-manager')
+
+function scrollToSettingsSection (id) {
+  const target = document.getElementById(id)
+  if (!target) {
+    return
+  }
+
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  navItems.forEach(function (item) {
+    item.classList.toggle('is-active', item.dataset.target === id)
+  })
+}
+
+navItems.forEach(function (item, idx) {
+  if (idx === 0) {
+    item.classList.add('is-active')
+  }
+
+  item.addEventListener('click', function () {
+    scrollToSettingsSection(item.dataset.target)
+  })
+})
+
+if (openHistoryManagerButton) {
+  openHistoryManagerButton.addEventListener('click', function () {
+    postMessage({ message: 'runBangCommand', command: '!history ' })
+  })
+}
+
+if (openFavoritesManagerButton) {
+  openFavoritesManagerButton.addEventListener('click', function () {
+    postMessage({ message: 'runBangCommand', command: '!bookmarks ' })
+  })
+}
+
 function showRestartRequiredBanner () {
   banner.hidden = false
   settings.set('restartNow', true)

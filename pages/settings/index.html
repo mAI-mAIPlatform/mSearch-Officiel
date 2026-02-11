@@ -17,6 +17,20 @@
       </div>
     </div>
 
+    <div class="settings-layout">
+      <aside class="settings-sidebar" aria-label="Navigation des paramètres">
+        <h4>Sections</h4>
+        <button class="settings-nav-item" data-target="privacy-settings-container">Confidentialité</button>
+        <button class="settings-nav-item" data-target="appearance-settings-container">Apparence</button>
+        <button class="settings-nav-item" data-target="additional-settings-container">Comportement</button>
+        <button class="settings-nav-item" data-target="search-engine-settings-container">Recherche</button>
+        <button class="settings-nav-item" data-target="history-favorites-settings-container">Historique & favoris</button>
+        <button class="settings-nav-item" data-target="password-autofill-container">Mots de passe</button>
+        <button class="settings-nav-item" data-target="proxy-settings-container">Proxy</button>
+        <button class="settings-nav-item" data-target="keymap-settings-container">Raccourcis</button>
+        <button class="settings-nav-item" data-target="custom-bangs-container">Bangs personnalisés</button>
+      </aside>
+      <main class="settings-main">
     <div class="settings-container" id="privacy-settings-container">
       <h3 data-string="settingsPrivacyHeading"></h3>
 
@@ -257,6 +271,15 @@
       </div>
     </div>
 
+    <div class="settings-container" id="history-favorites-settings-container">
+      <h3>Historique & favoris</h3>
+      <div class="settings-info-subheading">Accès rapide pour gérer vos éléments enregistrés.</div>
+      <div class="setting-section grouped-actions">
+        <button id="open-history-manager" type="button">Ouvrir l'historique</button>
+        <button id="open-favorites-manager" type="button">Ouvrir les favoris</button>
+      </div>
+    </div>
+
     <div class="settings-container" id="password-autofill-container">
       <h3 data-string="settingsPasswordAutoFillHeadline"></h3>
 
@@ -348,7 +371,10 @@
         ></button>
       </div>
     </div>
-    <!-- this needs to be placed at the bottom so that sticky positioning works correctly -->
+      </main>
+    </div>
+
+        <!-- this needs to be placed at the bottom so that sticky positioning works correctly -->
     <div
       class="banner yellow-background"
       id="restart-required-banner"

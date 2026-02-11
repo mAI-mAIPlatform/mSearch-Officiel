@@ -1,5 +1,6 @@
 var urlParser = require('util/urlParser.js')
 var settings = require('util/settings/settings.js')
+var tabEditor = require('navbar/tabEditor.js')
 
 /* implements selecting webviews, switching between them, and creating new ones. */
 
@@ -486,6 +487,17 @@ webviews.bindIPC('scroll-position-change', function (tabId, args) {
 webviews.bindIPC('downloadFile', function (tabId, args) {
   if (tabs.get(tabId).url.startsWith('min://')) {
     webviews.callAsync(tabId, 'downloadURL', [args[0]])
+  }
+})
+
+
+webviews.bindIPC('runBangCommand', function (tabId, args) {
+  if (!urlParser.isInternalURL(tabs.get(tabId).url)) {
+    throw new Error()
+  }
+
+  if (typeof args[0].command === 'string') {
+    tabEditor.show(tabId, args[0].command)
   }
 })
 

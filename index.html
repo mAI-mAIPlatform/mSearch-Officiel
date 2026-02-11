@@ -202,10 +202,29 @@
       <img id="webview-placeholder" hidden aria-hidden="true" />
       <div id="ntp-content">
           <img id="ntp-background" hidden>
+          <div id="ntp-overlay"></div>
+          <section id="ntp-welcome" aria-label="mSearch home">
+            <h1>mSearch</h1>
+            <p id="ntp-subtitle">Accueil personnalisable</p>
+            <div id="ntp-quick-actions">
+              <button id="ntp-open-favorites"><i class="i carbon:star"></i><span>Favoris</span></button>
+              <button id="ntp-open-history"><i class="i carbon:recently-viewed"></i><span>Historique</span></button>
+              <button id="ntp-open-settings"><i class="i carbon:settings-adjust"></i><span>Paramètres</span></button>
+            </div>
+          </section>
           <div id="ntp-background-controls">
-            <button id="ntp-image-remove"><i class="i carbon:trash-can"></i></button>
-            <button id="ntp-image-picker"><i class="i carbon:camera"></i></button>
+            <button id="ntp-image-remove" title="Supprimer l'image"><i class="i carbon:trash-can"></i></button>
+            <button id="ntp-image-random" title="Fond aléatoire"><i class="i carbon:shuffle"></i></button>
+            <button id="ntp-image-picker" title="Importer une image"><i class="i carbon:camera"></i></button>
+            <button id="ntp-customize-toggle" title="Personnaliser"><i class="i carbon:settings"></i></button>
           </div>
+          <aside id="ntp-customization-panel" hidden>
+            <h2>Personnaliser</h2>
+            <label><input type="checkbox" id="ntp-show-greeting" checked> Afficher le message d'accueil</label>
+            <label><input type="checkbox" id="ntp-show-actions" checked> Afficher les actions rapides</label>
+            <label for="ntp-background-select">Fond prédéfini</label>
+            <select id="ntp-background-select"></select>
+          </aside>
       </div>
     </div>
 
