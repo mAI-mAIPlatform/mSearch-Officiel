@@ -3,8 +3,23 @@ var searchbarPlugins = require('searchbar/searchbarPlugins.js')
 var urlParser = require('util/urlParser.js')
 var searchEngine = require('util/searchEngine.js')
 
+function normalizeSuggestionCount (value) {
+  var parsedValue = Number.parseInt(value, 10)
+
+  if (!Number.isInteger(parsedValue) || parsedValue < 1 || parsedValue > 8) {
+    return 3
+  }
+
+  return parsedValue
+}
+
 function showSearchSuggestions (text, input, inputFlags) {
-    const suggestionsURL = searchEngine.getCurrent().suggestionsURL
+  if (settings.get('searchSuggestionsEnabled') === false) {
+    searchbarPlugins.reset('searchSuggestions')
+    return
+  }
+
+  const suggestionsURL = searchEngine.getCurrent().suggestionsURL
 
   if (!suggestionsURL) {
     searchbarPlugins.reset('searchSuggestions')
@@ -15,6 +30,8 @@ function showSearchSuggestions (text, input, inputFlags) {
     searchbarPlugins.reset('searchSuggestions')
     return
   }
+
+  var suggestionCount = normalizeSuggestionCount(settings.get('searchSuggestionsCount'))
 
   fetch(suggestionsURL.replace('%s', encodeURIComponent(text)), {
     cache: 'force-cache'
@@ -29,8 +46,8 @@ function showSearchSuggestions (text, input, inputFlags) {
         return
       }
 
-      if (results) {
-        results = results[1].slice(0, 3)
+      if (results && Array.isArray(results[1])) {
+        results = results[1].slice(0, suggestionCount)
         results.forEach(function (result) {
           var data = {
             title: result,
@@ -46,6 +63,9 @@ function showSearchSuggestions (text, input, inputFlags) {
           searchbarPlugins.addResult('searchSuggestions', data)
         })
       }
+    })
+    .catch(function () {
+      searchbarPlugins.reset('searchSuggestions')
     })
 }
 

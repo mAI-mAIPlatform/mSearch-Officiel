@@ -212,10 +212,33 @@
         />
       </div>
 
-		<div class="setting-section">
+      <div class="setting-section">
 			<input type="checkbox" id="checkbox-enable-autoplay">
 			<label for="checkbox-enable-autoplay" data-string="settingsAutoplayToggle"></label>
 		</div>
+
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-search-suggestions" />
+        <label
+          for="checkbox-search-suggestions"
+          data-string="settingsSearchSuggestionsToggle"
+        ></label>
+      </div>
+
+      <div class="setting-section" id="section-search-suggestions-count">
+        <label
+          for="input-search-suggestions-count"
+          data-string="settingsSearchSuggestionsCount"
+        ></label>
+        <input
+          type="number"
+          id="input-search-suggestions-count"
+          min="1"
+          max="8"
+          step="1"
+          value="3"
+        />
+      </div>
 
       <div class="setting-section">
         <input type="checkbox" id="checkbox-update-notifications" />
