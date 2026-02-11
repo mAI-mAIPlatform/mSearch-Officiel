@@ -214,3 +214,68 @@ body.dark-mode .settings-action-button {
   background: rgba(39, 45, 56, 0.8);
   border-color: #5f6b7d;
 }
+
+.settings-layout {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.settings-sidebar {
+  position: sticky;
+  top: 1rem;
+  margin-top: 2.25em;
+  margin-left: 1em;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 14px;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+.settings-sidebar h4 {
+  margin: 0 0 0.6rem;
+}
+
+.settings-sidebar a {
+  display: block;
+  padding: 0.35rem 0.2rem;
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.settings-main-content {
+  min-width: 0;
+}
+
+#newtab-settings-container {
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  border-radius: 12px;
+  background: rgba(219, 234, 254, 0.22);
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+body.dark-mode .settings-sidebar {
+  background: rgba(24, 30, 43, 0.75);
+  border-color: rgba(100, 116, 139, 0.5);
+}
+
+body.dark-mode #newtab-settings-container {
+  background: rgba(30, 41, 59, 0.25);
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+@media all and (max-width: 980px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-sidebar {
+    position: static;
+    margin-right: 1em;
+  }
+}

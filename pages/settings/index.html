@@ -17,6 +17,21 @@
       </div>
     </div>
 
+
+    <div class="settings-layout">
+      <aside class="settings-sidebar">
+        <h4>Sections mSearch</h4>
+        <a href="#privacy-settings-container">Confidentialité</a>
+        <a href="#appearance-settings-container">Apparence</a>
+        <a href="#newtab-settings-container">Nouvel onglet</a>
+        <a href="#additional-settings-container">Fonctions</a>
+        <a href="#search-engine-settings-container">Recherche</a>
+        <a href="#password-autofill-container">Mots de passe</a>
+        <a href="#proxy-settings-container">Proxy</a>
+        <a href="#keymap-settings-container">Raccourcis clavier</a>
+        <a href="#custom-bangs-container">Bangs</a>
+      </aside>
+      <main class="settings-main-content">
     <div class="settings-container" id="privacy-settings-container">
       <h3 data-string="settingsPrivacyHeading"></h3>
 
@@ -160,6 +175,35 @@
       <div class="setting-section">
         <input type="checkbox" id="checkbox-comfort-reading" />
         <label for="checkbox-comfort-reading">Mode lecture confortable</label>
+      </div>
+    </div>
+
+    <div class="settings-container" id="newtab-settings-container">
+      <h3>Nouvel onglet mSearch</h3>
+
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-random-background" />
+        <label for="checkbox-ntp-random-background">Activer les backgrounds aléatoires (15 images)</label>
+      </div>
+      <div class="setting-section">
+        <label for="select-ntp-shortcuts-size">Nombre de raccourcis affichés</label>
+        <select id="select-ntp-shortcuts-size">
+          <option value="4">4</option>
+          <option value="6">6</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-show-history" />
+        <label for="checkbox-ntp-show-history">Afficher la section Historique récent</label>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-show-favorites" />
+        <label for="checkbox-ntp-show-favorites">Afficher la section Favoris</label>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-ntp-fix-title-overlap" />
+        <label for="checkbox-ntp-fix-title-overlap">Forcer la correction du chevauchement “mSearch / Nouvel onglet”</label>
       </div>
     </div>
 
@@ -422,6 +466,9 @@
         ></button>
       </div>
     </div>
+      </main>
+    </div>
+
     <!-- this needs to be placed at the bottom so that sticky positioning works correctly -->
     <div
       class="banner yellow-background"

@@ -3,13 +3,16 @@
     height: 100%;
     position: relative;
     opacity: 1;
-    transition: 0.15s opacity;
+    visibility: visible;
+    transition: opacity 0.18s ease;
     overflow: hidden;
     padding: 1.25rem;
 }
 
 body:not(.is-ntp) #ntp-content {
     opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 #ntp-background,
@@ -32,7 +35,7 @@ body:not(.is-ntp) #ntp-content {
     z-index: 1;
     height: 100%;
     overflow: auto;
-    padding: clamp(1rem, 3vw, 2.25rem);
+    padding: clamp(1rem, 3vw, 2rem);
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -41,19 +44,104 @@ body:not(.is-ntp) #ntp-content {
 
 #ntp-header {
     text-align: center;
-    padding-top: 0.75rem;
+    padding-top: 0.8rem;
 }
 
 #ntp-header h1 {
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-size: clamp(2.5rem, 6vw, 4rem);
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.03em;
+    text-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 #ntp-header p {
     margin-top: 0.3rem;
-    opacity: 0.9;
+    opacity: 0.94;
+}
+
+#ntp-search-form {
+    align-self: center;
+    width: min(820px, 94%);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 999px;
+    padding: 0.55rem 0.8rem;
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    background: rgba(14, 20, 38, 0.52);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 14px 34px rgba(9, 12, 21, 0.34);
+}
+
+#ntp-search-form i {
+    font-size: 1.1rem;
+}
+
+#ntp-search-input {
+    background: transparent;
+    border: none;
+    color: #f9fbff;
+    min-height: 2rem;
+}
+
+#ntp-search-input:focus {
+    outline: none;
+}
+
+#ntp-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+#ntp-search-form button,
+.ntp-subtle-button {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    padding: 0.45rem 0.8rem;
+}
+
+#ntp-shortcuts-panel {
+    width: min(820px, 94%);
+    align-self: center;
+    min-height: 0;
+}
+
+#ntp-shortcuts-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.5rem;
+}
+
+.ntp-shortcut-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.ntp-shortcut-open {
+    border-radius: 10px;
+    background: rgba(8, 13, 31, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+    padding: 0.45rem 0.55rem;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ntp-inline-icon {
+    border-radius: 8px;
+    width: 2rem;
+    height: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(8, 13, 31, 0.32);
 }
 
 #ntp-quick-actions {
@@ -107,6 +195,7 @@ body:not(.is-ntp) #ntp-content {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.8rem;
+    gap: 0.4rem;
 }
 
 .ntp-panel h2 {
@@ -229,5 +318,13 @@ body:not(.is-ntp) #ntp-content {
 @media (max-width: 760px) {
     #ntp-grid {
         grid-template-columns: 1fr;
+    }
+
+    #ntp-search-form {
+        width: 100%;
+    }
+
+    #ntp-shortcuts-panel {
+        width: 100%;
     }
 }

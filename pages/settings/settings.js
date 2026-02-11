@@ -25,6 +25,11 @@ var multiViewMaxViewsInput = document.getElementById('multi-view-max-views')
 var gestureShortcutsCheckbox = document.getElementById('checkbox-gesture-shortcuts')
 var gestureWorkspaceCheckbox = document.getElementById('checkbox-gesture-workspace')
 var openEphemeralTabButton = document.getElementById('button-open-ephemeral-tab')
+var ntpRandomBackgroundCheckbox = document.getElementById('checkbox-ntp-random-background')
+var ntpShortcutsSizeSelect = document.getElementById('select-ntp-shortcuts-size')
+var ntpShowHistoryCheckbox = document.getElementById('checkbox-ntp-show-history')
+var ntpShowFavoritesCheckbox = document.getElementById('checkbox-ntp-show-favorites')
+var ntpFixTitleOverlapCheckbox = document.getElementById('checkbox-ntp-fix-title-overlap')
 
 function showRestartRequiredBanner () {
   banner.hidden = false
@@ -455,6 +460,54 @@ gestureWorkspaceCheckbox.addEventListener('change', function () {
 
 openEphemeralTabButton.addEventListener('click', function () {
   postMessage({ message: 'open-ephemeral-tab', url: 'min://newtab' })
+})
+
+settings.get('ntpRandomBackgroundEnabled', function (value) {
+  ntpRandomBackgroundCheckbox.checked = value !== false
+})
+
+ntpRandomBackgroundCheckbox.addEventListener('change', function () {
+  settings.set('ntpRandomBackgroundEnabled', this.checked)
+})
+
+settings.get('ntpMaxShortcuts', function (value) {
+  var safe = parseInt(value, 10)
+  if (![4, 6, 8].includes(safe)) {
+    safe = 8
+  }
+  ntpShortcutsSizeSelect.value = String(safe)
+})
+
+ntpShortcutsSizeSelect.addEventListener('change', function () {
+  var safe = parseInt(this.value, 10)
+  if (![4, 6, 8].includes(safe)) {
+    safe = 8
+  }
+  settings.set('ntpMaxShortcuts', safe)
+})
+
+settings.get('ntpShowHistory', function (value) {
+  ntpShowHistoryCheckbox.checked = value !== false
+})
+
+ntpShowHistoryCheckbox.addEventListener('change', function () {
+  settings.set('ntpShowHistory', this.checked)
+})
+
+settings.get('ntpShowFavorites', function (value) {
+  ntpShowFavoritesCheckbox.checked = value !== false
+})
+
+ntpShowFavoritesCheckbox.addEventListener('change', function () {
+  settings.set('ntpShowFavorites', this.checked)
+})
+
+settings.get('ntpFixTitleOverlap', function (value) {
+  ntpFixTitleOverlapCheckbox.checked = value !== false
+})
+
+ntpFixTitleOverlapCheckbox.addEventListener('change', function () {
+  settings.set('ntpFixTitleOverlap', this.checked)
 })
 
 /* dynamic theme, animations and font preferences */
