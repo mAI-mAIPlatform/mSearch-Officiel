@@ -1,6 +1,7 @@
 document.title = l('settingsPreferencesHeading') + ' | Min'
 
 var contentTypeBlockingContainer = document.getElementById('content-type-blocking')
+var clearHistoryOnStartupCheckbox = document.getElementById('checkbox-clear-history-on-startup')
 var banner = document.getElementById('restart-required-banner')
 var siteThemeCheckbox = document.getElementById('checkbox-site-theme')
 var showDividerCheckbox = document.getElementById('checkbox-show-divider')
@@ -205,6 +206,18 @@ for (var contentType in contentTypes) {
   })(contentType)
 }
 
+/* clear history on startup setting */
+
+settings.get('clearHistoryOnStartup', function (value) {
+  if (value === true) {
+    clearHistoryOnStartupCheckbox.checked = true
+  }
+})
+
+clearHistoryOnStartupCheckbox.addEventListener('change', function (e) {
+  settings.set('clearHistoryOnStartup', this.checked)
+})
+
 /* dark mode setting */
 var darkModeNever = document.getElementById('dark-mode-never')
 var darkModeNight = document.getElementById('dark-mode-night')
@@ -258,11 +271,11 @@ siteThemeCheckbox.addEventListener('change', function (e) {
 
 var startupSettingInput = document.getElementById('startup-options')
 
-settings.get('startupTabOption', function(value = 2) {
+settings.get('startupTabOption', function (value = 2) {
   startupSettingInput.value = value
 })
 
-startupSettingInput.addEventListener('change', function() {
+startupSettingInput.addEventListener('change', function () {
   settings.set('startupTabOption', parseInt(this.value))
 })
 
@@ -270,11 +283,11 @@ startupSettingInput.addEventListener('change', function() {
 
 var newWindowSettingInput = document.getElementById('new-window-options')
 
-settings.get('newWindowOption', function(value = 1) {
+settings.get('newWindowOption', function (value = 1) {
   newWindowSettingInput.value = value
 })
 
-newWindowSettingInput.addEventListener('change', function() {
+newWindowSettingInput.addEventListener('change', function () {
   settings.set('newWindowOption', parseInt(this.value))
 })
 
@@ -292,7 +305,7 @@ userscriptsCheckbox.addEventListener('change', function (e) {
   userscriptsShowDirectorySection.hidden = !this.checked
 })
 
-userscriptsShowDirectorySection.getElementsByTagName('a')[0].addEventListener('click', function() {
+userscriptsShowDirectorySection.getElementsByTagName('a')[0].addEventListener('click', function () {
   postMessage({ message: 'showUserscriptDirectory' })
 })
 
@@ -308,11 +321,11 @@ showDividerCheckbox.addEventListener('change', function (e) {
   settings.set('showDividerBetweenTabs', this.checked)
 })
 
-/* language setting*/
+/* language setting */
 
 var languagePicker = document.getElementById('setting-language-picker')
 
-for (var language in languages) { //from localization.build.js
+for (var language in languages) { // from localization.build.js
   var item = document.createElement('option')
   item.textContent = languages[language].name
   item.value = languages[language].identifier
@@ -434,7 +447,6 @@ userAgentInput.addEventListener('input', function (e) {
   }
   showRestartRequiredBanner()
 })
-
 
 /* multi-view and gesture settings */
 
@@ -565,7 +577,6 @@ fontSpacingSlider.addEventListener('input', function () {
   settings.set('uiLetterSpacing', parseFloat(this.value) || 0)
   updateFontDisplay()
 })
-
 
 /* update notifications setting */
 

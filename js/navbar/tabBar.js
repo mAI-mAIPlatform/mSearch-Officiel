@@ -11,6 +11,7 @@ const urlParser = require('util/urlParser.js')
 const tabEditor = require('navbar/tabEditor.js')
 const progressBar = require('navbar/progressBar.js')
 const permissionRequests = require('navbar/permissionRequests.js')
+const permissionPopup = require('navbar/permissionPopup.js')
 
 var lastTabDeletion = 0 // TODO get rid of this
 
@@ -186,14 +187,27 @@ const tabBar = {
 
     var iconArea = tabEl.getElementsByClassName('tab-icon-area')[0]
 
-    var insecureIcon = tabEl.getElementsByClassName('icon-tab-not-secure')[0]
-    if (tabData.secure === true && insecureIcon) {
-      insecureIcon.remove()
-    } else if (tabData.secure === false && !insecureIcon) {
-      var insecureIcon = document.createElement('i')
-      insecureIcon.className = 'icon-tab-not-secure tab-icon tab-info-icon i carbon:unlocked'
-      insecureIcon.title = l('connectionNotSecure')
-      iconArea.appendChild(insecureIcon)
+    var siteInfoIcon = tabEl.getElementsByClassName('icon-site-info')[0]
+    if (urlParser.isInternalURL(tabData.url)) {
+      if (siteInfoIcon) siteInfoIcon.remove()
+    } else {
+      if (!siteInfoIcon) {
+        siteInfoIcon = document.createElement('i')
+        siteInfoIcon.className = 'icon-site-info tab-icon'
+        iconArea.appendChild(siteInfoIcon)
+        siteInfoIcon.addEventListener('click', function (e) {
+          e.stopPropagation()
+          permissionPopup.show(tabId, siteInfoIcon)
+        })
+      }
+
+      if (tabData.secure === false) {
+        siteInfoIcon.className = 'icon-site-info tab-icon i carbon:unlocked'
+        siteInfoIcon.title = l('connectionNotSecure')
+      } else {
+        siteInfoIcon.className = 'icon-site-info tab-icon i carbon:locked'
+        siteInfoIcon.title = l('sitePermissions')
+      }
     }
   },
   updateAll: function () {
