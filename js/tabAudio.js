@@ -58,6 +58,16 @@ var tabAudio = {
     webviews.bindEvent('media-paused', function (tabId) {
       tabs.update(tabId, { hasAudio: false })
     })
+
+    window.addEventListener('mode-changed', function (e) {
+      if (e.detail && e.detail.config) {
+        const shouldMute = e.detail.config.muteAudio || false
+        tabs.get().forEach(function (tab) {
+          webviews.callAsync(tab.id, 'setAudioMuted', shouldMute)
+          tabs.update(tab.id, { muted: shouldMute })
+        })
+      }
+    })
   }
 }
 

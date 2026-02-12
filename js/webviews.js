@@ -607,6 +607,13 @@ webviews.bindIPC('toggle-multi-view', function (tabId, args) {
   webviews.toggleComparisonView(tabs.getSelected(), targetTabId)
 })
 
+webviews.bindIPC('clearData', function (tabId, args) {
+  if (!urlParser.isInternalURL(tabs.get(tabId).url)) {
+    throw new Error()
+  }
+  ipc.send('clearData', args[0])
+})
+
 settings.listen('multiViewMaxViews', function (value) {
   const parsed = parseInt(value)
   if (!isNaN(parsed) && parsed >= 1 && parsed <= 3) {

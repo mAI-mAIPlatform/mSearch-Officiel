@@ -312,6 +312,24 @@
     "secretKey": "Clé privée",
     "openExternalApp": "Ouvrir avec %s", // %s est le nom de l'application
     "clickToCopy": "cliquer-glisser", 
-    "copied": "Copier" 
+    "copied": "Copier",
+    "highEnergyUsage": "Consommation d'énergie élevée",
+    "profileButtonTooltip": "Changer d'avatar (Clic gauche: suivant, Clic droit: effacer)",
+    "settingsCleaningHeading": "Nettoyage des données",
+    "settingsCleaningInterval": "Fréquence de nettoyage automatique",
+    "settingsCleaningIntervalDisabled": "Désactivé",
+    "settingsCleaningIntervalStartup": "Au démarrage",
+    "settingsCleaningIntervalDaily": "Toutes les 24h",
+    "settingsCleaningCookies": "Cookies",
+    "settingsCleaningHistory": "Historique",
+    "settingsCleaningCache": "Cache",
+    "settingsCleaningNow": "Nettoyer maintenant",
+    "settingsModesHeading": "Modes",
+    "modeStandard": "Standard",
+    "modeGaming": "Gaming",
+    "modeStudy": "Études",
+    "settingsModesDescription": "Sélectionnez un mode via le menu \"Affichage\" > \"Modes\".",
+    "settingsModesGamingDesc": "<strong>Gaming :</strong> Coupe le son et active le mode sombre.",
+    "settingsModesStudyDesc": "<strong>Études :</strong> Bloque les nouveaux onglets et les réseaux sociaux."
   }
 }

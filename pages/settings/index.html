@@ -30,8 +30,18 @@
         <a href="#proxy-settings-container">Proxy</a>
         <a href="#keymap-settings-container">Raccourcis clavier</a>
         <a href="#custom-bangs-container">Bangs</a>
+        <a href="#modes-settings-container">Modes</a>
       </aside>
       <main class="settings-main-content">
+    <div class="settings-container" id="modes-settings-container">
+      <h3 data-string="settingsModesHeading"></h3>
+      <div class="setting-section">
+        <p data-string="settingsModesDescription"></p>
+        <p data-string="settingsModesGamingDesc" data-allowHTML></p>
+        <p data-string="settingsModesStudyDesc" data-allowHTML></p>
+      </div>
+    </div>
+
     <div class="settings-container" id="privacy-settings-container">
       <h3 data-string="settingsPrivacyHeading"></h3>
 
@@ -90,6 +100,31 @@
       </div>
 
       <div id="content-type-blocking"></div>
+
+      <div class="setting-section">
+        <h4 data-string="settingsCleaningHeading"></h4>
+        <div class="setting-option">
+          <label for="cleaning-interval" data-string="settingsCleaningInterval"></label>
+          <select id="cleaning-interval">
+            <option value="0" data-string="settingsCleaningIntervalDisabled"></option>
+            <option value="startup" data-string="settingsCleaningIntervalStartup"></option>
+            <option value="24" data-string="settingsCleaningIntervalDaily"></option>
+          </select>
+        </div>
+        <div class="setting-option">
+          <input type="checkbox" id="checkbox-clean-cookies">
+          <label for="checkbox-clean-cookies" data-string="settingsCleaningCookies"></label>
+        </div>
+        <div class="setting-option">
+          <input type="checkbox" id="checkbox-clean-history">
+          <label for="checkbox-clean-history" data-string="settingsCleaningHistory"></label>
+        </div>
+        <div class="setting-option">
+          <input type="checkbox" id="checkbox-clean-cache">
+          <label for="checkbox-clean-cache" data-string="settingsCleaningCache"></label>
+        </div>
+        <button id="button-clean-now" class="settings-action-button" data-string="settingsCleaningNow"></button>
+      </div>
     </div>
 
     <div class="settings-container" id="appearance-settings-container">

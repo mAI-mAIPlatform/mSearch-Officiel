@@ -495,3 +495,19 @@ ipc.on('saveViewCapture', function (e, data) {
 })
 
 global.getView = getView
+
+setInterval(async function () {
+  for (const id in viewMap) {
+    try {
+      const metrics = await viewMap[id].webContents.getProcessMemoryInfo()
+      if (metrics.privateBytes > 500 * 1024 * 1024) { // 500MB
+         const win = getWindowFromViewContents(viewMap[id].webContents)
+         if (win) {
+           getWindowWebContents(win).send('high-resource-usage', { tabId: id, usage: metrics.privateBytes })
+         }
+      }
+    } catch (e) {
+      // view might be destroyed
+    }
+  }
+}, 60000)

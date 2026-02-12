@@ -1,3 +1,5 @@
+const { ipcRenderer } = require('electron')
+
 document.title = l('settingsPreferencesHeading') + ' | Min'
 
 var contentTypeBlockingContainer = document.getElementById('content-type-blocking')
@@ -722,6 +724,36 @@ function createKeyMapListItem (action, keyMap) {
   li.appendChild(input)
 
   return li
+}
+
+/* Cleaning settings */
+const cleaningIntervalSelect = document.getElementById('cleaning-interval')
+const cleanCookiesCheckbox = document.getElementById('checkbox-clean-cookies')
+const cleanHistoryCheckbox = document.getElementById('checkbox-clean-history')
+const cleanCacheCheckbox = document.getElementById('checkbox-clean-cache')
+const cleanNowButton = document.getElementById('button-clean-now')
+
+if (cleaningIntervalSelect) {
+  settings.get('cleaningInterval', (val) => { cleaningIntervalSelect.value = val || '0' })
+  cleaningIntervalSelect.addEventListener('change', () => settings.set('cleaningInterval', cleaningIntervalSelect.value))
+
+  settings.get('cleaningCookies', (val) => { cleanCookiesCheckbox.checked = val || false })
+  cleanCookiesCheckbox.addEventListener('change', () => settings.set('cleaningCookies', cleanCookiesCheckbox.checked))
+
+  settings.get('cleaningHistory', (val) => { cleanHistoryCheckbox.checked = val || false })
+  cleanHistoryCheckbox.addEventListener('change', () => settings.set('cleaningHistory', cleanHistoryCheckbox.checked))
+
+  settings.get('cleaningCache', (val) => { cleanCacheCheckbox.checked = val || false })
+  cleanCacheCheckbox.addEventListener('change', () => settings.set('cleaningCache', cleanCacheCheckbox.checked))
+
+  cleanNowButton.addEventListener('click', () => {
+      ipcRenderer.sendToHost('clearData', {
+          cookies: cleanCookiesCheckbox.checked,
+          history: cleanHistoryCheckbox.checked,
+          cache: cleanCacheCheckbox.checked
+      })
+      alert('Nettoyage effectué.')
+  })
 }
 
 function formatKeyValue (value) {

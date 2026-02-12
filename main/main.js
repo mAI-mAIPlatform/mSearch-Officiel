@@ -75,7 +75,7 @@ const browserPage = 'min://app/index.html'
 
 var mainMenu = null
 var secondaryMenu = null
-var isFocusMode = false
+var currentMode = 'standard'
 var appIsReady = false
 
 const isFirstInstance = app.requestSingleInstanceLock()
@@ -537,4 +537,53 @@ app.on('ready', function() {
       translateWindow.webContents.postMessage('page-translation-session-create', null, e.ports)
     })
   })
+})
+
+/* cleaning */
+
+ipc.on('clearData', function(e, data) {
+  if (data.cookies) {
+    session.defaultSession.clearStorageData({ storages: ['cookies'] })
+  }
+  if (data.cache) {
+    session.defaultSession.clearStorageData({ storages: ['shadercache', 'serviceworkers', 'cachestorage', 'appcache', 'filesystem', 'indexdb', 'localstorage', 'websql'] })
+  }
+  if (data.history) {
+    if (placesWindow) {
+      placesWindow.webContents.send('deleteAllHistory')
+    }
+  }
+})
+
+function performCleaning() {
+  const cookies = settings.get('cleaningCookies')
+  const history = settings.get('cleaningHistory')
+  const cache = settings.get('cleaningCache')
+
+  if (cookies) session.defaultSession.clearStorageData({ storages: ['cookies'] })
+  if (cache) session.defaultSession.clearStorageData({ storages: ['shadercache', 'serviceworkers', 'cachestorage'] })
+  if (history && placesWindow) placesWindow.webContents.send('deleteAllHistory')
+}
+
+let cleaningIntervalId = null
+
+function scheduleCleaning() {
+  const interval = settings.get('cleaningInterval')
+  if (cleaningIntervalId) clearInterval(cleaningIntervalId)
+
+  if (interval === '24') {
+    cleaningIntervalId = setInterval(performCleaning, 24 * 60 * 60 * 1000)
+  }
+}
+
+settings.listen('cleaningInterval', scheduleCleaning)
+
+app.on('ready', function() {
+  setTimeout(function() {
+      const interval = settings.get('cleaningInterval')
+      if (interval === 'startup') {
+          performCleaning()
+      }
+      scheduleCleaning()
+  }, 5000) // Wait for places to load
 })

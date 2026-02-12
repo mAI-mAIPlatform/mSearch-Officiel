@@ -49,7 +49,7 @@ function buildAppMenu (options = {}) {
       label: l('appMenuNewWindow'),
       accelerator: getFormattedKeyMapEntry('addWindow'),
       click: function () {
-        if (isFocusMode) {
+        if (currentMode === 'focus' || currentMode === 'study') {
           showFocusModeDialog2()
         } else {
           createWindow()
@@ -286,24 +286,51 @@ function buildAppMenu (options = {}) {
           type: 'separator'
         },
         {
-          label: l('appMenuFocusMode'),
-          accelerator: undefined,
-          type: 'checkbox',
-          checked: false,
-          click: function (item, window) {
-            if (isFocusMode) {
-              isFocusMode = false
-              windows.getAll().forEach(win => sendIPCToWindow(win, 'exitFocusMode'))
-            } else {
-              isFocusMode = true
-              windows.getAll().forEach(win => sendIPCToWindow(win, 'enterFocusMode'))
-
-              // wait to show the message until the tabs have been hidden, to make the message less confusing
-              setTimeout(function() {
-                showFocusModeDialog1()
-              }, 16);
+          label: l('settingsModesHeading'),
+          submenu: [
+            {
+              label: l('modeStandard'),
+              type: 'radio',
+              checked: currentMode === 'standard',
+              click: function (item, window) {
+                currentMode = 'standard'
+                windows.getAll().forEach(win => sendIPCToWindow(win, 'setMode', 'standard'))
+              }
+            },
+            {
+              label: l('appMenuFocusMode'),
+              type: 'radio',
+              checked: currentMode === 'focus',
+              click: function (item, window) {
+                currentMode = 'focus'
+                windows.getAll().forEach(win => sendIPCToWindow(win, 'setMode', 'focus'))
+                setTimeout(function() {
+                  showFocusModeDialog1()
+                }, 16);
+              }
+            },
+            {
+              label: l('modeGaming'),
+              type: 'radio',
+              checked: currentMode === 'gaming',
+              click: function (item, window) {
+                currentMode = 'gaming'
+                windows.getAll().forEach(win => sendIPCToWindow(win, 'setMode', 'gaming'))
+              }
+            },
+            {
+              label: l('modeStudy'),
+              type: 'radio',
+              checked: currentMode === 'study',
+              click: function (item, window) {
+                currentMode = 'study'
+                windows.getAll().forEach(win => sendIPCToWindow(win, 'setMode', 'study'))
+                setTimeout(function() {
+                  showFocusModeDialog1()
+                }, 16);
+              }
             }
-          }
+          ]
         },
         {
           label: l('appMenuFullScreen'),
@@ -494,7 +521,7 @@ function createDockMenu () {
       {
         label: l('appMenuNewWindow'),
         click: function () {
-          if (isFocusMode) {
+          if (currentMode === 'focus' || currentMode === 'study') {
             showFocusModeDialog2()
           } else {
             createWindow()

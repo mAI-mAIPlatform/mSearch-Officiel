@@ -42,6 +42,9 @@ const tabBar = {
     requestAnimationFrame(function () {
       el.scrollIntoView()
     })
+
+    // Update URL bar glow/loading state for the new active tab
+    tabBar.updateUrlBarState(tabId)
   },
   createTab: function (data) {
     var tabEl = document.createElement('div')
@@ -132,11 +135,22 @@ const tabBar = {
       }
     })
 
+    // Add hover effect for URL bar glow
+    tabEl.addEventListener('mouseenter', function () {
+      tabBar.navBar.classList.add('url-bar-glow')
+    })
+    tabEl.addEventListener('mouseleave', function () {
+      tabBar.navBar.classList.remove('url-bar-glow')
+    })
+
     tabBar.updateTab(data.id, tabEl)
 
     return tabEl
   },
   updateTab: function (tabId, tabEl = tabBar.getTab(tabId)) {
+    if (!tabEl) {
+      return
+    }
     var tabData = tabs.get(tabId)
 
     // update tab title
@@ -178,6 +192,22 @@ const tabBar = {
     var audioButton = tabEl.querySelector('.tab-audio-button')
     tabAudio.updateButton(tabId, audioButton)
 
+    // update high resource usage icon
+    var resourceIcon = tabEl.querySelector('.icon-tab-high-resource')
+    if (tabData.highResourceUsage && !resourceIcon) {
+      resourceIcon = document.createElement('i')
+      resourceIcon.className = 'icon-tab-high-resource tab-icon tab-info-icon i carbon:flash'
+      resourceIcon.title = l('highEnergyUsage')
+      // Insert before close button (last element usually) or audio button
+      // tab-icon-area has: [permission icons], [audio], [close]
+      // We'll append to iconArea before close button
+      var iconArea = tabEl.querySelector('.tab-icon-area')
+      var closeBtn = iconArea.querySelector('.tab-close-button')
+      iconArea.insertBefore(resourceIcon, closeBtn)
+    } else if (!tabData.highResourceUsage && resourceIcon) {
+      resourceIcon.remove()
+    }
+
     tabEl.querySelectorAll('.permission-request-icon').forEach(el => el.remove())
 
     permissionRequests.getButtons(tabId).reverse().forEach(function (button) {
@@ -194,6 +224,19 @@ const tabBar = {
       insecureIcon.className = 'icon-tab-not-secure tab-icon tab-info-icon i carbon:unlocked'
       insecureIcon.title = l('connectionNotSecure')
       iconArea.appendChild(insecureIcon)
+    }
+
+    // Update URL bar state if this is the active tab
+    if (tabId === tabs.getSelected()) {
+      tabBar.updateUrlBarState(tabId)
+    }
+  },
+  updateUrlBarState: function(tabId) {
+    const tab = tabs.get(tabId)
+    if (tab && tab.loaded === false) {
+      tabBar.navBar.classList.add('url-bar-loading')
+    } else {
+      tabBar.navBar.classList.remove('url-bar-loading')
     }
   },
   updateAll: function () {
@@ -223,10 +266,20 @@ const tabBar = {
   removeTab: function (tabId) {
     var tabEl = tabBar.getTab(tabId)
     if (tabEl) {
+      // Animate removal
+      tabEl.classList.add('closing')
+
       // The tab does not have a corresponding .tab-item element.
       // This happens when destroying tabs from other task where this .tab-item is not present
-      tabBar.containerInner.removeChild(tabEl)
       delete tabBar.tabElementMap[tabId]
+
+      setTimeout(function() {
+        if (tabEl.parentNode) {
+            tabBar.containerInner.removeChild(tabEl)
+            tabBar.handleSizeChange()
+        }
+      }, 200) // Match CSS transition duration
+
       tabBar.handleSizeChange()
     }
   },
@@ -321,6 +374,20 @@ tabBar.container.addEventListener('drop', e => {
       url: path,
       private: tabs.get(tabs.getSelected()).private
     }), { enterEditMode: false, openInBackground: !settings.get('openTabsInForeground') })
+  }
+})
+
+ipc.on('high-resource-usage', function (e, data) {
+  if (tabs.get(data.tabId)) {
+    tabs.update(data.tabId, { highResourceUsage: true })
+    tabBar.updateTab(data.tabId)
+  }
+})
+
+webviews.bindEvent('did-start-navigation', function (tabId, url, isInPlace, isMainFrame) {
+  if (isMainFrame) {
+    tabs.update(tabId, { highResourceUsage: false })
+    tabBar.updateTab(tabId)
   }
 })
 

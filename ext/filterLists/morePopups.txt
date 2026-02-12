@@ -1,0 +1,6 @@
+! Basic popup blocking enhancements
+$popup,third-party
+||pop.*^$popup
+||ads.*^$popup
+||click.*^$popup
+||track.*^$popup

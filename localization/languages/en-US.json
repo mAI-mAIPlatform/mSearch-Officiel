@@ -316,6 +316,24 @@
     "secretKey": "Secret key",
     "openExternalApp": "Open in \\\"%s\\\"?", // %s is the name of an app
     "clickToCopy": "Click to copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "highEnergyUsage": "High Energy Usage",
+    "profileButtonTooltip": "Change Avatar (Left click: next, Right click: clear)",
+    "settingsCleaningHeading": "Data Cleaning",
+    "settingsCleaningInterval": "Automatic Cleaning Frequency",
+    "settingsCleaningIntervalDisabled": "Disabled",
+    "settingsCleaningIntervalStartup": "On Startup",
+    "settingsCleaningIntervalDaily": "Every 24h",
+    "settingsCleaningCookies": "Cookies",
+    "settingsCleaningHistory": "History",
+    "settingsCleaningCache": "Cache",
+    "settingsCleaningNow": "Clean Now",
+    "settingsModesHeading": "Modes",
+    "modeStandard": "Standard",
+    "modeGaming": "Gaming",
+    "modeStudy": "Study",
+    "settingsModesDescription": "Select a mode via the \"View\" > \"Modes\" menu.",
+    "settingsModesGamingDesc": "<strong>Gaming:</strong> Mutes audio and enables dark mode.",
+    "settingsModesStudyDesc": "<strong>Study:</strong> Blocks new tabs and social media."
   }
 }

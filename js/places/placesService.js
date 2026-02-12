@@ -292,3 +292,11 @@ ipcRenderer.on('places-connect', function (e) {
   })
   e.ports[0].start()
 })
+
+ipcRenderer.on('deleteAllHistory', function () {
+  db.places.filter(function (item) {
+    return item.isBookmarked === false
+  }).delete().then(function () {
+    loadHistoryInMemory()
+  })
+})
