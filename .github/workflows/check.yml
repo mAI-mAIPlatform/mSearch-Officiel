@@ -1,8 +1,9 @@
 name: Build Check
 
 on:
+  workflow_dispatch: 
   push:
-    branches: [main, dev]
+    branches: [main, master]
   pull_request:
 
 jobs:
@@ -18,4 +19,3 @@ jobs:
 
       - run: npm install
       - run: npm run build
-
