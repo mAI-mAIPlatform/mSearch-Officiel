@@ -2,6 +2,17 @@
 
 const { ipcRenderer } = require('electron')
 
+window.globalArgs = {}
+process.argv.forEach(function (arg) {
+  if (arg.startsWith('--')) {
+    var key = arg.split('=')[0].replace('--', '')
+    var value = arg.split('=')[1]
+    globalArgs[key] = value
+  }
+})
+
+const settings = require('../../js/util/settings/settings.js')
+
 const spacesRegex = /[+\s._/-]+/g // things that could be considered spaces
 
 function calculateHistoryScore (item) { // item.boost - how much the score should be multiplied by. Example - 0.05
@@ -99,7 +110,13 @@ function loadHistoryInMemory () {
   })
 }
 
-loadHistoryInMemory()
+if (settings.get('clearHistoryOnStartup')) {
+  db.places.filter(function (item) {
+    return item.isBookmarked === false
+  }).delete().then(loadHistoryInMemory)
+} else {
+  loadHistoryInMemory()
+}
 
 function handleRequest (data, cb) {
   const action = data.action

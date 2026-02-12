@@ -244,6 +244,14 @@
     "appMenuShowAll": "Show All",
     "appMenuQuit": "Quit %n",
     "appMenuBringToFront": "Bring All to Front",
+    /* Site Permissions */
+    "notifications": "Notifications",
+    "camera": "Camera",
+    "microphone": "Microphone",
+    "permissionAllow": "Allow",
+    "permissionBlock": "Block",
+    "permissionAsk": "Ask",
+    "sitePermissions": "Permissions",
     /* Tab menu */
     "tabMenuNewWindow": "Move Tab to New Window",
     "tabMenuReload": "Reload",
