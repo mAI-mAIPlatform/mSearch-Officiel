@@ -178,6 +178,7 @@ const webviewMenu = {
     }
 
     var clipboardActions = []
+    var editFlags = data.editFlags || {}
 
     if (mediaURL && data.mediaType === 'image') {
       clipboardActions.push({
@@ -186,7 +187,7 @@ const webviewMenu = {
           webviews.callAsync(tabs.getSelected(), 'copyImageAt', [data.x, data.y])
         }
       })
-    } else if (selection) {
+    } else if (selection || editFlags.canCopy) {
       clipboardActions.push({
         label: l('copy'),
         click: function () {
@@ -195,7 +196,16 @@ const webviewMenu = {
       })
     }
 
-    if (data.editFlags && data.editFlags.canPaste) {
+    if (editFlags.canCut) {
+      clipboardActions.push({
+        label: l('cut'),
+        click: function () {
+          webviews.callAsync(tabs.getSelected(), 'cut')
+        }
+      })
+    }
+
+    if (editFlags.canPaste) {
       clipboardActions.push({
         label: l('paste'),
         click: function () {
@@ -204,7 +214,7 @@ const webviewMenu = {
       })
     }
 
-    if (data.editFlags && data.editFlags.canPaste) {
+    if (editFlags.canPaste) {
       clipboardActions.push({
         label: l('pasteAndMatchStyle'),
         click: function () {
@@ -213,14 +223,27 @@ const webviewMenu = {
       })
     }
 
+    if (editFlags.canSelectAll) {
+      clipboardActions.push({
+        label: l('selectAll'),
+        click: function () {
+          webviews.callAsync(tabs.getSelected(), 'selectAll')
+        }
+      })
+    }
+
     if (link || (mediaURL && !mediaURL.startsWith('blob:'))) {
-      if (link && link.startsWith('mailto:')) {
-        var ematch = link.match(/(?<=mailto:)[^\?]+/)
-        if (ematch) {
+      if (link && link.toLowerCase().startsWith('mailto:')) {
+        var emailAddress = link.substring('mailto:'.length).split('?')[0]
+        if (emailAddress) {
           clipboardActions.push({
             label: l('copyEmailAddress'),
             click: function () {
-              clipboard.writeText(ematch[0])
+              var decodedEmailAddress = emailAddress
+              try {
+                decodedEmailAddress = decodeURIComponent(emailAddress)
+              } catch (e) { }
+              clipboard.writeText(decodedEmailAddress)
             }
           })
         }
