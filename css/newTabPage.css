@@ -69,6 +69,109 @@ body:not(.is-ntp) #ntp-content {
     color: #f9fbff;
 }
 
+
+#ntp-mai-toggle {
+    position: absolute;
+    right: 1.25rem;
+    top: 1.25rem;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.45rem 0.7rem 0.45rem 0.45rem;
+    color: #f9fbff;
+    backdrop-filter: blur(calc(var(--ntp-glass-blur) + 2px)) saturate(170%);
+    -webkit-backdrop-filter: blur(calc(var(--ntp-glass-blur) + 2px)) saturate(170%);
+    background: color-mix(in srgb, var(--ntp-glass-bg) 95%, rgba(14, 20, 38, 0.45));
+    border: 1px solid color-mix(in srgb, var(--ntp-glass-border) 90%, rgba(255, 255, 255, 0.32));
+    box-shadow: 0 10px 28px rgba(9, 12, 21, 0.3);
+}
+
+#ntp-mai-toggle-logo,
+#ntp-mai-logo {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 999px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.26);
+}
+
+#ntp-mai-sidebar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    width: min(380px, 85vw);
+    z-index: 5;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-radius: 22px;
+    padding: 0.8rem;
+    transform: translateX(calc(100% + 1.8rem));
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+    backdrop-filter: blur(calc(var(--ntp-glass-blur) + 6px)) saturate(185%);
+    -webkit-backdrop-filter: blur(calc(var(--ntp-glass-blur) + 6px)) saturate(185%);
+    background: color-mix(in srgb, var(--ntp-glass-bg) 95%, rgba(13, 18, 35, 0.42));
+    border: 1px solid color-mix(in srgb, var(--ntp-glass-border) 90%, rgba(255, 255, 255, 0.28));
+    box-shadow: 0 16px 36px rgba(8, 11, 20, 0.34);
+}
+
+#ntp-mai-sidebar.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#ntp-mai-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-bottom: 0.65rem;
+}
+
+#ntp-mai-branding {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+#ntp-mai-branding p {
+    margin: 0.15rem 0 0;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+#ntp-mai-close {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    color: #f9fbff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(8, 13, 31, 0.34);
+}
+
+#ntp-mai-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(5, 10, 25, 0.42);
+}
+
+body.ntp-mai-open #ntp-main-shell {
+    padding-right: min(420px, 40vw);
+}
+
+body.ntp-mai-open #ntp-mai-toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+
 #ntp-header {
     text-align: center;
     padding-top: 0.8rem;
@@ -392,7 +495,19 @@ body:not(.is-ntp) #ntp-content {
         right: 0.5rem;
         bottom: 0.5rem;
     }
+
+    #ntp-mai-sidebar {
+        top: 0.5rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+        width: min(96vw, 420px);
+    }
+
+    body.ntp-mai-open #ntp-main-shell {
+        padding-right: 0;
+    }
 }
+
 
 
 #ntp-widgets-panel {
@@ -502,7 +617,8 @@ body.ntp-reduced-motion #ntp-search-form,
 body.ntp-reduced-motion .ntp-action,
 body.ntp-reduced-motion .ntp-panel,
 body.ntp-reduced-motion #ntp-background-controls button,
-body.ntp-reduced-motion #ntp-theme-selector {
+body.ntp-reduced-motion #ntp-theme-selector,
+body.ntp-reduced-motion #ntp-mai-sidebar {
     transition: none !important;
 }
 

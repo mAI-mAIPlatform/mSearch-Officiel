@@ -204,6 +204,31 @@
       <div id="ntp-content">
           <img id="ntp-background" hidden>
           <div id="ntp-gradient-overlay"></div>
+          <button id="ntp-mai-toggle" type="button" aria-controls="ntp-mai-sidebar" aria-expanded="false" aria-label="Afficher la barre latérale mAI">
+            <img src="icons/icon256.png" alt="Logo mAI" id="ntp-mai-toggle-logo">
+            <span>mAI</span>
+          </button>
+          <aside id="ntp-mai-sidebar" aria-label="Assistant mAI">
+            <div id="ntp-mai-sidebar-header">
+              <div id="ntp-mai-branding">
+                <img src="icons/icon256.png" alt="Logo mAI" id="ntp-mai-logo">
+                <div>
+                  <strong>mAI</strong>
+                  <p>Assistant IA</p>
+                </div>
+              </div>
+              <button id="ntp-mai-close" type="button" aria-label="Réduire la barre latérale mAI">
+                <i class="i carbon:chevron-right"></i>
+              </button>
+            </div>
+            <iframe
+              id="ntp-mai-iframe"
+              src="https://m-ai-officiel.base44.app"
+              title="mAI"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+            ></iframe>
+          </aside>
           <div id="ntp-main-shell">
             <header id="ntp-header">
               <h1>mSearch</h1>

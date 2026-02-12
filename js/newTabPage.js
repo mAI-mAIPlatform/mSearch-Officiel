@@ -15,6 +15,7 @@ const GLASS_STORAGE_KEY = 'msearch.ntp.glass'
 const SHOW_WIDGETS_STORAGE_KEY = 'msearch.ntp.showWidgets'
 const SHOW_FAVORITES_STORAGE_KEY = 'msearch.ntp.showFavorites'
 const SHOW_HISTORY_STORAGE_KEY = 'msearch.ntp.showHistory'
+const MAI_SIDEBAR_OPEN_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
 const MAX_REMINDERS = 12
 const DEFAULT_MAX_SHORTCUTS = 5
 const MAX_SHORTCUTS_LIMIT = 5
@@ -135,6 +136,9 @@ const newTabPage = {
   toggleWidgets: document.getElementById('ntp-toggle-widgets'),
   toggleFavorites: document.getElementById('ntp-toggle-favorites'),
   toggleHistory: document.getElementById('ntp-toggle-history'),
+  maiSidebar: document.getElementById('ntp-mai-sidebar'),
+  maiSidebarToggle: document.getElementById('ntp-mai-toggle'),
+  maiSidebarClose: document.getElementById('ntp-mai-close'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
@@ -418,6 +422,21 @@ const newTabPage = {
     }
     return raw !== 'false'
   },
+  setMaiSidebarState: function (isOpen) {
+    const sidebar = newTabPage.maiSidebar
+    const toggle = newTabPage.maiSidebarToggle
+
+    if (!sidebar || !toggle) {
+      return
+    }
+
+    // Synchronise l'état visuel + accessibilité + persistance pour éviter les désynchronisations UI.
+    sidebar.classList.toggle('is-open', isOpen)
+    document.body.classList.toggle('ntp-mai-open', isOpen)
+    toggle.setAttribute('aria-expanded', String(isOpen))
+    toggle.setAttribute('aria-label', isOpen ? 'Masquer la barre latérale mAI' : 'Afficher la barre latérale mAI')
+    localStorage.setItem(MAI_SIDEBAR_OPEN_STORAGE_KEY, String(isOpen))
+  },
   applyDisplayPreferences: function () {
     const density = localStorage.getItem(DENSITY_STORAGE_KEY) || 'comfortable'
     const glass = localStorage.getItem(GLASS_STORAGE_KEY) || 'balanced'
@@ -456,6 +475,25 @@ const newTabPage = {
     }
   },
   bindPersonalizationControls: function () {
+    if (newTabPage.maiSidebarToggle) {
+      newTabPage.maiSidebarToggle.addEventListener('click', function () {
+        const isOpen = newTabPage.maiSidebar && newTabPage.maiSidebar.classList.contains('is-open')
+        newTabPage.setMaiSidebarState(!isOpen)
+      })
+    }
+
+    if (newTabPage.maiSidebarClose) {
+      newTabPage.maiSidebarClose.addEventListener('click', function () {
+        newTabPage.setMaiSidebarState(false)
+      })
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && newTabPage.maiSidebar && newTabPage.maiSidebar.classList.contains('is-open')) {
+        newTabPage.setMaiSidebarState(false)
+      }
+    })
+
     if (newTabPage.densitySelector) {
       newTabPage.densitySelector.addEventListener('change', function () {
         localStorage.setItem(DENSITY_STORAGE_KEY, newTabPage.densitySelector.value === 'compact' ? 'compact' : 'comfortable')
@@ -780,6 +818,7 @@ const newTabPage = {
     newTabPage.renderReminders()
     newTabPage.renderShortcuts()
     newTabPage.applyDisplayPreferences()
+    newTabPage.setMaiSidebarState(newTabPage.getBooleanPreference(MAI_SIDEBAR_OPEN_STORAGE_KEY, false))
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
