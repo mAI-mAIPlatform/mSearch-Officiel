@@ -36,7 +36,7 @@
     "DDGAnswerSubtitle": "Réponse", //this is a noun - it is used as a subtitle when displaying Instant Answers from DuckDuckGo in the searchbar
     "suggestedSite": "Site suggéré", //this is used to label suggested websites from the DuckDuckGo API,
     "resultsFromDDG": "Résultats de DuckDuckGo", //this is used as a label to indicate which results come from DuckDuckGo's API
-    "taskN": "Tâche %n", //this is used as a way to identify which tab a task is in "task 1", "task 2", ...
+    "taskN": "Workspace %n", //this is used as a way to identify which tab a task is in "task 1", "task 2", ...
     /* custom commands
         these are some of the items that show up when you press ! in the searchbar.
         Each one of these strings describes what the command will do when you run it. */
@@ -47,11 +47,12 @@
     "enableBlocking": "Activer le blocage",
     "disableBlocking": "Désactiver le blocage",
     "clearHistoryConfirmation": "Effacer toutes les données d'historique et de navigation ?",
-    "switchToTask": "Changer de tâche",
-    "createTask": "Créer une tâche",
-    "closeTask": "Fermer cette tâche",
-    "moveToTask": "Déplacer cette tâche à cet onglet",
-    "nameTask": "Nommer la tâche",
+    "switchToTask": "Changer de workspace",
+    "createTask": "Créer un workspace",
+    "closeTask": "Fermer ce workspace",
+    "moveToTask": "Déplacer vers ce workspace",
+    "nameTask": "Nommer le workspace",
+    "taskAddResource": "Ajouter une ressource",
     "addBookmark": "Ajouter un marque-page",
     "searchBookmarks": "Rechercher des signets",
     "bookmarksAddTag": "Ajouter une étiquette de marque-page",
@@ -73,14 +74,14 @@
     "privateTab": "Onglet privé",
     "newTabAction": "Ajouter un onglet", //this is a verb, used to label a button that adds a tab to the tabstrip when clicked
     /* task overlay */
-    "viewTasks": "Voir les tâches",
-    "newTask": "Ouvrir une nouvelle tâche", //"new" is a verb - it is used for a button at the bottom of the task overlay
-    "defaultTaskName": "Tâche %n", //this is the name used for newly-created tasks; %n is replaced with a number ("task 1", "task 2", etc)
+    "viewTasks": "Voir les workspaces",
+    "newTask": "Ouvrir un nouveau workspace", //"new" is a verb - it is used for a button at the bottom of the task overlay
+    "defaultTaskName": "Workspace %n", //this is the name used for newly-created tasks; %n is replaced with a number ("task 1", "task 2", etc)
     "taskDeleteWarning": {
-      "unsafeHTML": "Tâche supprimée. <a>Annuler ?</a>"
+      "unsafeHTML": "Workspace supprimé. <a>Annuler ?</a>"
     },
     "tasksSearchTabs": "Rechercher dans les onglets", 
-    "returnToTask": "Revenir à la tâche précédente",
+    "returnToTask": "Revenir au workspace précédent",
     "taskDescriptionTwo": "%t et %t",
     "taskDescriptionThree": "%t, %t, et %n",
     /* find in page toolbar */
@@ -90,7 +91,7 @@
     /* Focus mode */
     "isFocusMode": "Vous êtes en mode Focus.",
     "closeDialog": "D'accord", //used as a label for the button that closes the dialog
-    "focusModeExplanation1": "En mode focus vous ne pouvez créer de nouvel onglet ni changer de tâche",
+    "focusModeExplanation1": "En mode focus vous ne pouvez créer de nouvel onglet ni changer de workspace",
     "focusModeExplanation2": "Vous pouvez quitter le mode Focus en décochant \"Mode Focus\" dans le menu",
     /* relative dates */
     "timeRangeJustNow": "À l'instant",
@@ -180,10 +181,10 @@
     "settingsStartupOptions": "Les paramétres de démarrage de Min", 
     "settingsStartupCreateTask": "Ré-ouverture des onglets précédents", 
     "settingsStartupNewTaskandBackground": "Déplacer les onglets précédents en arrière plan", 
-    "settingsStartupNewTaskOnly": "Ouvrir une nouvelle tâche", 
+    "settingsStartupNewTaskOnly": "Ouvrir un nouveau workspace",
     "settingsNewWindowOptions": "Dans une nouvelle fenêtre",
-    "settingsNewWindowCreateTask": "Créer une nouvelle tâche",
-    "settingsNewWindowPickTask": "Afficher la liste des tâches",
+    "settingsNewWindowCreateTask": "Créer un nouveau workspace",
+    "settingsNewWindowPickTask": "Afficher la liste des workspaces",
     "settingsSearchEngineHeading": "Moteur de recherche",
     "settingsDefaultSearchEngine": "Choisir un moteur de recherche par défaut :",
     "settingsDDGExplanation": "Définir DuckDuckGo comme moteur de recherche par défaut pour voir instantanément des résulats dans la barre de recherche.",
@@ -202,7 +203,7 @@
     "appMenuNewTab": "Nouvel onglet",
     "appMenuDuplicateTab": "Dupliquer l'onglet",
     "appMenuNewPrivateTab": "Nouvel onglet de navigation privée",
-    "appMenuNewTask": "Nouvelle tâche",
+    "appMenuNewTask": "Nouveau workspace",
     "appMenuNewWindow": "Ouvrir une nouvelle fenêtre", 
     "appMenuSavePageAs": "Enregistrer la page sous",
     "appMenuPrint": "Imprimer",

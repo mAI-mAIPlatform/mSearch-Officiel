@@ -33,6 +33,7 @@ button {
   border: none;
   color: inherit;
   outline: none;
+  border-radius: 6px;
 }
 body,
 html {
@@ -128,6 +129,19 @@ body.liquid-glass-animations .tab-item,
 body.liquid-glass-animations input,
 body.liquid-glass-animations select {
   transition: background-color 140ms ease, transform 140ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  border-radius: 6px;
+}
+
+.tab-item {
+  border-radius: 6px;
+}
+
+.searchbar-item {
+  border-radius: 6px;
+}
+
+input, select {
+  border-radius: 6px;
 }
 
 body.liquid-glass-animations button:hover,
@@ -154,4 +168,25 @@ body.dynamic-theme-enabled.dynamic-theme-evening {
 
 body.dynamic-theme-enabled.dynamic-theme-night {
   background: linear-gradient(180deg, #1d2533 0%, #21252b 52%);
+}
+
+.tab-preview-popup {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 5px;
+  border-radius: 4px;
+  pointer-events: none;
+  max-width: 300px;
+}
+.tab-preview-popup img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.dark-mode .tab-preview-popup {
+  background: #333;
+  border-color: #555;
 }

@@ -27,7 +27,7 @@ async function showPlaceSuggestions (text, input, inputFlags) {
     return tabList.indexOf(item.url) === -1
   })
 
-  results.slice(0, 4).forEach(function (result) {
+  results.slice(0, 6).forEach(function (result) {
     searchbarPlugins.addResult('placeSuggestions', {
       title: urlParser.prettyURL(result.url),
       secondaryText: searchbarUtils.getRealTitle(result.title),

@@ -227,6 +227,9 @@ var taskOverlay = {
         },
         tabDelete: function (item) {
           deleteTabFromOverlay(item)
+        },
+        overlayHide: function () {
+          taskOverlay.hide()
         }
       })
 
