@@ -1,30 +1,30 @@
-var searchbar = require('searchbar/searchbar.js')
-var searchbarPlugins = require('searchbar/searchbarPlugins.js')
-var searchbarUtils = require('searchbar/searchbarUtils.js')
-var searchbarAutocomplete = require('util/autocomplete.js')
-var urlParser = require('util/urlParser.js')
-var readerDecision = require('readerDecision.js')
-var browserUI = require('browserUI.js')
+const searchbar = require('searchbar/searchbar.js')
+const searchbarPlugins = require('searchbar/searchbarPlugins.js')
+const searchbarUtils = require('searchbar/searchbarUtils.js')
+const searchbarAutocomplete = require('util/autocomplete.js')
+const urlParser = require('util/urlParser.js')
+const readerDecision = require('readerDecision.js')
+const browserUI = require('browserUI.js')
 
-var places = require('places/places.js')
-var searchEngine = require('util/searchEngine.js')
+const places = require('places/places.js')
+const searchEngine = require('util/searchEngine.js')
 
-var currentResponseSent = 0
+let currentResponseSent = 0
 
 async function showSearchbarPlaceResults (text, input, inputFlags, pluginName = 'places') {
-  var responseSent = Date.now()
+  const responseSent = Date.now()
 
-  var searchFn, resultCount
+  let searchFn, resultCount
   if (pluginName === 'fullTextPlaces') {
     searchFn = places.searchPlacesFullText
-    resultCount = 4 - searchbarPlugins.getResultCount('places')
+    resultCount = 6 - searchbarPlugins.getResultCount('places')
   } else {
     searchFn = places.searchPlaces
-    resultCount = 4
+    resultCount = 6
   }
 
   // only autocomplete an item if the delete key wasn't pressed
-  var canAutocomplete = !inputFlags.isDeletion
+  let canAutocomplete = !inputFlags.isDeletion
 
   let results = await searchFn(text)
 
@@ -40,27 +40,27 @@ async function showSearchbarPlaceResults (text, input, inputFlags, pluginName = 
   results = results.slice(0, resultCount)
 
   results.forEach(function (result, index) {
-    var didAutocompleteResult = false
+    let didAutocompleteResult = false
 
-    var searchQuery = searchEngine.getSearch(result.url)
+    const searchQuery = searchEngine.getSearch(result.url)
 
     if (canAutocomplete) {
       // if the query is autocompleted, pressing enter will search for the result using the current search engine, so only pages from the current engine should be autocompleted
       if (searchQuery && searchQuery.engine === searchEngine.getCurrent().name && index === 0) {
-        var acResult = searchbarAutocomplete.autocomplete(input, [searchQuery.search])
+        const acResult = searchbarAutocomplete.autocomplete(input, [searchQuery.search])
         if (acResult.valid) {
           canAutocomplete = false
           didAutocompleteResult = true
         }
       } else {
-        var autocompletionType = searchbarAutocomplete.autocompleteURL(input, result.url)
+        const autocompletionType = searchbarAutocomplete.autocompleteURL(input, result.url)
 
         if (autocompletionType !== -1) {
           canAutocomplete = false
         }
 
         if (autocompletionType === 0) { // the domain was autocompleted, show a domain result item
-          var domain = new URL(result.url).hostname
+          const domain = new URL(result.url).hostname
 
           searchbarPlugins.setTopAnswer(pluginName, {
             title: domain,
@@ -74,10 +74,10 @@ async function showSearchbarPlaceResults (text, input, inputFlags, pluginName = 
       }
     }
 
-    var url = result.url
+    let url = result.url
 
     if (result.searchFragment && pluginName === 'fullTextPlaces' && !url.includes('#')) {
-      var fragment = '#:~:text='
+      let fragment = '#:~:text='
       if (result.searchFragment.contextBefore) {
         fragment += encodeURIComponent(result.searchFragment.contextBefore).replace(/-/g, '%2d') + '-,'
       }
@@ -88,8 +88,8 @@ async function showSearchbarPlaceResults (text, input, inputFlags, pluginName = 
       url += fragment
     }
 
-    var data = {
-      url: url,
+    const data = {
+      url,
       metadata: result.tags,
       descriptionBlock: result.searchSnippet,
       highlightedTerms: (result.searchSnippet ? text.toLowerCase().split(' ').filter(t => t.length > 0) : []),
@@ -113,7 +113,7 @@ async function showSearchbarPlaceResults (text, input, inputFlags, pluginName = 
     // click handler for switch-to-tab results
     function onSwitchClick (task) {
       // if we created a new tab but are switching away from it, destroy the current (empty) tab
-      var currentTabUrl = tabs.get(tabs.getSelected()).url
+      const currentTabUrl = tabs.get(tabs.getSelected()).url
       if (!currentTabUrl) {
         browserUI.closeTab(tabs.getSelected())
       }
@@ -202,7 +202,7 @@ function initialize () {
       return !!text && text.indexOf('!') !== 0
     },
     showResults: debounce(function () {
-      if (searchbarPlugins.getResultCount('places') < 4 && searchbar.associatedInput) {
+      if (searchbarPlugins.getResultCount('places') < 6 && searchbar.associatedInput) {
         showSearchbarPlaceResults.apply(this, Array.from(arguments).concat('fullTextPlaces'))
       } else {
         // can't show results, clear any previous ones

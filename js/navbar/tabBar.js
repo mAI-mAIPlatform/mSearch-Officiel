@@ -12,7 +12,12 @@ const tabEditor = require('navbar/tabEditor.js')
 const progressBar = require('navbar/progressBar.js')
 const permissionRequests = require('navbar/permissionRequests.js')
 
-var lastTabDeletion = 0 // TODO get rid of this
+const tabPreviewPopup = document.createElement('div')
+tabPreviewPopup.className = 'tab-preview-popup'
+tabPreviewPopup.hidden = true
+document.body.appendChild(tabPreviewPopup)
+
+let lastTabDeletion = 0 // TODO get rid of this
 
 const tabBar = {
   navBar: document.getElementById('navbar'),
@@ -28,14 +33,14 @@ const tabBar = {
     return tabBar.getTab(tabId).querySelector('.tab-input')
   },
   setActiveTab: function (tabId) {
-    var activeTab = document.querySelector('.tab-item.active')
+    const activeTab = document.querySelector('.tab-item.active')
 
     if (activeTab) {
       activeTab.classList.remove('active')
       activeTab.removeAttribute('aria-selected')
     }
 
-    var el = tabBar.getTab(tabId)
+    const el = tabBar.getTab(tabId)
     el.classList.add('active')
     el.setAttribute('aria-selected', 'true')
 
@@ -44,7 +49,7 @@ const tabBar = {
     })
   },
   createTab: function (data) {
-    var tabEl = document.createElement('div')
+    const tabEl = document.createElement('div')
     tabEl.className = 'tab-item'
     tabEl.setAttribute('data-tab', data.id)
     tabEl.setAttribute('role', 'tab')
@@ -55,16 +60,16 @@ const tabBar = {
 
     // icons
 
-    var iconArea = document.createElement('span')
+    const iconArea = document.createElement('span')
     iconArea.className = 'tab-icon-area'
 
     if (data.private) {
-      var pbIcon = document.createElement('i')
+      const pbIcon = document.createElement('i')
       pbIcon.className = 'icon-tab-is-private tab-icon tab-info-icon i carbon:view-off'
       iconArea.appendChild(pbIcon)
     }
 
-    var closeTabButton = document.createElement('button')
+    const closeTabButton = document.createElement('button')
     closeTabButton.className = 'tab-icon tab-close-button i carbon:close'
 
     closeTabButton.addEventListener('click', function (e) {
@@ -79,15 +84,15 @@ const tabBar = {
 
     // title
 
-    var titleContainer = document.createElement('div')
+    const titleContainer = document.createElement('div')
     titleContainer.className = 'title-container'
 
-    var title = document.createElement('span')
+    const title = document.createElement('span')
     title.className = 'title'
 
     // URL
 
-    var urlElement = document.createElement('span')
+    const urlElement = document.createElement('span')
     urlElement.className = 'url-element'
 
     titleContainer.appendChild(title)
@@ -132,15 +137,35 @@ const tabBar = {
       }
     })
 
+    tabEl.addEventListener('mouseenter', function (e) {
+      const tabId = this.getAttribute('data-tab')
+      const img = tabs.get(tabId).previewImage
+      if (img) {
+        tabPreviewPopup.innerHTML = ''
+        const image = document.createElement('img')
+        image.src = img
+        tabPreviewPopup.appendChild(image)
+        tabPreviewPopup.hidden = false
+
+        const rect = this.getBoundingClientRect()
+        tabPreviewPopup.style.left = rect.left + 'px'
+        tabPreviewPopup.style.top = (rect.bottom + 5) + 'px'
+      }
+    })
+
+    tabEl.addEventListener('mouseleave', function (e) {
+      tabPreviewPopup.hidden = true
+    })
+
     tabBar.updateTab(data.id, tabEl)
 
     return tabEl
   },
   updateTab: function (tabId, tabEl = tabBar.getTab(tabId)) {
-    var tabData = tabs.get(tabId)
+    const tabData = tabs.get(tabId)
 
     // update tab title
-    var tabTitle
+    let tabTitle
 
     const isNewTab = tabData.url === '' || tabData.url === urlParser.parse('min://newtab')
     if (isNewTab) {
@@ -153,7 +178,7 @@ const tabBar = {
 
     tabTitle = (tabTitle || l('newTabLabel')).substring(0, 500)
 
-    var titleEl = tabEl.querySelector('.title')
+    const titleEl = tabEl.querySelector('.title')
     titleEl.textContent = tabTitle
 
     tabEl.title = tabTitle
@@ -161,7 +186,7 @@ const tabBar = {
       tabEl.title += ' (' + l('privateTab') + ')'
     }
 
-    var tabUrl = urlParser.getDomain(tabData.url)
+    let tabUrl = urlParser.getDomain(tabData.url)
     if (tabUrl.startsWith('www.') && tabUrl.split('.').length > 2) {
       tabUrl = tabUrl.replace('www.', '')
     }
@@ -175,7 +200,7 @@ const tabBar = {
     }
 
     // update tab audio icon
-    var audioButton = tabEl.querySelector('.tab-audio-button')
+    const audioButton = tabEl.querySelector('.tab-audio-button')
     tabAudio.updateButton(tabId, audioButton)
 
     tabEl.querySelectorAll('.permission-request-icon').forEach(el => el.remove())
@@ -184,7 +209,7 @@ const tabBar = {
       tabEl.insertBefore(button, tabEl.children[0])
     })
 
-    var iconArea = tabEl.getElementsByClassName('tab-icon-area')[0]
+    const iconArea = tabEl.getElementsByClassName('tab-icon-area')[0]
 
     var insecureIcon = tabEl.getElementsByClassName('icon-tab-not-secure')[0]
     if (tabData.secure === true && insecureIcon) {
@@ -201,7 +226,7 @@ const tabBar = {
     tabBar.tabElementMap = {}
 
     tabs.get().forEach(function (tab) {
-      var el = tabBar.createTab(tab)
+      const el = tabBar.createTab(tab)
       tabBar.containerInner.appendChild(el)
       tabBar.tabElementMap[tab.id] = el
     })
@@ -212,16 +237,16 @@ const tabBar = {
     tabBar.handleSizeChange()
   },
   addTab: function (tabId) {
-    var tab = tabs.get(tabId)
-    var index = tabs.getIndex(tabId)
+    const tab = tabs.get(tabId)
+    const index = tabs.getIndex(tabId)
 
-    var tabEl = tabBar.createTab(tab)
+    const tabEl = tabBar.createTab(tab)
     tabBar.containerInner.insertBefore(tabEl, tabBar.containerInner.childNodes[index])
     tabBar.tabElementMap[tabId] = tabEl
     tabBar.handleSizeChange()
   },
   removeTab: function (tabId) {
-    var tabEl = tabBar.getTab(tabId)
+    const tabEl = tabBar.getTab(tabId)
     if (tabEl) {
       // The tab does not have a corresponding .tab-item element.
       // This happens when destroying tabs from other task where this .tab-item is not present
@@ -244,14 +269,14 @@ const tabBar = {
     })
 
     tabBar.dragulaInstance.on('drop', function (el, target, source, sibling) {
-      var tabId = el.getAttribute('data-tab')
+      const tabId = el.getAttribute('data-tab')
       if (sibling) {
         var adjacentTabId = sibling.getAttribute('data-tab')
       }
 
-      var oldTab = tabs.splice(tabs.getIndex(tabId), 1)[0]
+      const oldTab = tabs.splice(tabs.getIndex(tabId), 1)[0]
 
-      var newIdx
+      let newIdx
       if (adjacentTabId) {
         newIdx = tabs.getIndex(adjacentTabId)
       } else {
@@ -290,7 +315,7 @@ webviews.bindEvent('did-stop-loading', function (tabId) {
 })
 
 tasks.on('tab-updated', function (id, key) {
-  var updateKeys = ['title', 'secure', 'url', 'muted', 'hasAudio']
+  const updateKeys = ['title', 'secure', 'url', 'muted', 'hasAudio']
   if (updateKeys.includes(key)) {
     tabBar.updateTab(id)
   }
@@ -308,8 +333,8 @@ tabBar.container.addEventListener('dragover', e => e.preventDefault())
 
 tabBar.container.addEventListener('drop', e => {
   e.preventDefault()
-  var data = e.dataTransfer
-  var path = data.files[0] ? 'file://' + electron.webUtils.getPathForFile(data.files[0]) : data.getData('text')
+  const data = e.dataTransfer
+  const path = data.files[0] ? 'file://' + electron.webUtils.getPathForFile(data.files[0]) : data.getData('text')
   if (!path) {
     return
   }

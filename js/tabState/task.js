@@ -40,6 +40,7 @@ class TaskList {
       collapsed: task.collapsed, // this property must stay undefined if it is already (since there is a difference between "explicitly uncollapsed" and "never collapsed")
       id: task.id || String(TaskList.getRandomId()),
       selectedInWindow: task.selectedInWindow || null,
+      resources: task.resources || []
     }
 
     if (index) {
@@ -55,14 +56,14 @@ class TaskList {
     return newTask.id
   }
 
-  update (id, data, emit=true) {
-    let task = this.get(id)
+  update (id, data, emit = true) {
+    const task = this.get(id)
 
     if (!task) {
       throw new ReferenceError('Attempted to update a task that does not exist.')
     }
 
-    for (var key in data) {
+    for (const key in data) {
       if (data[key] === undefined) {
         throw new ReferenceError('Key ' + key + ' is undefined.')
       }
@@ -75,12 +76,12 @@ class TaskList {
 
   getStringifyableState () {
     return {
-      tasks: this.tasks.map(task => Object.assign({}, task, { tabs: task.tabs.getStringifyableState() })).map(function(task) {
-        //remove temporary properties from task
-        let result = {}
+      tasks: this.tasks.map(task => Object.assign({}, task, { tabs: task.tabs.getStringifyableState() })).map(function (task) {
+        // remove temporary properties from task
+        const result = {}
         Object.keys(task)
-        .filter(key => !TaskList.temporaryProperties.includes(key))
-        .forEach(key => result[key] = task[key])
+          .filter(key => !TaskList.temporaryProperties.includes(key))
+          .forEach(key => result[key] = task[key])
         return result
       })
     }
@@ -88,7 +89,7 @@ class TaskList {
 
   getCopyableState () {
     return {
-      tasks: this.tasks.map(task => Object.assign({}, task, {tabs: task.tabs.tabs}))
+      tasks: this.tasks.map(task => Object.assign({}, task, { tabs: task.tabs.tabs }))
     }
   }
 
@@ -112,8 +113,8 @@ class TaskList {
     return this.tasks.findIndex(task => task.id === id)
   }
 
-  setSelected (id, emit = true, onWindow=windowId) {
-    for (var i = 0; i < this.tasks.length; i++) {
+  setSelected (id, emit = true, onWindow = windowId) {
+    for (let i = 0; i < this.tasks.length; i++) {
       if (this.tasks[i].selectedInWindow === onWindow) {
         this.tasks[i].selectedInWindow = null
       }
@@ -145,15 +146,15 @@ class TaskList {
     if (index < 0) return false
 
     this.tasks.splice(index, 1)
-  
+
     return index
   }
 
   getLastActivity (id) {
-    var tabs = this.get(id).tabs
-    var lastActivity = 0
+    const tabs = this.get(id).tabs
+    let lastActivity = 0
 
-    for (var i = 0; i < tabs.count(); i++) {
+    for (let i = 0; i < tabs.count(); i++) {
       if (tabs.getAtIndex(i).lastActivity > lastActivity) {
         lastActivity = tabs.getAtIndex(i).lastActivity
       }
@@ -163,7 +164,7 @@ class TaskList {
   }
 
   isCollapsed (id) {
-    var task = this.get(id)
+    const task = this.get(id)
     return task.collapsed || (task.collapsed === undefined && Date.now() - tasks.getLastActivity(task.id) > (7 * 24 * 60 * 60 * 1000))
   }
 
@@ -184,7 +185,7 @@ class TaskList {
   filter (...args) { return this.tasks.filter.apply(this.tasks, args) }
 
   find (filter) {
-    for (var i = 0, len = this.tasks.length; i < len; i++) {
+    for (let i = 0, len = this.tasks.length; i < len; i++) {
       if (filter(this.tasks[i], i, this.tasks)) {
         return this.tasks[i]
       }

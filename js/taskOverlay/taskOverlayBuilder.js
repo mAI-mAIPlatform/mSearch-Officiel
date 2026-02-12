@@ -1,20 +1,20 @@
-var browserUI = require('browserUI.js')
-var searchbarUtils = require('searchbar/searchbarUtils.js')
-var urlParser = require('util/urlParser.js')
-var searchEngine = require('util/searchEngine.js')
+const browserUI = require('browserUI.js')
+const searchbarUtils = require('searchbar/searchbarUtils.js')
+const urlParser = require('util/urlParser.js')
+const searchEngine = require('util/searchEngine.js')
 
 const faviconMinimumLuminance = 70 // minimum brightness for a "light" favicon
 
 function getTaskRelativeDate (task) {
-  var minimumTime = new Date()
+  let minimumTime = new Date()
   minimumTime.setHours(0)
   minimumTime.setMinutes(0)
   minimumTime.setSeconds(0)
   minimumTime = minimumTime.getTime()
   minimumTime -= (5 * 24 * 60 * 60 * 1000)
 
-  var time = tasks.getLastActivity(task.id)
-  var d = new Date(time)
+  const time = tasks.getLastActivity(task.id)
+  const d = new Date(time)
 
   // don't show times for recent tasks in order to save space
   if (time > minimumTime) {
@@ -25,10 +25,10 @@ function getTaskRelativeDate (task) {
 }
 
 function toggleCollapsed (taskContainer, task) {
-  tasks.update(task.id, {collapsed: !tasks.isCollapsed(task.id)})
+  tasks.update(task.id, { collapsed: !tasks.isCollapsed(task.id) })
   taskContainer.classList.toggle('collapsed')
 
-  var collapseButton = taskContainer.querySelector('.task-collapse-button')
+  const collapseButton = taskContainer.querySelector('.task-collapse-button')
   collapseButton.classList.toggle('carbon:chevron-right')
   collapseButton.classList.toggle('carbon:chevron-down')
 
@@ -43,7 +43,7 @@ var TaskOverlayBuilder = {
   create: {
     task: {
       collapseButton: function (taskContainer, task) {
-        var collapseButton = document.createElement('button')
+        const collapseButton = document.createElement('button')
         collapseButton.className = 'task-collapse-button i'
         collapseButton.setAttribute('tabindex', '-1')
 
@@ -62,10 +62,10 @@ var TaskOverlayBuilder = {
         return collapseButton
       },
       nameInputField: function (task, taskIndex) {
-        var input = document.createElement('input')
+        const input = document.createElement('input')
         input.classList.add('task-name')
 
-        var taskName = l('defaultTaskName').replace('%n', taskIndex + 1)
+        const taskName = l('defaultTaskName').replace('%n', taskIndex + 1)
 
         input.placeholder = taskName
         input.value = task.name || taskName
@@ -76,7 +76,7 @@ var TaskOverlayBuilder = {
             this.blur()
           }
 
-          tasks.update(task.id, {name: this.value})
+          tasks.update(task.id, { name: this.value })
         })
 
         input.addEventListener('focusin', function (e) {
@@ -89,7 +89,7 @@ var TaskOverlayBuilder = {
         return input
       },
       deleteButton: function (container, task) {
-        var deleteButton = document.createElement('button')
+        const deleteButton = document.createElement('button')
         deleteButton.className = 'task-delete-button i carbon:trash-can'
         deleteButton.tabIndex = -1 // needed for keyboardNavigationHelper
 
@@ -114,7 +114,7 @@ var TaskOverlayBuilder = {
         return deleteButton
       },
       deleteWarning: function (container, task) {
-        var deleteWarning = document.createElement('div')
+        const deleteWarning = document.createElement('div')
         deleteWarning.className = 'task-delete-warning'
 
         deleteWarning.innerHTML = l('taskDeleteWarning').unsafeHTML
@@ -125,39 +125,56 @@ var TaskOverlayBuilder = {
       },
 
       actionContainer: function (taskContainer, task, taskIndex) {
-        var taskActionContainer = document.createElement('div')
+        const taskActionContainer = document.createElement('div')
         taskActionContainer.className = 'task-action-container'
 
         // add the collapse button
-        var collapseButton = this.collapseButton(taskContainer, task)
+        const collapseButton = this.collapseButton(taskContainer, task)
         taskActionContainer.appendChild(collapseButton)
 
         // add the input for the task name
-        var input = this.nameInputField(task, taskIndex)
+        const input = this.nameInputField(task, taskIndex)
         taskActionContainer.appendChild(input)
 
+        // add resource button
+        const addResourceButton = document.createElement('button')
+        addResourceButton.className = 'task-add-resource-button i carbon:link'
+        addResourceButton.title = l('taskAddResource')
+        addResourceButton.addEventListener('click', function (e) {
+          e.stopPropagation()
+          var url = window.prompt('Enter resource URL or path:')
+          if (url) {
+            const resources = task.resources || []
+            resources.push({ url, title: url })
+            tasks.update(task.id, { resources })
+            // Re-render handled by state sync or we could manually update.
+            // taskOverlay.render() is called on state-sync-change in taskOverlay.js
+          }
+        })
+        taskActionContainer.appendChild(addResourceButton)
+
         // add the delete button
-        var deleteButton = this.deleteButton(taskContainer, task)
+        const deleteButton = this.deleteButton(taskContainer, task)
         taskActionContainer.appendChild(deleteButton)
 
         return taskActionContainer
       },
       infoContainer: function (task) {
-        var infoContainer = document.createElement('div')
+        const infoContainer = document.createElement('div')
         infoContainer.className = 'task-info-container'
 
-        var date = getTaskRelativeDate(task)
+        const date = getTaskRelativeDate(task)
 
         if (date) {
-          var dateEl = document.createElement('span')
+          const dateEl = document.createElement('span')
           dateEl.className = 'task-date'
           dateEl.textContent = date
           infoContainer.appendChild(dateEl)
         }
 
-        var lastTabEl = document.createElement('span')
+        const lastTabEl = document.createElement('span')
         lastTabEl.className = 'task-last-tab-title'
-        var lastTabTitle = task.tabs.get().sort((a, b) => b.lastActivity - a.lastActivity)[0].title
+        let lastTabTitle = task.tabs.get().sort((a, b) => b.lastActivity - a.lastActivity)[0].title
 
         if (lastTabTitle) {
           lastTabTitle = searchbarUtils.getRealTitle(lastTabTitle)
@@ -168,8 +185,8 @@ var TaskOverlayBuilder = {
         }
         infoContainer.appendChild(lastTabEl)
 
-        var favicons = []
-        var faviconURLs = []
+        let favicons = []
+        const faviconURLs = []
 
         task.tabs.get().sort((a, b) => b.lastActivity - a.lastActivity).forEach(function (tab) {
           if (tab.favicon) {
@@ -179,12 +196,12 @@ var TaskOverlayBuilder = {
         })
 
         if (favicons.length > 0) {
-          var faviconsEl = document.createElement('span')
+          const faviconsEl = document.createElement('span')
           faviconsEl.className = 'task-favicons'
           favicons = favicons.filter((i, idx) => faviconURLs.indexOf(i.url) === idx)
 
           favicons.forEach(function (favicon) {
-            var img = document.createElement('img')
+            const img = document.createElement('img')
             img.src = favicon.url
             if (favicon.luminance < faviconMinimumLuminance) {
               img.classList.add('dark-favicon')
@@ -198,7 +215,7 @@ var TaskOverlayBuilder = {
         return infoContainer
       },
       container: function (task, taskIndex, events) {
-        var container = document.createElement('div')
+        const container = document.createElement('div')
         container.className = 'task-container'
 
         if (task.id !== tasks.getSelected().id && tasks.isCollapsed(task.id)) {
@@ -215,21 +232,65 @@ var TaskOverlayBuilder = {
           }
         })
 
-        var taskActionContainer = this.actionContainer(
+        const taskActionContainer = this.actionContainer(
           container,
           task,
           taskIndex
         )
         container.appendChild(taskActionContainer)
 
-        var infoContainer = this.infoContainer(task)
+        const infoContainer = this.infoContainer(task)
         container.appendChild(infoContainer)
 
-        var deleteWarning = this.deleteWarning(container, task)
+        const deleteWarning = this.deleteWarning(container, task)
         container.appendChild(deleteWarning)
 
-        var tabContainer = TaskOverlayBuilder.create.tab.container(task, events)
+        if (task.resources && task.resources.length > 0) {
+          const resourceContainer = TaskOverlayBuilder.create.resource.container(task, events)
+          container.appendChild(resourceContainer)
+        }
+
+        const tabContainer = TaskOverlayBuilder.create.tab.container(task, events)
         container.appendChild(tabContainer)
+
+        return container
+      }
+    },
+
+    resource: {
+      element: function (task, resource, index, events) {
+        const data = {
+          title: resource.title || resource.url,
+          secondaryText: resource.url,
+          icon: 'carbon:link',
+          delete: function () {
+            const resources = task.resources
+            resources.splice(index, 1)
+            tasks.update(task.id, { resources })
+          },
+          showDeleteButton: true
+        }
+
+        const el = searchbarUtils.createItem(data)
+        el.classList.add('task-resource-item')
+
+        el.addEventListener('click', function (e) {
+          browserUI.addTab(tabs.add({ url: resource.url, private: false }), { enterEditMode: false, openInBackground: false })
+          if (events && events.overlayHide) {
+            events.overlayHide()
+          }
+        })
+
+        return el
+      },
+
+      container: function (task, events) {
+        const container = document.createElement('ul')
+        container.className = 'task-resources-container'
+
+        task.resources.forEach(function (resource, index) {
+          container.appendChild(TaskOverlayBuilder.create.resource.element(task, resource, index, events))
+        })
 
         return container
       }
@@ -237,7 +298,7 @@ var TaskOverlayBuilder = {
 
     tab: {
       element: function (tabContainer, task, tab, events) {
-        var data = {
+        const data = {
           classList: ['task-tab-item'],
           delete: events.tabDelete,
           showDeleteButton: true
@@ -253,8 +314,8 @@ var TaskOverlayBuilder = {
           }
         }
 
-        var source = urlParser.getSourceURL(tab.url)
-        var searchQuery = searchEngine.getSearch(source)
+        const source = urlParser.getSourceURL(tab.url)
+        const searchQuery = searchEngine.getSearch(source)
 
         if (searchQuery) {
           data.title = searchQuery.search
@@ -264,7 +325,7 @@ var TaskOverlayBuilder = {
           data.secondaryText = urlParser.basicURL(source)
         }
 
-        var el = searchbarUtils.createItem(data)
+        const el = searchbarUtils.createItem(data)
 
         el.setAttribute('data-tab', tab.id)
 
@@ -277,13 +338,13 @@ var TaskOverlayBuilder = {
       },
 
       container: function (task, events) {
-        var tabContainer = document.createElement('ul')
+        const tabContainer = document.createElement('ul')
         tabContainer.className = 'task-tabs-container'
         tabContainer.setAttribute('data-task', task.id)
 
         if (task.tabs) {
-          for (var i = 0; i < task.tabs.count(); i++) {
-            var el = this.element(tabContainer, task, task.tabs.getAtIndex(i), events)
+          for (let i = 0; i < task.tabs.count(); i++) {
+            const el = this.element(tabContainer, task, task.tabs.getAtIndex(i), events)
             tabContainer.appendChild(el)
           }
         }
