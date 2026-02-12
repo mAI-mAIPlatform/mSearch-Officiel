@@ -27,7 +27,7 @@ jobs:
 
       # 3️⃣ Installer les dépendances
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # 4️⃣ Exécuter un scan de vulnérabilités avec npm audit
       - name: Run npm audit
