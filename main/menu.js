@@ -440,7 +440,7 @@ function buildAppMenu (options = {}) {
         {
           label: l('appMenuViewGithub'),
           click: function () {
-            openTabInWindow('https://github.com/minbrowser/min')
+            openTabInWindow('https://github.com/mAI-mAIPlatform/')
           }
         },
         ...(process.platform !== 'darwin' ? [{ type: 'separator' }] : []),
@@ -448,7 +448,7 @@ function buildAppMenu (options = {}) {
           label: l('appMenuAbout').replace('%n', app.name),
           click: function (item, window) {
             var info = [
-              'Min v' + app.getVersion(),
+              'mSearch v' + app.getVersion(),
               'Chromium v' + process.versions.chrome
             ]
             electron.dialog.showMessageBox({

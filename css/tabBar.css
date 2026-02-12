@@ -267,12 +267,14 @@ body:not(.touch)
   display: none;
 }
 .tab-item .title-container {
-  display: inline-block;
+  display: block;
   position: relative;
   padding-left: 0.25rem;
   padding-right: 0.25rem;
   flex: 1;
   overflow: hidden;
+  min-width: 0;
+  height: 100%;
 }
 .compact-tabs .tab-item .title {
   font-size: 14px;
@@ -280,33 +282,42 @@ body:not(.touch)
 .tab-item .title {
   display: block;
   position: absolute;
-  top: 0;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
   font-size: 15px;
   transform-origin: left 10%;
-  transition: 0.15s transform;
+  transition: 0.15s transform, 0.15s opacity;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .tab-item .url-element {
   display: block;
   position: absolute;
-  top: 5px;
+  top: 50%;
+  left: 0;
+  right: 0;
   transform-origin: left 90%;
-  transform: translateY(15%);
+  transform: translateY(-6%);
   opacity: 0;
-  transition: 0.15s all;
+  transition: 0.15s transform, 0.15s opacity;
   font-size: 13px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .tab-item.active.has-url:hover .url-element {
-  transform: none;
+  transform: translateY(20%);
   opacity: 1;
 }
 .tab-item.active.has-url:hover .title {
-  transform: scale(0.7333) translateY(-10%);
+  transform: scale(0.8) translateY(-120%);
   opacity: 0.9;
 }
 .compact-tabs .tab-item.active.has-url:hover .title {
-  transform: scale(0.78571) translateY(-12%);
+  transform: scale(0.83) translateY(-110%);
 }
 
 /* buttons */

@@ -1,0 +1,39 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - '**'   # toutes les branches
+  pull_request:
+    branches:
+      - '**'   # toutes les branches
+
+jobs:
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout du code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Installer Node.js v20
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3️⃣ Installer les dépendances
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Lancer ESLint pour checker le code
+      - name: Run ESLint
+        run: |
+          npm install eslint --save-dev
+          npx eslint . --ext .js,.ts || true
+
+      # 5️⃣ Lancer npm audit pour vérifier la sécurité
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || true

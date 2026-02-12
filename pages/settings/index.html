@@ -159,7 +159,7 @@
 
       <div class="setting-section" id="liquid-glass-section">
         <input type="checkbox" id="checkbox-liquid-glass-animations" />
-        <label for="checkbox-liquid-glass-animations">Animations micro-interactives Liquid Glass</label>
+        <label for="checkbox-liquid-glass-animations">Animations</label>
       </div>
 
       <div class="setting-section" id="font-preferences-section">
@@ -366,13 +366,51 @@
           style="margin-left: 0.5em; min-width: 325px"
           hidden
         />
-
-        <div
-          class="settings-info-subheading"
-          style="padding-top: 0.4em"
-          data-string="settingsDDGExplanation"
-        ></div>
       </div>
+
+      <div class="setting-section">
+        <label for="search-region">Région des résultats</label>
+        <select id="search-region">
+          <option value="fr-FR">France</option>
+          <option value="fr-CA">Canada (français)</option>
+          <option value="fr-BE">Belgique</option>
+          <option value="fr-CH">Suisse</option>
+          <option value="en-US">États-Unis</option>
+          <option value="all">International</option>
+        </select>
+      </div>
+
+      <div class="setting-section">
+        <label for="search-language">Langue prioritaire</label>
+        <select id="search-language">
+          <option value="fr">Français</option>
+          <option value="en">Anglais</option>
+          <option value="es">Espagnol</option>
+          <option value="de">Allemand</option>
+          <option value="all">Toutes les langues</option>
+        </select>
+      </div>
+
+      <div class="setting-section">
+        <label for="search-safe-mode">Filtre de contenu explicite</label>
+        <select id="search-safe-mode">
+          <option value="strict">Strict</option>
+          <option value="moderate">Modéré</option>
+          <option value="off">Désactivé</option>
+        </select>
+      </div>
+
+      <div class="setting-section">
+        <label for="search-extra-params">Paramètres URL additionnels</label>
+        <input id="search-extra-params" placeholder="ex: ref=msearch&source=app" />
+        <div class="settings-info-subheading">Astuce : ces paramètres sont ajoutés aux recherches et suggestions (format clé=valeur&clé2=valeur2).</div>
+      </div>
+
+      <div
+        class="settings-info-subheading"
+        style="padding-top: 0.4em"
+        data-string="settingsDDGExplanation"
+      ></div>
     </div>
 
     <div class="settings-container" id="password-autofill-container">

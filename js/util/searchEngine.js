@@ -9,6 +9,12 @@ var currentSearchEngine = {
 }
 
 var defaultSearchEngine = 'DuckDuckGo'
+var defaultSearchOptions = {
+  region: 'fr-FR',
+  language: 'fr',
+  safeMode: 'moderate',
+  extraParams: ''
+}
 
 var searchEngines = {
   DuckDuckGo: {
@@ -82,6 +88,131 @@ var searchEngines = {
   }
 }
 
+function normalizeSearchOptions (value) {
+  if (!value || typeof value !== 'object') {
+    return { ...defaultSearchOptions }
+  }
+
+  return {
+    region: value.region || defaultSearchOptions.region,
+    language: value.language || defaultSearchOptions.language,
+    safeMode: value.safeMode || defaultSearchOptions.safeMode,
+    extraParams: typeof value.extraParams === 'string' ? value.extraParams.trim() : ''
+  }
+}
+
+function parseExtraParams (extraParams) {
+  if (!extraParams) {
+    return {}
+  }
+
+  var params = {}
+  extraParams.split('&').forEach(function (part) {
+    var trimmed = part.trim()
+    if (!trimmed) {
+      return
+    }
+    var equalIndex = trimmed.indexOf('=')
+    if (equalIndex === -1) {
+      return
+    }
+    var key = trimmed.slice(0, equalIndex).trim()
+    var value = trimmed.slice(equalIndex + 1).trim()
+    if (key) {
+      params[key] = value
+    }
+  })
+  return params
+}
+
+function getEngineSpecificParams (engineName, options, isSuggestionURL) {
+  var region = options.region || defaultSearchOptions.region
+  var language = options.language || defaultSearchOptions.language
+  var safeMode = options.safeMode || defaultSearchOptions.safeMode
+  var params = {}
+
+  if (engineName === 'DuckDuckGo') {
+    params.kl = region === 'all' ? 'wt-wt' : region.toLowerCase()
+    params.kp = safeMode === 'strict' ? '1' : (safeMode === 'off' ? '-2' : '-1')
+  } else if (engineName === 'Google') {
+    if (region !== 'all') {
+      params.gl = region.split('-')[1] ? region.split('-')[1].toLowerCase() : region.toLowerCase()
+      params.hl = region.toLowerCase()
+    }
+    if (language !== 'all') {
+      params.lr = 'lang_' + language.toLowerCase()
+    }
+    params.safe = safeMode === 'off' ? 'off' : 'active'
+  } else if (engineName === 'Bing') {
+    if (region !== 'all') {
+      var country = region.split('-')[1] ? region.split('-')[1].toLowerCase() : region.toLowerCase()
+      params.cc = country
+      params.mkt = region.toLowerCase()
+      params.setlang = region.toLowerCase()
+    }
+    params.adlt = safeMode === 'strict' ? 'strict' : (safeMode === 'off' ? 'off' : 'moderate')
+  } else if (engineName === 'Qwant') {
+    params.locale = region === 'all' ? 'fr_FR' : region.replace('-', '_')
+    if (safeMode === 'strict') {
+      params.t = 'web'
+    }
+  } else if (engineName === 'Brave') {
+    if (region !== 'all') {
+      params.country = region.split('-')[1] ? region.split('-')[1].toUpperCase() : region.toUpperCase()
+    }
+    if (!isSuggestionURL && language !== 'all') {
+      params.hl = language.toLowerCase()
+    }
+    params.safe = safeMode
+  } else if (engineName === 'Wikipedia' && language !== 'all') {
+    params.uselang = language.toLowerCase()
+  }
+
+  return params
+}
+
+function getSearchOptionsSetting () {
+  if (!settings || typeof settings.get !== 'function') {
+    return { ...defaultSearchOptions }
+  }
+
+  // The settings content page exposes an async API; keep deterministic defaults there.
+  if (settings.get.length > 1) {
+    return { ...defaultSearchOptions }
+  }
+
+  return normalizeSearchOptions(settings.get('searchEngineOptions'))
+}
+
+function applySearchOptionsToURL (baseURL, query, isSuggestionURL) {
+  if (!baseURL) {
+    return ''
+  }
+
+  var encodedQuery = encodeURIComponent(query)
+  var urlWithQuery = baseURL.replace('%s', encodedQuery)
+  var searchOptions = getSearchOptionsSetting()
+
+  try {
+    var parsedURL = new URL(urlWithQuery)
+    var engineName = currentSearchEngine.name || defaultSearchEngine
+    var mergedParams = {
+      ...getEngineSpecificParams(engineName, searchOptions, isSuggestionURL),
+      ...parseExtraParams(searchOptions.extraParams)
+    }
+
+    Object.keys(mergedParams).forEach(function (key) {
+      if (mergedParams[key] !== undefined && mergedParams[key] !== null && mergedParams[key] !== '') {
+        parsedURL.searchParams.set(key, mergedParams[key])
+      }
+    })
+
+    return parsedURL.toString()
+  } catch (e) {
+    return urlWithQuery
+  }
+}
+
 for (const e in searchEngines) {
   try {
     searchEngines[e].urlObj = new URL(searchEngines[e].searchURL)
@@ -131,11 +262,21 @@ var searchEngine = {
       }
     }
     return null
+  },
+  buildSearchURL: function (query) {
+    return applySearchOptionsToURL(currentSearchEngine.searchURL, query, false)
+  },
+  buildSuggestionsURL: function (query) {
+    if (!currentSearchEngine.suggestionsURL) {
+      return null
+    }
+    return applySearchOptionsToURL(currentSearchEngine.suggestionsURL, query, true)
   }
 }
 
 if (typeof module === 'undefined') {
   window.currentSearchEngine = currentSearchEngine
+  window.searchEngine = searchEngine
 } else {
   module.exports = searchEngine
 }

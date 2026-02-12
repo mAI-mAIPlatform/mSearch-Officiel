@@ -110,13 +110,13 @@
     "serverNotFoundSubtitle": "Min ne peut pas trouver ce site internet.",
     "archiveSearchAction": "Rechercher sur archive.org",
     "sslErrorTitle": "Ce site n'est pas disponible",
-    "sslErrorMessage": "Min ne peut pas établir une connexion sécurisée avec ce site.",
+    "sslErrorMessage": "mSearch ne peut pas établir une connexion sécurisée avec ce site.",
     "dnsErrorTitle": "Site non trouvé",
     "dnsErrorMessage": "Il y a eu un problème DNS avec ce site.",
     "offlineErrorTitle": "Vous êtes hors-ligne",
     "offlineErrorMessage": "Reconnectez-vous à internet et réessayez.",
-    "genericConnectionFail": "Min ne peut pas se connecter à ce site internet.",
-    "sslTimeErrorMessage": "Min ne peux pas établir une connexion sécurisée avec ce site. Merci de vérifier que votre horloge est bien réglée.",
+    "genericConnectionFail": "mSearch ne peut pas se connecter à ce site internet.",
+    "sslTimeErrorMessage": "mSearch ne peux pas établir une connexion sécurisée avec ce site. Merci de vérifier que votre horloge est bien réglée.",
     "addressInvalidTitle": "Cette adresse est invalide.",
     "genericError": "Il y a une erreur",
     /* pages/phishing/index.html */
@@ -144,7 +144,7 @@
     "settingsBlockScriptsToggle": "Scripts bloqués",
     "settingsBlockImagesToggle": "Images bloquées",
     "settingsBlockedRequestCount": {
-      "unsafeHTML": "À ce jour, Min a bloqué <strong></strong> publicités et pisteurs"
+      "unsafeHTML": "À ce jour, mSearch a bloqué <strong></strong> publicités et traqueurs"
     },
     "settingsCustomBangs": null, // Missing translation
     "settingsCustomBangsAdd": null, // Missing translation
@@ -169,7 +169,7 @@
     "settingsSearchSuggestionsCount": "Nombre maximal de suggestions de recherche :",
     "settingsOpenTabsInForegroundToggle": "Ouvrir les nouveaux onglets au premiers plan",
     "settingsUserscriptsExplanation": {
-      "unsafeHTML": "Les scripts personnalisés vous permettent de modifier le comportement des pages web - <a href=\"https://github.com/minbrowser/min/wiki/userscripts\">en savoir plus (en anglais)</a>."
+      "unsafeHTML": "Les scripts personnalisés vous permettent de modifier le comportement des pages web - <a href=\"https://github.com/minbrowser/min/wiki/userscripts\">en savoir plus (anglais seulement)</a>."
     },
     "settingsUserscriptShowDirectory": "Afficher le répertoire des scripts",
     "settingsUserAgentToggle": "Utiliser un user-agent particulier",
@@ -267,7 +267,7 @@
     "downloadStateCompleted": "Complété",
     "downloadStateFailed": "Échoué",
     /* Update Notifications */
-    "updateNotificationTitle": "Une nouvelle version de Min est disponible",
+    "updateNotificationTitle": "Une nouvelle version d'mSearch est disponible",
     /* Autofill settings */
     "settingsPasswordAutoFillHeadline": "Remplissage automatique des mots de passe",
     "settingsSelectPasswordManager": "Choisissez l'un des gestionnaires de mots de passe acceptés :",
