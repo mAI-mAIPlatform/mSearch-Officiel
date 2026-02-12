@@ -1,3 +1,4 @@
+/* global electron, ipc */
 const clipboard = electron.clipboard
 
 const webviews = require('webviews.js')
@@ -13,11 +14,37 @@ const remoteMenu = require('remoteMenuRenderer.js')
 const webviewMenu = {
   menuData: null,
   showMenu: function (data, extraData) { // data comes from a context-menu event
-    var currentTab = tabs.get(tabs.getSelected())
+    const currentTab = tabs.get(tabs.getSelected())
 
-    var menuSections = []
+    const menuSections = []
 
     const openInBackground = !settings.get('openTabsInForeground')
+
+    /* Undo/Redo */
+
+    const undoRedo = []
+
+    if (data.editFlags && data.editFlags.canUndo) {
+      undoRedo.push({
+        label: l('undo'),
+        click: function () {
+          webviews.callAsync(tabs.getSelected(), 'undo')
+        }
+      })
+    }
+
+    if (data.editFlags && data.editFlags.canRedo) {
+      undoRedo.push({
+        label: l('redo'),
+        click: function () {
+          webviews.callAsync(tabs.getSelected(), 'redo')
+        }
+      })
+    }
+
+    if (undoRedo.length > 0) {
+      menuSections.push(undoRedo)
+    }
 
     /* Picture in Picture */
 
@@ -35,7 +62,7 @@ const webviewMenu = {
     /* Spellcheck */
 
     if (data.misspelledWord) {
-      var suggestionEntries = data.dictionarySuggestions.slice(0, 3).map(function (suggestion) {
+      const suggestionEntries = data.dictionarySuggestions.slice(0, 3).map(function (suggestion) {
         return {
           label: suggestion,
           click: function () {
@@ -62,7 +89,7 @@ const webviewMenu = {
 
     /* links */
 
-    var link = data.linkURL
+    let link = data.linkURL
 
     // show link items for embedded frames, but not the top-level page (which will also be listed as a frameURL)
     if (!link && data.frameURL && data.frameURL !== currentTab.url) {
@@ -75,7 +102,7 @@ const webviewMenu = {
     }
 
     if (link) {
-      var linkActions = [
+      const linkActions = [
         {
           label: (link.length > 60) ? link.substring(0, 60) + '...' : link,
           enabled: false
@@ -86,7 +113,7 @@ const webviewMenu = {
         linkActions.push({
           label: l('openInNewTab'),
           click: function () {
-            browserUI.addTab(tabs.add({ url: link }), { enterEditMode: false, openInBackground: openInBackground })
+            browserUI.addTab(tabs.add({ url: link }), { enterEditMode: false, openInBackground })
           }
         })
       }
@@ -94,7 +121,7 @@ const webviewMenu = {
       linkActions.push({
         label: l('openInNewPrivateTab'),
         click: function () {
-          browserUI.addTab(tabs.add({ url: link, private: true }), { enterEditMode: false, openInBackground: openInBackground })
+          browserUI.addTab(tabs.add({ url: link, private: true }), { enterEditMode: false, openInBackground })
         }
       })
 
@@ -110,11 +137,10 @@ const webviewMenu = {
 
     /* images */
 
-    var mediaURL = data.srcURL
+    const mediaURL = data.srcURL
 
     if (mediaURL && data.mediaType === 'image') {
-
-      var imageActions = [
+      const imageActions = [
         {
           label: (mediaURL.length > 60) ? mediaURL.substring(0, 60) + '...' : mediaURL,
           enabled: false
@@ -132,7 +158,7 @@ const webviewMenu = {
         imageActions.push({
           label: l('openImageInNewTab'),
           click: function () {
-            browserUI.addTab(tabs.add({ url: mediaURL }), { enterEditMode: false, openInBackground: openInBackground })
+            browserUI.addTab(tabs.add({ url: mediaURL }), { enterEditMode: false, openInBackground })
           }
         })
       }
@@ -140,7 +166,7 @@ const webviewMenu = {
       imageActions.push({
         label: l('openImageInNewPrivateTab'),
         click: function () {
-          browserUI.addTab(tabs.add({ url: mediaURL, private: true }), { enterEditMode: false, openInBackground: openInBackground })
+          browserUI.addTab(tabs.add({ url: mediaURL, private: true }), { enterEditMode: false, openInBackground })
         }
       })
 
@@ -156,14 +182,14 @@ const webviewMenu = {
 
     /* selected text */
 
-    var selection = data.selectionText
+    const selection = data.selectionText
 
     if (selection) {
-      var textActions = [
+      const textActions = [
         {
           label: l('searchWith').replace('%s', searchEngine.getCurrent().name),
           click: function () {
-            var newTab = tabs.add({
+            const newTab = tabs.add({
               url: searchEngine.buildSearchURL(selection),
               private: currentTab.private
             })
@@ -177,7 +203,18 @@ const webviewMenu = {
       menuSections.push(textActions)
     }
 
-    var clipboardActions = []
+    /* Clipboard */
+
+    const clipboardActions = []
+
+    if (data.editFlags && data.editFlags.canCut) {
+      clipboardActions.push({
+        label: l('cut'),
+        click: function () {
+          webviews.callAsync(tabs.getSelected(), 'cut')
+        }
+      })
+    }
 
     if (mediaURL && data.mediaType === 'image') {
       clipboardActions.push({
@@ -202,6 +239,16 @@ const webviewMenu = {
           webviews.callAsync(tabs.getSelected(), 'paste')
         }
       })
+
+      const text = clipboard.readText()
+      if (text && text.trim().length > 0) {
+        clipboardActions.push({
+          label: l('pasteAndGo'),
+          click: function () {
+            webviews.update(tabs.getSelected(), text)
+          }
+        })
+      }
     }
 
     if (data.editFlags && data.editFlags.canPaste) {
@@ -215,7 +262,7 @@ const webviewMenu = {
 
     if (link || (mediaURL && !mediaURL.startsWith('blob:'))) {
       if (link && link.startsWith('mailto:')) {
-        var ematch = link.match(/(?<=mailto:)[^\?]+/)
+        const ematch = link.match(/(?<=mailto:)[^?]+/)
         if (ematch) {
           clipboardActions.push({
             label: l('copyEmailAddress'),
@@ -238,6 +285,18 @@ const webviewMenu = {
       menuSections.push(clipboardActions)
     }
 
+    /* Select All */
+    if (data.editFlags && data.editFlags.canSelectAll) {
+      menuSections.push([
+        {
+          label: l('selectAll'),
+          click: function () {
+            webviews.callAsync(tabs.getSelected(), 'selectAll')
+          }
+        }
+      ])
+    }
+
     if (data.formControlType === 'input-password' && PasswordManagers.getActivePasswordManager()?.saveCredential) {
       menuSections.push([
         {
@@ -249,7 +308,7 @@ const webviewMenu = {
       ])
     }
 
-    var navigationActions = [
+    const navigationActions = [
       {
         label: l('goBack'),
         click: function () {
@@ -282,14 +341,15 @@ const webviewMenu = {
 
     /* Userscripts */
 
-    var contextMenuScripts = userscripts.getMatchingScripts(tabs.get(tabs.getSelected()).url).filter(function (script) {
+    const contextMenuScripts = userscripts.getMatchingScripts(tabs.get(tabs.getSelected()).url).filter(function (script) {
       if (script.options['run-at'] && script.options['run-at'].includes('context-menu')) {
         return true
       }
+      return false
     })
 
     if (contextMenuScripts.length > 0) {
-      var scriptActions = [
+      const scriptActions = [
         {
           label: l('runUserscript'),
           enabled: false
@@ -306,7 +366,7 @@ const webviewMenu = {
       menuSections.push(scriptActions)
     }
 
-    var translateMenu = {
+    const translateMenu = {
       label: l('translatePage'),
       submenu: []
     }
@@ -351,7 +411,7 @@ const webviewMenu = {
 
     // Electron's default menu position is sometimes wrong on Windows with a touchscreen
     // https://github.com/minbrowser/min/issues/903
-    var offset = webviews.getViewBounds()
+    const offset = webviews.getViewBounds()
     remoteMenu.open(menuSections, data.x + offset.x, data.y + offset.y)
   },
   initialize: function () {
