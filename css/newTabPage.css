@@ -1,3 +1,30 @@
+body {
+    --ntp-glass-bg: rgba(15, 20, 38, 0.45);
+    --ntp-glass-border: rgba(255, 255, 255, 0.22);
+    --ntp-glass-blur: 16px;
+    --ntp-panel-padding: 1rem;
+    --ntp-action-padding-y: 0.65rem;
+    --ntp-action-padding-x: 0.95rem;
+}
+
+body.ntp-density-compact {
+    --ntp-panel-padding: 0.75rem;
+    --ntp-action-padding-y: 0.5rem;
+    --ntp-action-padding-x: 0.75rem;
+}
+
+body.ntp-glass-soft {
+    --ntp-glass-bg: rgba(25, 32, 56, 0.34);
+    --ntp-glass-border: rgba(255, 255, 255, 0.17);
+    --ntp-glass-blur: 12px;
+}
+
+body.ntp-glass-strong {
+    --ntp-glass-bg: rgba(9, 13, 27, 0.58);
+    --ntp-glass-border: rgba(255, 255, 255, 0.3);
+    --ntp-glass-blur: 24px;
+}
+
 #ntp-content {
     width: 100%;
     height: 100%;
@@ -91,10 +118,10 @@ body:not(.is-ntp) #ntp-content {
     gap: 0.55rem;
     border-radius: 999px;
     padding: 0.55rem 0.8rem;
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
-    background: rgba(14, 20, 38, 0.52);
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(calc(var(--ntp-glass-blur) + 4px)) saturate(170%);
+    -webkit-backdrop-filter: blur(calc(var(--ntp-glass-blur) + 4px)) saturate(170%);
+    background: color-mix(in srgb, var(--ntp-glass-bg) 92%, rgba(14, 20, 38, 0.52));
+    border: 1px solid color-mix(in srgb, var(--ntp-glass-border) 85%, rgba(255, 255, 255, 0.28));
     box-shadow: 0 14px 34px rgba(9, 12, 21, 0.34);
 }
 
@@ -178,17 +205,17 @@ body:not(.is-ntp) #ntp-content {
 .ntp-panel,
 #ntp-background-controls button,
 #ntp-theme-selector {
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    background: rgba(15, 20, 38, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(var(--ntp-glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--ntp-glass-blur)) saturate(160%);
+    background: var(--ntp-glass-bg);
+    border: 1px solid var(--ntp-glass-border);
     box-shadow: 0 8px 30px rgba(9, 12, 21, 0.25);
 }
 
 .ntp-action {
     border-radius: 14px;
     color: #f9fbff;
-    padding: 0.65rem 0.95rem;
+    padding: var(--ntp-action-padding-y) var(--ntp-action-padding-x);
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -209,7 +236,7 @@ body:not(.is-ntp) #ntp-content {
 
 .ntp-panel {
     border-radius: 20px;
-    padding: 1rem;
+    padding: var(--ntp-panel-padding);
     min-height: 260px;
 }
 
@@ -388,7 +415,7 @@ body:not(.is-ntp) #ntp-content {
     padding: 0.75rem;
     color: #f9fbff;
     text-align: left;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid var(--ntp-glass-border);
     background: rgba(8, 13, 31, 0.38);
     transition: transform 0.14s ease, background 0.14s ease;
 }
@@ -482,4 +509,68 @@ body.ntp-reduced-motion #ntp-theme-selector {
 body.ntp-reduced-motion #ntp-gradient-overlay {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+}
+
+
+#ntp-personalization-panel {
+    width: min(1020px, 94%);
+    align-self: center;
+    min-height: 0;
+}
+
+#ntp-personalization-grid {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.ntp-control,
+.ntp-toggle-control {
+    border-radius: 12px;
+    padding: 0.55rem 0.65rem;
+    background: rgba(8, 13, 31, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.ntp-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.ntp-control span {
+    font-size: 0.86rem;
+    opacity: 0.88;
+}
+
+.ntp-control select {
+    width: 100%;
+    border-radius: 10px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(13, 18, 36, 0.55);
+    padding: 0.45rem 0.6rem;
+}
+
+.ntp-toggle-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.4rem;
+}
+
+.ntp-toggle-control input {
+    accent-color: #87a8ff;
+}
+
+body.ntp-density-compact #ntp-main-shell {
+    gap: 0.75rem;
+}
+
+body.ntp-density-compact #ntp-grid {
+    gap: 0.75rem;
+}
+
+body.ntp-density-compact .ntp-widget-card {
+    padding: 0.6rem;
 }
