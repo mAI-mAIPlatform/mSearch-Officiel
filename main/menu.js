@@ -286,6 +286,29 @@ function buildAppMenu (options = {}) {
           type: 'separator'
         },
         {
+          label: l('appMenuDisplayModes'),
+          submenu: [
+            {
+              label: l('appMenuDisplayModeStandard'),
+              click: function (item, window) {
+                sendIPCToWindow(window, 'setDisplayMode', { mode: 'standard' })
+              }
+            },
+            {
+              label: l('appMenuDisplayModeGame'),
+              click: function (item, window) {
+                sendIPCToWindow(window, 'setDisplayMode', { mode: 'game' })
+              }
+            },
+            {
+              label: l('appMenuDisplayModeStudy'),
+              click: function (item, window) {
+                sendIPCToWindow(window, 'setDisplayMode', { mode: 'study' })
+              }
+            }
+          ]
+        },
+        {
           label: l('appMenuFocusMode'),
           accelerator: undefined,
           type: 'checkbox',

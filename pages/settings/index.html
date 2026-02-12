@@ -95,6 +95,31 @@
         <input type="checkbox" id="checkbox-clear-history-on-startup" />
         <label for="checkbox-clear-history-on-startup">Nettoyer l'historique au démarrage</label>
       </div>
+
+      <div class="setting-section">
+        <label for="cleanup-interval-select" data-string="settingsCleanupSchedule"></label>
+        <select id="cleanup-interval-select">
+          <option value="off" data-string="settingsCleanupOff"></option>
+          <option value="startup" data-string="settingsCleanupStartup"></option>
+          <option value="24h" data-string="settingsCleanup24h"></option>
+        </select>
+      </div>
+
+      <div class="setting-section setting-secondary-label">
+        <input type="checkbox" id="checkbox-cleanup-cookies" />
+        <label for="checkbox-cleanup-cookies" data-string="settingsCleanupCookies"></label>
+      </div>
+      <div class="setting-section setting-secondary-label">
+        <input type="checkbox" id="checkbox-cleanup-history" />
+        <label for="checkbox-cleanup-history" data-string="settingsCleanupHistory"></label>
+      </div>
+      <div class="setting-section setting-secondary-label">
+        <input type="checkbox" id="checkbox-cleanup-cache" />
+        <label for="checkbox-cleanup-cache" data-string="settingsCleanupCache"></label>
+      </div>
+      <div class="setting-section">
+        <button id="button-cleanup-now" class="settings-action-button" data-string="settingsCleanupNow"></button>
+      </div>
     </div>
 
     <div class="settings-container" id="appearance-settings-container">
@@ -165,6 +190,50 @@
       <div class="setting-section" id="liquid-glass-section">
         <input type="checkbox" id="checkbox-liquid-glass-animations" />
         <label for="checkbox-liquid-glass-animations">Animations</label>
+      </div>
+      <div class="setting-section profile-customization-card" id="profile-customization-section">
+        <strong data-string="settingsProfileCustomizationHeading"></strong>
+        <div class="setting-section profile-customization-row">
+          <label for="input-profile-display-name" data-string="settingsProfileDisplayName"></label>
+          <input id="input-profile-display-name" maxlength="32" placeholder="Alex Martin" />
+        </div>
+        <div class="setting-section profile-customization-row">
+          <label for="select-profile-avatar-type" data-string="settingsProfileAvatarType"></label>
+          <select id="select-profile-avatar-type">
+            <option value="emoji" data-string="settingsProfileAvatarTypeEmoji"></option>
+            <option value="initials" data-string="settingsProfileAvatarTypeInitials"></option>
+            <option value="symbol" data-string="settingsProfileAvatarTypeSymbol"></option>
+          </select>
+        </div>
+        <div class="setting-section profile-customization-row" id="profile-emoji-row">
+          <label for="input-profile-emoji" data-string="settingsProfileEmoji"></label>
+          <input id="input-profile-emoji" maxlength="2" placeholder="🙂" />
+        </div>
+        <div class="setting-section profile-customization-row" id="profile-symbol-row">
+          <label for="input-profile-symbol" data-string="settingsProfileSymbol"></label>
+          <input id="input-profile-symbol" maxlength="2" placeholder="◆" />
+        </div>
+        <div class="setting-section profile-customization-row">
+          <label for="input-profile-accent-color" data-string="settingsProfileAccentColor"></label>
+          <input id="input-profile-accent-color" type="color" value="#6ca0ff" />
+        </div>
+      </div>
+
+      <div class="setting-section">
+        <label for="display-mode-select" data-string="settingsDisplayModeLabel"></label>
+        <select id="display-mode-select">
+          <option value="standard" data-string="appMenuDisplayModeStandard"></option>
+          <option value="game" data-string="appMenuDisplayModeGame"></option>
+          <option value="study" data-string="appMenuDisplayModeStudy"></option>
+        </select>
+      </div>
+      <div class="setting-section setting-secondary-label">
+        <input type="checkbox" id="checkbox-mode-dark" />
+        <label for="checkbox-mode-dark" data-string="settingsDisplayModeDark"></label>
+      </div>
+      <div class="setting-section setting-secondary-label">
+        <input type="checkbox" id="checkbox-mode-mute" />
+        <label for="checkbox-mode-mute" data-string="settingsDisplayModeMute"></label>
       </div>
 
       <div class="setting-section" id="font-preferences-section">

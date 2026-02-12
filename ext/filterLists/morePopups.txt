@@ -1,0 +1,7 @@
+! Règles supplémentaires de blocage des fenêtres contextuelles pour mSearch
+||doubleclick.net^$popup
+||popads.net^$popup
+||popcash.net^$popup
+||propellerads.com^$popup
+||adservice.google.com^$popup
+||adnxs.com^$popup
