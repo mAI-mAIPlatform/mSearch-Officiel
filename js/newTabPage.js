@@ -15,6 +15,7 @@ const GLASS_STORAGE_KEY = 'msearch.ntp.glass'
 const SHOW_WIDGETS_STORAGE_KEY = 'msearch.ntp.showWidgets'
 const SHOW_FAVORITES_STORAGE_KEY = 'msearch.ntp.showFavorites'
 const SHOW_HISTORY_STORAGE_KEY = 'msearch.ntp.showHistory'
+const MAI_SIDEBAR_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
 const MAX_REMINDERS = 12
 const DEFAULT_MAX_SHORTCUTS = 5
 const MAX_SHORTCUTS_LIMIT = 5
@@ -135,6 +136,8 @@ const newTabPage = {
   toggleWidgets: document.getElementById('ntp-toggle-widgets'),
   toggleFavorites: document.getElementById('ntp-toggle-favorites'),
   toggleHistory: document.getElementById('ntp-toggle-history'),
+  maiSidebar: document.getElementById('ntp-mai-sidebar'),
+  maiToggleButton: document.getElementById('ntp-mai-toggle'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
@@ -143,6 +146,7 @@ const newTabPage = {
   clockTimer: null,
   historyRefreshTimer: null,
   shortcutsEventsBound: false,
+  isMaiSidebarOpen: false,
   getShortcutLimit: function () {
     const rawLimit = Number(settings.get('ntpMaxShortcuts'))
     if (!Number.isFinite(rawLimit) || rawLimit <= 0) {
@@ -492,6 +496,53 @@ const newTabPage = {
       })
     }
   },
+  syncMaiSidebarA11y: function (isOpen) {
+    if (!newTabPage.maiToggleButton) {
+      return
+    }
+
+    newTabPage.maiToggleButton.setAttribute('aria-expanded', String(isOpen))
+    newTabPage.maiToggleButton.setAttribute('aria-label', isOpen ? 'Fermer la barre mAI' : 'Ouvrir la barre mAI')
+  },
+  setMaiSidebarState: function (isOpen, options = {}) {
+    if (!newTabPage.maiSidebar || !newTabPage.maiToggleButton || !document.body) {
+      return
+    }
+
+    const shouldOpen = Boolean(isOpen)
+    const shouldPersist = options.persist !== false
+
+    newTabPage.isMaiSidebarOpen = shouldOpen
+    newTabPage.maiSidebar.hidden = false
+    newTabPage.maiSidebar.setAttribute('aria-hidden', String(!shouldOpen))
+    document.body.classList.toggle('ntp-mai-open', shouldOpen)
+    newTabPage.syncMaiSidebarA11y(shouldOpen)
+
+    if (shouldPersist) {
+      localStorage.setItem(MAI_SIDEBAR_STORAGE_KEY, String(shouldOpen))
+    }
+  },
+  bindMaiSidebarControls: function () {
+    if (!newTabPage.maiSidebar || !newTabPage.maiToggleButton) {
+      return
+    }
+
+    const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
+    newTabPage.setMaiSidebarState(storedState, { persist: false })
+
+    newTabPage.maiToggleButton.addEventListener('click', function () {
+      newTabPage.setMaiSidebarState(!newTabPage.isMaiSidebarOpen)
+    })
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape' || !newTabPage.isMaiSidebarOpen) {
+        return
+      }
+
+      newTabPage.setMaiSidebarState(false)
+      newTabPage.maiToggleButton.focus()
+    })
+  },
   renderHistoryAndFavorites: async function () {
     if (!newTabPage.favoritesList || !newTabPage.historyList) {
       return
@@ -785,6 +836,7 @@ const newTabPage = {
     newTabPage.bindSearch()
     newTabPage.bindShortcutControls()
     newTabPage.bindPersonalizationControls()
+    newTabPage.bindMaiSidebarControls()
 
     settings.listen('liquidGlassAnimations', function (value) {
       document.body.classList.toggle('ntp-reduced-motion', value === false)
