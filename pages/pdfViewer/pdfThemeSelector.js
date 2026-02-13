@@ -3,8 +3,13 @@ var settingsDropdown = document.getElementById('settings-dropdown')
 var invertSection = document.getElementById('invert-pdf-section')
 var invertCheckbox = document.getElementById('invert-pdf-checkbox')
 
+function isClickInsideSettings (target) {
+  return settingsDropdown.contains(target) || target.closest('#settings-button')
+}
+
 settingsButton.addEventListener('click', function () {
   settingsDropdown.hidden = !settingsDropdown.hidden
+  settingsButton.setAttribute('aria-expanded', (!settingsDropdown.hidden).toString())
   if (settingsDropdown.hidden) {
     settingsButton.classList.remove('force-visible')
   } else {
@@ -13,9 +18,18 @@ settingsButton.addEventListener('click', function () {
 })
 
 document.addEventListener('click', function (e) {
-  if (!settingsDropdown.contains(e.target) && e.target !== settingsButton) {
+  if (!isClickInsideSettings(e.target)) {
     settingsDropdown.hidden = true
     settingsButton.classList.remove('force-visible')
+    settingsButton.setAttribute('aria-expanded', 'false')
+  }
+})
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && !settingsDropdown.hidden) {
+    settingsDropdown.hidden = true
+    settingsButton.classList.remove('force-visible')
+    settingsButton.setAttribute('aria-expanded', 'false')
   }
 })
 
