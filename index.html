@@ -249,17 +249,6 @@
               <button type="submit">Rechercher</button>
             </form>
 
-            <section id="ntp-shortcuts-panel" class="ntp-panel" aria-label="Raccourcis personnalisables">
-              <div class="ntp-panel-title-row">
-                <h2>Raccourcis personnalisés</h2>
-                <button id="ntp-shortcut-add" type="button" class="ntp-subtle-button">
-                  <i class="i carbon:add"></i>
-                  <span>Ajouter</span>
-                </button>
-              </div>
-              <ul id="ntp-shortcuts-list"></ul>
-            </section>
-
             <section id="ntp-quick-actions" aria-label="Actions rapides">
               <button class="ntp-action" data-ntp-action="open-favorites">
                 <i class="i carbon:star-filled"></i>
@@ -346,6 +335,23 @@
             <section id="ntp-personalization-panel" class="ntp-panel" aria-label="Options de personnalisation">
               <div class="ntp-panel-title-row">
                 <h2>Personnalisation</h2>
+              </div>
+              <p id="ntp-personalization-help">
+                Ajustez l'affichage Liquid Glass de l'accueil. Les préférences invalides sont automatiquement réinitialisées pour éviter les états incohérents.
+              </p>
+              <div id="ntp-personalization-actions" role="group" aria-label="Actions rapides de personnalisation">
+                <button class="ntp-subtle-button" type="button" data-ntp-action="random-background">
+                  <i class="i carbon:shuffle"></i>
+                  <span>Fond aléatoire</span>
+                </button>
+                <button class="ntp-subtle-button" type="button" data-ntp-action="clear-background">
+                  <i class="i carbon:trash-can"></i>
+                  <span>Retirer le fond</span>
+                </button>
+                <button class="ntp-subtle-button" type="button" data-ntp-action="reset-personalization">
+                  <i class="i carbon:reset"></i>
+                  <span>Réinitialiser</span>
+                </button>
               </div>
               <div id="ntp-personalization-grid">
                 <label class="ntp-control">

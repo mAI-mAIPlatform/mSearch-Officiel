@@ -8,7 +8,6 @@ const settings = require('util/settings/settings.js')
 
 const REMINDER_STORAGE_KEY = 'msearch.ntp.reminders'
 const THEME_STORAGE_KEY = 'msearch.ntp.theme'
-const SHORTCUTS_STORAGE_KEY = 'msearch.ntp.shortcuts'
 const RANDOM_BG_STORAGE_KEY = 'msearch.ntp.randomBackground'
 const DENSITY_STORAGE_KEY = 'msearch.ntp.density'
 const GLASS_STORAGE_KEY = 'msearch.ntp.glass'
@@ -17,8 +16,6 @@ const SHOW_FAVORITES_STORAGE_KEY = 'msearch.ntp.showFavorites'
 const SHOW_HISTORY_STORAGE_KEY = 'msearch.ntp.showHistory'
 const MAI_SIDEBAR_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
 const MAX_REMINDERS = 12
-const DEFAULT_MAX_SHORTCUTS = 5
-const MAX_SHORTCUTS_LIMIT = 5
 
 const themes = {
   aurora: 'linear-gradient(120deg, rgba(49, 87, 255, 0.45), rgba(65, 230, 180, 0.25), rgba(203, 124, 255, 0.35))',
@@ -103,9 +100,6 @@ const curatedBackgrounds = baseBackgrounds.concat(brightBackgroundSeeds.map(func
   return `https://picsum.photos/seed/msearch-${seed}/1920/1080`
 }))
 
-// Démarrage volontairement vide pour inviter l'utilisateur à personnaliser ses raccourcis.
-const defaultShortcuts = []
-
 const newTabPage = {
   background: document.getElementById('ntp-background'),
   backgroundOverlay: document.getElementById('ntp-gradient-overlay'),
@@ -124,9 +118,7 @@ const newTabPage = {
   subtitle: document.getElementById('ntp-subtitle'),
   dateOutput: document.getElementById('ntp-date'),
   timeOutput: document.getElementById('ntp-time'),
-  shortcutsList: document.getElementById('ntp-shortcuts-list'),
-  shortcutAddButton: document.getElementById('ntp-shortcut-add'),
-  actionButtons: document.querySelectorAll('[data-ntp-action]'),
+  actionButtons: document.querySelectorAll('#ntp-quick-actions [data-ntp-action], #ntp-widget-grid [data-ntp-action]'),
   widgetsPanel: document.getElementById('ntp-widgets-panel'),
   favoritesPanel: document.getElementById('ntp-favorites-panel'),
   historyPanel: document.getElementById('ntp-history-panel'),
@@ -141,20 +133,9 @@ const newTabPage = {
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
-  shortcuts: [],
-  maxShortcuts: Math.min(Math.floor(Number(settings.get('ntpMaxShortcuts')) || DEFAULT_MAX_SHORTCUTS), MAX_SHORTCUTS_LIMIT),
   clockTimer: null,
   historyRefreshTimer: null,
-  shortcutsEventsBound: false,
   isMaiSidebarOpen: false,
-  getShortcutLimit: function () {
-    const rawLimit = Number(settings.get('ntpMaxShortcuts'))
-    if (!Number.isFinite(rawLimit) || rawLimit <= 0) {
-      return DEFAULT_MAX_SHORTCUTS
-    }
-
-    return Math.min(Math.floor(rawLimit), MAX_SHORTCUTS_LIMIT)
-  },
   setBackgroundVisualState: function (hasBackground) {
     if (!newTabPage.background || !newTabPage.deleteBackground || !newTabPage.backgroundOverlay) {
       return
@@ -234,24 +215,6 @@ const newTabPage = {
   saveReminders: function () {
     localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(newTabPage.reminders.slice(0, MAX_REMINDERS)))
   },
-  loadShortcuts: function () {
-    try {
-      const raw = localStorage.getItem(SHORTCUTS_STORAGE_KEY)
-      const parsed = raw ? JSON.parse(raw) : defaultShortcuts
-      if (Array.isArray(parsed)) {
-        newTabPage.shortcuts = parsed
-          .filter(item => item && typeof item.title === 'string' && typeof item.url === 'string')
-          .slice(0, newTabPage.maxShortcuts)
-      } else {
-        newTabPage.shortcuts = defaultShortcuts.slice()
-      }
-    } catch (e) {
-      newTabPage.shortcuts = defaultShortcuts.slice()
-    }
-  },
-  saveShortcuts: function () {
-    localStorage.setItem(SHORTCUTS_STORAGE_KEY, JSON.stringify(newTabPage.shortcuts.slice(0, newTabPage.maxShortcuts)))
-  },
   normalizeURL: function (value) {
     const trimmed = (value || '').trim()
     if (!trimmed) {
@@ -308,68 +271,6 @@ const newTabPage = {
 
     newTabPage.reminderList.appendChild(fragment)
   },
-  renderShortcuts: function () {
-    if (!newTabPage.shortcutsList) {
-      return
-    }
-
-    newTabPage.shortcutsList.textContent = ''
-
-    if (newTabPage.shortcuts.length === 0) {
-      const empty = document.createElement('li')
-      empty.className = 'ntp-empty-state'
-      empty.textContent = `Ajoutez vos raccourcis favoris (max ${newTabPage.maxShortcuts}).`
-      newTabPage.shortcutsList.appendChild(empty)
-
-      if (newTabPage.shortcutAddButton) {
-        newTabPage.shortcutAddButton.disabled = false
-        newTabPage.shortcutAddButton.title = `Créer un raccourci (0/${newTabPage.maxShortcuts}).`
-      }
-
-      return
-    }
-
-    const fragment = document.createDocumentFragment()
-
-    newTabPage.shortcuts.forEach(function (item, index) {
-      const listItem = document.createElement('li')
-      listItem.className = 'ntp-shortcut-item'
-
-      const openButton = document.createElement('button')
-      openButton.className = 'ntp-shortcut-open'
-      openButton.textContent = item.title
-      openButton.title = item.url
-      openButton.setAttribute('data-shortcut-index', String(index))
-      openButton.setAttribute('data-shortcut-action', 'open')
-
-      const editButton = document.createElement('button')
-      editButton.className = 'ntp-inline-icon i carbon:edit'
-      editButton.setAttribute('aria-label', 'Modifier le raccourci')
-      editButton.setAttribute('data-shortcut-index', String(index))
-      editButton.setAttribute('data-shortcut-action', 'edit')
-
-      const deleteButton = document.createElement('button')
-      deleteButton.className = 'ntp-inline-icon i carbon:trash-can'
-      deleteButton.setAttribute('aria-label', 'Supprimer le raccourci')
-      deleteButton.setAttribute('data-shortcut-index', String(index))
-      deleteButton.setAttribute('data-shortcut-action', 'delete')
-
-      listItem.appendChild(openButton)
-      listItem.appendChild(editButton)
-      listItem.appendChild(deleteButton)
-      fragment.appendChild(listItem)
-    })
-
-    newTabPage.shortcutsList.appendChild(fragment)
-
-    if (newTabPage.shortcutAddButton) {
-      const limitReached = newTabPage.shortcuts.length >= newTabPage.maxShortcuts
-      newTabPage.shortcutAddButton.disabled = limitReached
-      newTabPage.shortcutAddButton.title = limitReached
-        ? `Limite atteinte (${newTabPage.maxShortcuts} raccourcis max).`
-        : `Créer un raccourci (${newTabPage.shortcuts.length}/${newTabPage.maxShortcuts}).`
-    }
-  },
   createPageListItem: function (item) {
     const listItem = document.createElement('li')
     listItem.className = 'ntp-list-item'
@@ -422,9 +323,31 @@ const newTabPage = {
     }
     return raw !== 'false'
   },
+  sanitizeDisplayPreference: function (storageKey, allowedValues, defaultValue) {
+    const raw = localStorage.getItem(storageKey)
+    if (!raw) {
+      return defaultValue
+    }
+
+    if (allowedValues.includes(raw)) {
+      return raw
+    }
+
+    localStorage.setItem(storageKey, defaultValue)
+    return defaultValue
+  },
+  resetPersonalizationPreferences: function () {
+    localStorage.setItem(DENSITY_STORAGE_KEY, 'comfortable')
+    localStorage.setItem(GLASS_STORAGE_KEY, 'balanced')
+    localStorage.setItem(SHOW_WIDGETS_STORAGE_KEY, 'true')
+    localStorage.setItem(SHOW_FAVORITES_STORAGE_KEY, 'true')
+    localStorage.setItem(SHOW_HISTORY_STORAGE_KEY, 'true')
+    newTabPage.applyDisplayPreferences()
+    newTabPage.renderHistoryAndFavorites()
+  },
   applyDisplayPreferences: function () {
-    const density = localStorage.getItem(DENSITY_STORAGE_KEY) || 'comfortable'
-    const glass = localStorage.getItem(GLASS_STORAGE_KEY) || 'balanced'
+    const density = newTabPage.sanitizeDisplayPreference(DENSITY_STORAGE_KEY, ['comfortable', 'compact'], 'comfortable')
+    const glass = newTabPage.sanitizeDisplayPreference(GLASS_STORAGE_KEY, ['balanced', 'soft', 'strong'], 'balanced')
     const showWidgets = newTabPage.getBooleanPreference(SHOW_WIDGETS_STORAGE_KEY, true)
     const showFavorites = newTabPage.getBooleanPreference(SHOW_FAVORITES_STORAGE_KEY, true)
     const showHistory = newTabPage.getBooleanPreference(SHOW_HISTORY_STORAGE_KEY, true)
@@ -493,6 +416,31 @@ const newTabPage = {
       newTabPage.toggleHistory.addEventListener('change', function () {
         localStorage.setItem(SHOW_HISTORY_STORAGE_KEY, String(newTabPage.toggleHistory.checked))
         newTabPage.applyDisplayPreferences()
+      })
+    }
+
+    if (newTabPage.personalizationPanel) {
+      newTabPage.personalizationPanel.addEventListener('click', function (event) {
+        const actionButton = event.target.closest('[data-ntp-action]')
+        if (!actionButton || !newTabPage.personalizationPanel.contains(actionButton)) {
+          return
+        }
+
+        const action = actionButton.getAttribute('data-ntp-action')
+        if (action === 'random-background') {
+          newTabPage.applyRandomBackground()
+          return
+        }
+
+        if (action === 'clear-background') {
+          newTabPage.clearBackground()
+          newTabPage.reloadBackground()
+          return
+        }
+
+        if (action === 'reset-personalization') {
+          newTabPage.resetPersonalizationPreferences()
+        }
       })
     }
   },
@@ -719,53 +667,6 @@ const newTabPage = {
       })
     })
   },
-  handleShortcutListClick: function (event) {
-    const actionTarget = event.target.closest('[data-shortcut-action]')
-    if (!actionTarget || !newTabPage.shortcutsList || !newTabPage.shortcutsList.contains(actionTarget)) {
-      return
-    }
-
-    const action = actionTarget.getAttribute('data-shortcut-action')
-    const index = Number(actionTarget.getAttribute('data-shortcut-index'))
-    const item = newTabPage.shortcuts[index]
-
-    if (!item || Number.isNaN(index)) {
-      return
-    }
-
-    if (action === 'open') {
-      searchbar.events.emit('url-selected', { url: item.url, background: false })
-      return
-    }
-
-    if (action === 'edit') {
-      const title = window.prompt('Nom du raccourci :', item.title)
-      if (title === null) {
-        return
-      }
-
-      const url = window.prompt('URL du raccourci :', item.url)
-      if (url === null) {
-        return
-      }
-
-      const safeURL = newTabPage.normalizeURL(url)
-      if (!safeURL) {
-        return
-      }
-
-      newTabPage.shortcuts[index] = { title: title.trim() || safeURL, url: safeURL }
-      newTabPage.saveShortcuts()
-      newTabPage.renderShortcuts()
-      return
-    }
-
-    if (action === 'delete') {
-      newTabPage.shortcuts.splice(index, 1)
-      newTabPage.saveShortcuts()
-      newTabPage.renderShortcuts()
-    }
-  },
   bindSearch: function () {
     if (!newTabPage.searchForm || !newTabPage.searchInput) {
       return
@@ -783,37 +684,6 @@ const newTabPage = {
       searchbar.events.emit('url-selected', { url: value, background: false })
     })
   },
-  bindShortcutControls: function () {
-    if (!newTabPage.shortcutAddButton || newTabPage.shortcutsEventsBound) {
-      return
-    }
-
-    newTabPage.shortcutsEventsBound = true
-
-    if (newTabPage.shortcutsList) {
-      newTabPage.shortcutsList.addEventListener('click', newTabPage.handleShortcutListClick)
-    }
-
-    newTabPage.shortcutAddButton.addEventListener('click', function () {
-      if (newTabPage.shortcuts.length >= newTabPage.maxShortcuts) {
-        return
-      }
-
-      const title = window.prompt('Nom du raccourci :')
-      if (!title) {
-        return
-      }
-      const url = window.prompt('URL du raccourci :')
-      const safeURL = newTabPage.normalizeURL(url)
-      if (!safeURL) {
-        return
-      }
-
-      newTabPage.shortcuts.push({ title: title.trim(), url: safeURL })
-      newTabPage.saveShortcuts()
-      newTabPage.renderShortcuts()
-    })
-  },
   initialize: function () {
     if (!document.body) {
       return
@@ -822,19 +692,16 @@ const newTabPage = {
     if (settings.get('ntpFixTitleOverlap') !== false) {
       document.body.classList.remove('has-overlay-ntp-title')
     }
-    newTabPage.maxShortcuts = newTabPage.getShortcutLimit()
     document.body.classList.toggle('ntp-reduced-motion', settings.get('liquidGlassAnimations') === false)
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
-    newTabPage.loadShortcuts()
+    localStorage.removeItem('msearch.ntp.shortcuts')
     newTabPage.renderReminders()
-    newTabPage.renderShortcuts()
     newTabPage.applyDisplayPreferences()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
-    newTabPage.bindShortcutControls()
     newTabPage.bindPersonalizationControls()
     newTabPage.bindMaiSidebarControls()
 

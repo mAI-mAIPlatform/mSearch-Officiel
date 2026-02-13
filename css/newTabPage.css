@@ -260,40 +260,6 @@ body:not(.is-ntp) #ntp-content {
     padding: 0.45rem 0.8rem;
 }
 
-#ntp-shortcuts-panel {
-    width: min(820px, 94%);
-    align-self: center;
-    min-height: 0;
-}
-
-#ntp-shortcuts-list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 0.5rem;
-}
-
-.ntp-shortcut-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 0.35rem;
-    align-items: center;
-}
-
-.ntp-shortcut-open {
-    border-radius: 12px;
-    min-height: 2.3rem;
-    background: rgba(8, 13, 31, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #fff;
-    padding: 0.45rem 0.55rem;
-    text-align: left;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 .ntp-inline-icon {
     border-radius: 8px;
     width: 2rem;
@@ -494,7 +460,6 @@ body:not(.is-ntp) #ntp-content {
         width: 100%;
     }
 
-    #ntp-shortcuts-panel,
     #ntp-widgets-panel {
         width: 100%;
     }
@@ -653,6 +618,26 @@ body.ntp-reduced-motion #ntp-gradient-overlay {
     display: grid;
     gap: 0.65rem;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+#ntp-personalization-help {
+    margin: 0 0 0.65rem;
+    opacity: 0.88;
+    font-size: 0.9rem;
+}
+
+#ntp-personalization-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+#ntp-personalization-actions .ntp-subtle-button {
+    min-height: 2.3rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .ntp-control,
