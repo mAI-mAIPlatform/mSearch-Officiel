@@ -344,9 +344,22 @@ const tabBar = {
 window.addEventListener('resize', tabBar.handleSizeChange)
 
 
-webviews.bindEvent('high-resource-usage', function (tabId, memoryUsage) {
-  tabs.update(tabId, { memoryUsage: memoryUsage })
-})
+function monitorTabMemoryUsage () {
+  tabs.get().forEach(function (tab) {
+    if (!webviews.hasViewForTab(tab.id)) {
+      return
+    }
+
+    webviews.callAsync(tab.id, 'executeJavaScript', 'window.performance && performance.memory ? performance.memory.usedJSHeapSize : null', function (err, result) {
+      if (!err && typeof result === 'number') {
+        tabs.update(tab.id, { memoryUsage: result })
+      }
+    })
+  })
+}
+
+setInterval(monitorTabMemoryUsage, 20000)
+setTimeout(monitorTabMemoryUsage, 8000)
 
 
 settings.listen('showDividerBetweenTabs', function (dividerPreference) {
