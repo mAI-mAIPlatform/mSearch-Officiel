@@ -495,3 +495,21 @@ ipc.on('saveViewCapture', function (e, data) {
 })
 
 global.getView = getView
+
+setInterval(function () {
+  for (const id in viewMap) {
+    const view = viewMap[id]
+    if (view && view.webContents && !view.webContents.isDestroyed()) {
+      view.webContents.getProcessMemoryInfo().then(function (info) {
+        const eventTarget = getWindowFromViewContents(view.webContents) || windows.getCurrent()
+        if (eventTarget) {
+          getWindowWebContents(eventTarget).send('view-event', {
+            tabId: id,
+            event: 'high-resource-usage',
+            args: [info.private * 1024]
+          })
+        }
+      }).catch(e => {})
+    }
+  }
+}, 30000)

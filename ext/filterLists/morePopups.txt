@@ -1,7 +1,7 @@
-! Règles supplémentaires de blocage des fenêtres contextuelles pour mSearch
-||doubleclick.net^$popup
-||popads.net^$popup
-||popcash.net^$popup
-||propellerads.com^$popup
-||adservice.google.com^$popup
-||adnxs.com^$popup
+! Title: More Popups
+! Expires: 4 days
+! Homepage: https://github.com/minbrowser/min
+! License: https://github.com/minbrowser/min/blob/master/LICENSE.txt
+
+! Block all third-party popups
+$popup,third-party

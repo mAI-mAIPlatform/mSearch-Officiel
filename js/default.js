@@ -172,6 +172,11 @@ require('productivityHub.js').initialize()
 require('cleanupScheduler.js').initialize()
 require('macHandoff.js').initialize()
 
+const viewMode = require('viewMode.js')
+ipc.on('setDisplayMode', function (e, data) {
+  viewMode.applyMode(data.mode)
+})
+
 // default searchbar plugins
 
 require('searchbar/placesPlugin.js').initialize()
