@@ -44,8 +44,13 @@ autoRedirectNo.addEventListener('click', function () {
 var settingsButton = document.getElementById('settings-button')
 var settingsDropdown = document.getElementById('settings-dropdown')
 
+function isClickInsideSettings (target) {
+  return settingsDropdown.contains(target) || target.closest('#settings-button')
+}
+
 settingsButton.addEventListener('click', function () {
   settingsDropdown.hidden = !settingsDropdown.hidden
+  settingsButton.setAttribute('aria-expanded', (!settingsDropdown.hidden).toString())
 })
 
 window.addEventListener('blur', function () {
@@ -56,8 +61,16 @@ window.addEventListener('blur', function () {
 })
 
 document.addEventListener('click', function (e) {
-  if (!settingsDropdown.contains(e.target) && e.target !== settingsButton) {
+  if (!isClickInsideSettings(e.target)) {
     settingsDropdown.hidden = true
+    settingsButton.setAttribute('aria-expanded', 'false')
+  }
+})
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && !settingsDropdown.hidden) {
+    settingsDropdown.hidden = true
+    settingsButton.setAttribute('aria-expanded', 'false')
   }
 })
 

@@ -44,13 +44,25 @@ html {
 }
 
 .setting-section {
-  font-size: 0; /* avoid adding space between inline-block children */
+  font-size: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.7rem;
+  min-width: 0;
 }
 .setting-section:not(:only-of-type) {
   padding: 0.5rem 0;
 }
+.setting-section .setting-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  width: 100%;
+}
 .setting-section select {
   min-width: 225px;
+  max-width: 100%;
 }
 .setting-section input[type="checkbox"] {
   vertical-align: middle;
@@ -64,7 +76,7 @@ html {
 .setting-section label + input,
 .setting-section label + textarea,
 .setting-section label + select {
-  margin-left: 0.66em;
+  margin-left: 0;
 }
 .setting-secondary-label {
   padding-left: 1.18em;
@@ -251,6 +263,13 @@ body.dark-mode .settings-action-button {
   min-width: 0;
 }
 
+.settings-container,
+.settings-sidebar,
+#newtab-settings-container,
+#search-engine-settings-container {
+  isolation: isolate;
+}
+
 #newtab-settings-container {
   border: 1px solid rgba(96, 165, 250, 0.35);
   border-radius: 12px;
@@ -322,6 +341,31 @@ body.dark-mode #search-engine-settings-container {
 
 .setting-section {
   overflow-wrap: anywhere;
+}
+
+@media all and (max-width: 720px) {
+  .settings-container {
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+  }
+
+  .setting-section {
+    align-items: flex-start;
+  }
+
+  .setting-section label,
+  .setting-section select,
+  .setting-section textarea,
+  .setting-section input[type="text"],
+  .setting-section input[type="url"],
+  .setting-section input[type="number"] {
+    width: 100%;
+  }
+
+  #custom-bangs input {
+    width: min(100%, 19rem);
+    max-width: 100%;
+  }
 }
 
 body.dark-mode #default-search-engine,
