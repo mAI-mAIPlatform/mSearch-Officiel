@@ -576,3 +576,46 @@ body.ntp-density-compact #ntp-grid {
 body.ntp-density-compact .ntp-widget-card {
     padding: 0.6rem;
 }
+
+/* Améliorations visuelles et anti-chevauchement */
+#ntp-search-form button,
+.ntp-subtle-button,
+.ntp-action,
+.ntp-widget-card,
+#ntp-reminder-form button,
+#ntp-background-controls button,
+#ntp-theme-selector,
+.ntp-control select {
+    transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.14s ease, border-color 0.14s ease;
+}
+
+#ntp-search-form button:hover,
+.ntp-subtle-button:hover,
+.ntp-action:hover,
+.ntp-widget-card:hover,
+#ntp-reminder-form button:hover,
+#ntp-background-controls button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(6, 10, 20, 0.28);
+}
+
+#ntp-search-form button:focus-visible,
+.ntp-subtle-button:focus-visible,
+.ntp-action:focus-visible,
+.ntp-widget-card:focus-visible,
+#ntp-reminder-form button:focus-visible,
+.ntp-control select:focus-visible,
+#ntp-theme-selector:focus-visible {
+    outline: 2px solid rgba(191, 219, 254, 0.95);
+    outline-offset: 1px;
+}
+
+.ntp-page-list-item {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 0.25rem;
+}
+
+.ntp-page-list-item .ntp-item-meta {
+    max-width: 100%;
+}

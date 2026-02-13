@@ -755,6 +755,7 @@ usageStatisticsCheckbox.addEventListener('change', function (e) {
 
 var searchEngineDropdown = document.getElementById('default-search-engine')
 var searchEngineInput = document.getElementById('custom-search-engine')
+var searchOptionsSaveTimer = null
 
 function normalizeSearchEngineOptions (value) {
   var defaults = {
@@ -777,12 +778,15 @@ function normalizeSearchEngineOptions (value) {
 }
 
 function saveSearchEngineOptions () {
-  settings.set('searchEngineOptions', {
-    region: searchRegionSelect.value,
-    language: searchLanguageSelect.value,
-    safeMode: searchSafeModeSelect.value,
-    extraParams: (searchExtraParamsInput.value || '').trim()
-  })
+  clearTimeout(searchOptionsSaveTimer)
+  searchOptionsSaveTimer = setTimeout(function () {
+    settings.set('searchEngineOptions', {
+      region: searchRegionSelect.value,
+      language: searchLanguageSelect.value,
+      safeMode: searchSafeModeSelect.value,
+      extraParams: (searchExtraParamsInput.value || '').trim()
+    })
+  }, 120)
 }
 
 searchEngineInput.setAttribute('placeholder', l('customSearchEngineDescription'))
@@ -795,9 +799,10 @@ settings.onLoad(function () {
 
   for (var searchEngine in searchEngines) {
     var item = document.createElement('option')
+    item.value = searchEngine
     item.textContent = searchEngines[searchEngine].name
 
-    if (searchEngines[searchEngine].name == currentSearchEngine.name) {
+    if (searchEngine === currentSearchEngine.name || searchEngines[searchEngine].name === currentSearchEngine.name) {
       item.setAttribute('selected', 'true')
     }
 
@@ -832,7 +837,16 @@ searchEngineDropdown.addEventListener('change', function () {
 })
 
 searchEngineInput.addEventListener('input', function () {
-  settings.set('searchEngine', { url: this.value })
+  var normalizedURL = this.value.trim()
+  if (!normalizedURL) {
+    return
+  }
+
+  if (!normalizedURL.includes('%s')) {
+    normalizedURL += normalizedURL.includes('?') ? '&q=%s' : '?q=%s'
+  }
+
+  settings.set('searchEngine', { url: normalizedURL })
 })
 
 searchRegionSelect.addEventListener('change', saveSearchEngineOptions)

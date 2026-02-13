@@ -340,3 +340,66 @@ body.dark-mode .profile-customization-card {
   border-color: rgba(96, 165, 250, 0.55);
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.56), rgba(15, 23, 42, 0.38));
 }
+
+/* UI Liquid Glass: boutons, menus et champs plus lisibles */
+.setting-section select,
+.setting-section input[type="text"],
+.setting-section input[type="number"],
+.setting-section textarea,
+#add-custom-bang,
+.settings-action-button {
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  min-height: 2.2rem;
+  padding: 0.3rem 0.65rem;
+  transition: box-shadow 0.14s ease, transform 0.14s ease, border-color 0.14s ease;
+}
+
+.setting-section select:hover,
+#add-custom-bang:hover,
+.settings-action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.setting-section select:focus-visible,
+.setting-section input[type="text"]:focus-visible,
+.setting-section input[type="number"]:focus-visible,
+.setting-section textarea:focus-visible,
+#add-custom-bang:focus-visible,
+.settings-action-button:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.85);
+  outline-offset: 1px;
+  border-color: rgba(96, 165, 250, 0.7);
+}
+
+body.dark-mode .setting-section select,
+body.dark-mode .setting-section input[type="text"],
+body.dark-mode .setting-section input[type="number"],
+body.dark-mode .setting-section textarea,
+body.dark-mode #add-custom-bang,
+body.dark-mode .settings-action-button {
+  background: rgba(30, 41, 59, 0.72);
+  border-color: rgba(100, 116, 139, 0.8);
+}
+
+#custom-bangs input {
+  width: clamp(10rem, 27%, 16rem);
+}
+
+@media all and (max-width: 760px) {
+  .setting-section label + input,
+  .setting-section label + textarea,
+  .setting-section label + select {
+    margin-left: 0;
+    margin-top: 0.35rem;
+    width: 100%;
+  }
+
+  .setting-section {
+    font-size: initial;
+  }
+}

@@ -368,7 +368,7 @@ const newTabPage = {
   },
   createPageListItem: function (item) {
     const listItem = document.createElement('li')
-    listItem.className = 'ntp-list-item'
+    listItem.className = 'ntp-list-item ntp-page-list-item'
 
     const link = document.createElement('button')
     link.className = 'ntp-link-button'

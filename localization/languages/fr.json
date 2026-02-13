@@ -147,8 +147,8 @@
     "settingsBlockedRequestCount": {
       "unsafeHTML": "À ce jour, mSearch a bloqué <strong></strong> publicités et traqueurs"
     },
-    "settingsCustomBangs": null, // Missing translation
-    "settingsCustomBangsAdd": null, // Missing translation
+    "settingsCustomBangs": "Commandes personnalisées",
+    "settingsCustomBangsAdd": "Ajouter une commande",
     "settingsCustomBangsPhrase": "Phrase (obligatoire)",
     "settingsCustomBangsSnippet": "Description (optionnelle)",
     "settingsCustomBangsRedirect": "URL associée (obligatoire)",
