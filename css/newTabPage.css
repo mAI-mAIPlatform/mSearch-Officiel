@@ -71,6 +71,16 @@ body:not(.is-ntp) #ntp-content {
     color: #f9fbff;
 }
 
+
+
+#ntp-main-shell,
+#ntp-grid,
+#ntp-widgets-panel,
+#ntp-personalization-panel {
+    content-visibility: auto;
+    contain-intrinsic-size: 420px;
+}
+
 #ntp-header {
     text-align: center;
     padding-top: 0.8rem;
@@ -148,6 +158,7 @@ body:not(.is-ntp) #ntp-content {
 
 #ntp-search-form button,
 .ntp-subtle-button {
+    cursor: pointer;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.28);
     background: rgba(255, 255, 255, 0.14);
@@ -176,7 +187,8 @@ body:not(.is-ntp) #ntp-content {
 }
 
 .ntp-shortcut-open {
-    border-radius: 10px;
+    border-radius: 12px;
+    min-height: 2.3rem;
     background: rgba(8, 13, 31, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.16);
     color: #fff;
@@ -215,7 +227,10 @@ body:not(.is-ntp) #ntp-content {
 }
 
 .ntp-action {
-    border-radius: 14px;
+    border-radius: 999px;
+    min-height: 2.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     color: #f9fbff;
     padding: var(--ntp-action-padding-y) var(--ntp-action-padding-x);
     display: inline-flex;
@@ -244,6 +259,7 @@ body:not(.is-ntp) #ntp-content {
 
 .ntp-panel-title-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.8rem;
@@ -252,6 +268,8 @@ body:not(.is-ntp) #ntp-content {
 
 .ntp-panel h2 {
     font-size: 1.05rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
     margin: 0;
     color: #fff;
 }
@@ -345,7 +363,8 @@ body:not(.is-ntp) #ntp-content {
 }
 
 #ntp-theme-selector {
-    height: 2.3em;
+    height: 2.5em;
+    max-width: min(40vw, 14rem);
     min-width: 9.5em;
     padding: 0 0.65rem;
 }
@@ -547,6 +566,8 @@ body.ntp-reduced-motion #ntp-gradient-overlay {
 
 .ntp-control select {
     width: 100%;
+    min-height: 2.4rem;
+    text-overflow: ellipsis;
     border-radius: 10px;
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.2);
