@@ -18,6 +18,9 @@ tabPreviewPopup.className = 'tab-preview-popup'
 tabPreviewPopup.hidden = true
 document.body.appendChild(tabPreviewPopup)
 
+const navBarEditorInput = document.getElementById('tab-editor-input')
+const highMemoryThresholdBytes = 500 * 1024 * 1024
+
 let lastTabDeletion = 0 // TODO get rid of this
 
 const tabBar = {
@@ -70,11 +73,20 @@ const tabBar = {
       iconArea.appendChild(pbIcon)
     }
 
+    const highMemoryIcon = document.createElement('i')
+    highMemoryIcon.className = 'tab-icon tab-memory-warning i carbon:flash-filled'
+    highMemoryIcon.hidden = true
+    highMemoryIcon.title = l('tabHighMemoryUsage')
+    iconArea.appendChild(highMemoryIcon)
+
     const closeTabButton = document.createElement('button')
     closeTabButton.className = 'tab-icon tab-close-button i carbon:close'
 
     closeTabButton.addEventListener('click', function (e) {
-      tabBar.events.emit('tab-closed', data.id)
+      tabEl.classList.add('is-closing')
+      setTimeout(function () {
+        tabBar.events.emit('tab-closed', data.id)
+      }, 120)
       // prevent the searchbar from being opened
       e.stopPropagation()
     })
@@ -140,7 +152,14 @@ const tabBar = {
 
     tabEl.addEventListener('mouseenter', function (e) {
       const tabId = this.getAttribute('data-tab')
-      const img = tabs.get(tabId).previewImage
+      if (navBarEditorInput) {
+        navBarEditorInput.classList.add('is-tab-hovered')
+      }
+      const tabData = tabs.get(tabId)
+      if (!tabData) {
+        return
+      }
+      const img = tabData.previewImage
       if (img) {
         tabPreviewPopup.innerHTML = ''
         const image = document.createElement('img')
@@ -156,6 +175,9 @@ const tabBar = {
 
     tabEl.addEventListener('mouseleave', function (e) {
       tabPreviewPopup.hidden = true
+      if (navBarEditorInput) {
+        navBarEditorInput.classList.remove('is-tab-hovered')
+      }
     })
 
     tabBar.updateTab(data.id, tabEl)
@@ -164,6 +186,9 @@ const tabBar = {
   },
   updateTab: function (tabId, tabEl = tabBar.getTab(tabId)) {
     const tabData = tabs.get(tabId)
+    if (!tabData || !tabEl) {
+      return
+    }
 
     // update tab title
     let tabTitle
@@ -198,6 +223,12 @@ const tabBar = {
       tabEl.classList.add('has-url')
     } else {
       tabEl.classList.remove('has-url')
+    }
+
+    const memoryWarningIcon = tabEl.querySelector('.tab-memory-warning')
+    if (memoryWarningIcon) {
+      const tabMemory = tabData.memoryUsage
+      memoryWarningIcon.hidden = !(typeof tabMemory === 'number' && tabMemory >= highMemoryThresholdBytes)
     }
 
     // update tab audio icon
@@ -312,24 +343,58 @@ const tabBar = {
 
 window.addEventListener('resize', tabBar.handleSizeChange)
 
+
+function monitorTabMemoryUsage () {
+  tabs.get().forEach(function (tab) {
+    if (!webviews.hasViewForTab(tab.id)) {
+      return
+    }
+
+    webviews.callAsync(tab.id, 'executeJavaScript', 'window.performance && performance.memory ? performance.memory.usedJSHeapSize : null', function (err, result) {
+      if (!err && typeof result === 'number') {
+        tabs.update(tab.id, { memoryUsage: result })
+      }
+    })
+  })
+}
+
+setInterval(monitorTabMemoryUsage, 20000)
+setTimeout(monitorTabMemoryUsage, 8000)
+
+
 settings.listen('showDividerBetweenTabs', function (dividerPreference) {
   tabBar.handleDividerPreference(dividerPreference)
 })
 
 /* tab loading and progress bar status */
 webviews.bindEvent('did-start-loading', function (tabId) {
-  progressBar.update(tabBar.getTab(tabId).querySelector('.progress-bar'), 'start')
+  const tabElement = tabBar.getTab(tabId)
+  if (!tabElement) {
+    return
+  }
+  progressBar.update(tabElement.querySelector('.progress-bar'), 'start')
   tabs.update(tabId, { loaded: false })
+  if (navBarEditorInput && tabId === tabs.getSelected()) {
+    navBarEditorInput.classList.add('is-loading')
+  }
 })
 
 webviews.bindEvent('did-stop-loading', function (tabId) {
-  progressBar.update(tabBar.getTab(tabId).querySelector('.progress-bar'), 'finish')
+  const tabElement = tabBar.getTab(tabId)
+  if (!tabElement) {
+    return
+  }
+  progressBar.update(tabElement.querySelector('.progress-bar'), 'finish')
   tabs.update(tabId, { loaded: true })
+  if (navBarEditorInput && tabId === tabs.getSelected()) {
+    navBarEditorInput.classList.remove('is-loading')
+  }
   tabBar.updateTab(tabId)
 })
 
+
 tasks.on('tab-updated', function (id, key) {
-  const updateKeys = ['title', 'secure', 'url', 'muted', 'hasAudio']
+  const updateKeys = ['title', 'secure', 'url', 'muted', 'hasAudio', 'memoryUsage']
   if (updateKeys.includes(key)) {
     tabBar.updateTab(id)
   }

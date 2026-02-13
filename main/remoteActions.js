@@ -45,16 +45,42 @@ ipc.handle('addWordToSpellCheckerDictionary', function (e, word) {
   session.fromPartition('persist:webcontent').addWordToSpellCheckerDictionary(word)
 })
 
-ipc.handle('clearStorageData', function () {
-  return session.fromPartition('persist:webcontent').clearStorageData()
-  /* It's important not to delete data from file:// from the default partition, since that would also remove internal browser data (such as bookmarks). However, HTTP data does need to be cleared, as there can be leftover data from loading external resources in the browser UI */
+function clearBrowsingDataByOptions (options = {}) {
+  const clearCookies = options.cookies !== false
+  const clearCache = options.cache !== false
+  const clearHistory = options.history !== false
+
+  const storageTypes = []
+  if (clearCookies) {
+    storageTypes.push('cookies')
+  }
+  if (clearHistory) {
+    storageTypes.push('history')
+  }
+
+  const hasStorageTypes = storageTypes.length > 0
+  const clearStorage = hasStorageTypes
+    ? session.fromPartition('persist:webcontent').clearStorageData({ storages: storageTypes })
+    : Promise.resolve()
+
+  return clearStorage
+    /* It's important not to delete data from file:// from the default partition, since that would also remove internal browser data (such as bookmarks). However, HTTP data does need to be cleared, as there can be leftover data from loading external resources in the browser UI */
     .then(function () {
-      return session.defaultSession.clearStorageData({ origin: 'http://' })
+      if (!hasStorageTypes) {
+        return
+      }
+      return session.defaultSession.clearStorageData({ origin: 'http://', storages: storageTypes })
     })
     .then(function () {
-      return session.defaultSession.clearStorageData({ origin: 'https://' })
+      if (!hasStorageTypes) {
+        return
+      }
+      return session.defaultSession.clearStorageData({ origin: 'https://', storages: storageTypes })
     })
     .then(function () {
+      if (!clearCache) {
+        return
+      }
       return session.fromPartition('persist:webcontent').clearCache()
     })
     .then(function () {
@@ -64,6 +90,9 @@ ipc.handle('clearStorageData', function () {
       return session.fromPartition('persist:webcontent').clearAuthCache()
     })
     .then(function () {
+      if (!clearCache) {
+        return
+      }
       return session.defaultSession.clearCache()
     })
     .then(function () {
@@ -72,6 +101,14 @@ ipc.handle('clearStorageData', function () {
     .then(function () {
       return session.defaultSession.clearAuthCache()
     })
+}
+
+ipc.handle('clearStorageData', function () {
+  return clearBrowsingDataByOptions({ cookies: true, history: true, cache: true })
+})
+
+ipc.handle('clearBrowsingData', function (e, options) {
+  return clearBrowsingDataByOptions(options || {})
 })
 
 /* window actions */

@@ -35,6 +35,21 @@ var ntpShortcutsSizeSelect = document.getElementById('select-ntp-shortcuts-size'
 var ntpShowHistoryCheckbox = document.getElementById('checkbox-ntp-show-history')
 var ntpShowFavoritesCheckbox = document.getElementById('checkbox-ntp-show-favorites')
 var ntpFixTitleOverlapCheckbox = document.getElementById('checkbox-ntp-fix-title-overlap')
+var displayModeSelect = document.getElementById('display-mode-select')
+var modeDarkCheckbox = document.getElementById('checkbox-mode-dark')
+var modeMuteCheckbox = document.getElementById('checkbox-mode-mute')
+var cleanupIntervalSelect = document.getElementById('cleanup-interval-select')
+var cleanupCookiesCheckbox = document.getElementById('checkbox-cleanup-cookies')
+var cleanupHistoryCheckbox = document.getElementById('checkbox-cleanup-history')
+var cleanupCacheCheckbox = document.getElementById('checkbox-cleanup-cache')
+var cleanupNowButton = document.getElementById('button-cleanup-now')
+var profileDisplayNameInput = document.getElementById('input-profile-display-name')
+var profileAvatarTypeSelect = document.getElementById('select-profile-avatar-type')
+var profileEmojiInput = document.getElementById('input-profile-emoji')
+var profileSymbolInput = document.getElementById('input-profile-symbol')
+var profileAccentColorInput = document.getElementById('input-profile-accent-color')
+var profileEmojiRow = document.getElementById('profile-emoji-row')
+var profileSymbolRow = document.getElementById('profile-symbol-row')
 
 function showRestartRequiredBanner () {
   banner.hidden = false
@@ -252,6 +267,132 @@ darkModeSystem.addEventListener('change', function (e) {
     settings.set('darkMode', 2)
   }
 })
+
+function getDisplayModeOptions () {
+  return settings.get('displayModeOptions') || {
+    standard: { muteAudio: false, darkMode: false },
+    game: { muteAudio: true, darkMode: false },
+    study: { muteAudio: true, darkMode: true }
+  }
+}
+
+function saveDisplayModeOptions () {
+  const mode = displayModeSelect.value
+  const options = getDisplayModeOptions()
+  options[mode] = {
+    muteAudio: modeMuteCheckbox.checked,
+    darkMode: modeDarkCheckbox.checked
+  }
+  settings.set('displayModeOptions', options)
+}
+
+function refreshDisplayModeOptions () {
+  const mode = displayModeSelect.value || 'standard'
+  const options = getDisplayModeOptions()
+  const option = options[mode] || { muteAudio: false, darkMode: false }
+  modeMuteCheckbox.checked = !!option.muteAudio
+  modeDarkCheckbox.checked = !!option.darkMode
+}
+
+settings.get('displayMode', function (value) {
+  displayModeSelect.value = value || 'standard'
+  refreshDisplayModeOptions()
+})
+
+settings.get('displayModeOptions', function () {
+  refreshDisplayModeOptions()
+})
+
+displayModeSelect.addEventListener('change', function () {
+  settings.set('displayMode', displayModeSelect.value)
+  refreshDisplayModeOptions()
+})
+
+modeMuteCheckbox.addEventListener('change', saveDisplayModeOptions)
+modeDarkCheckbox.addEventListener('change', saveDisplayModeOptions)
+
+settings.get('cleanupSchedule', function (value) {
+  cleanupIntervalSelect.value = value || 'off'
+})
+
+settings.get('cleanupDataOptions', function (value) {
+  const options = value || {}
+  cleanupCookiesCheckbox.checked = options.cookies !== false
+  cleanupHistoryCheckbox.checked = options.history !== false
+  cleanupCacheCheckbox.checked = options.cache !== false
+})
+
+function saveCleanupDataOptions () {
+  settings.set('cleanupDataOptions', {
+    cookies: cleanupCookiesCheckbox.checked,
+    history: cleanupHistoryCheckbox.checked,
+    cache: cleanupCacheCheckbox.checked
+  })
+}
+
+cleanupIntervalSelect.addEventListener('change', function () {
+  settings.set('cleanupSchedule', cleanupIntervalSelect.value)
+})
+
+cleanupCookiesCheckbox.addEventListener('change', saveCleanupDataOptions)
+cleanupHistoryCheckbox.addEventListener('change', saveCleanupDataOptions)
+cleanupCacheCheckbox.addEventListener('change', saveCleanupDataOptions)
+
+cleanupNowButton.addEventListener('click', async function () {
+  cleanupNowButton.disabled = true
+  try {
+    await ipc.invoke('clearBrowsingData', {
+      cookies: cleanupCookiesCheckbox.checked,
+      history: cleanupHistoryCheckbox.checked,
+      cache: cleanupCacheCheckbox.checked
+    })
+  } finally {
+    cleanupNowButton.disabled = false
+  }
+})
+
+function normalizeProfileSettings (value) {
+  var profile = value || {}
+  return {
+    displayName: typeof profile.displayName === 'string' ? profile.displayName.slice(0, 32) : '',
+    avatarType: ['emoji', 'initials', 'symbol'].includes(profile.avatarType) ? profile.avatarType : 'emoji',
+    emoji: typeof profile.emoji === 'string' && profile.emoji.trim() ? profile.emoji : '🙂',
+    symbol: typeof profile.symbol === 'string' && profile.symbol.trim() ? profile.symbol.trim().slice(0, 2) : '◆',
+    accentColor: /^#[0-9a-fA-F]{6}$/.test(profile.accentColor) ? profile.accentColor : '#6ca0ff'
+  }
+}
+
+function refreshProfileCustomizationUI () {
+  profileEmojiRow.hidden = profileAvatarTypeSelect.value !== 'emoji'
+  profileSymbolRow.hidden = profileAvatarTypeSelect.value !== 'symbol'
+}
+
+function saveProfileSettings () {
+  settings.set('profileSettings', {
+    displayName: profileDisplayNameInput.value.trim(),
+    avatarType: profileAvatarTypeSelect.value,
+    emoji: profileEmojiInput.value.trim() || '🙂',
+    symbol: profileSymbolInput.value.trim() || '◆',
+    accentColor: profileAccentColorInput.value
+  })
+  refreshProfileCustomizationUI()
+}
+
+settings.get('profileSettings', function (value) {
+  var profile = normalizeProfileSettings(value)
+  profileDisplayNameInput.value = profile.displayName
+  profileAvatarTypeSelect.value = profile.avatarType
+  profileEmojiInput.value = profile.emoji
+  profileSymbolInput.value = profile.symbol
+  profileAccentColorInput.value = profile.accentColor
+  refreshProfileCustomizationUI()
+})
+
+profileDisplayNameInput.addEventListener('input', saveProfileSettings)
+profileAvatarTypeSelect.addEventListener('change', saveProfileSettings)
+profileEmojiInput.addEventListener('input', saveProfileSettings)
+profileSymbolInput.addEventListener('input', saveProfileSettings)
+profileAccentColorInput.addEventListener('input', saveProfileSettings)
 
 /* site theme setting */
 

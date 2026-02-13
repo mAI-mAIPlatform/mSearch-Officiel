@@ -342,6 +342,28 @@ body.windows.dark-theme .navbar-action-button:not(:disabled):hover {
 }
 .navbar-right-actions {
   margin-right: 2.3em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+#profile-button {
+  width: 36px;
+  padding: 0;
+  font-size: 0.92rem !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid color-mix(in srgb, var(--profile-accent-color, #6ca0ff) 40%, rgba(255, 255, 255, 0.75));
+  border-radius: 11px;
+  color: var(--theme-foreground-color);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--profile-accent-color, #6ca0ff) 24%, rgba(255, 255, 255, 0.88)), rgba(255, 255, 255, 0.46));
+  backdrop-filter: blur(10px) saturate(145%);
+  -webkit-backdrop-filter: blur(10px) saturate(145%);
+}
+
+.dark-theme #profile-button {
+  border-color: color-mix(in srgb, var(--profile-accent-color, #6ca0ff) 60%, rgba(30, 41, 59, 0.85));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--profile-accent-color, #6ca0ff) 28%, rgba(30, 41, 59, 0.8)), rgba(15, 23, 42, 0.62));
 }
 
 .navbar-right-actions #add-tab-button {
@@ -470,4 +492,16 @@ body:not(.dark-theme) .progress-bar {
 .p100 {
   transform: translateX(0%);
   transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+.tab-item .tab-memory-warning {
+  color: #ff9900;
+}
+
+.tab-item.is-closing {
+  transform: translateY(-14px) scale(0.97);
+  opacity: 0;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+  pointer-events: none;
 }

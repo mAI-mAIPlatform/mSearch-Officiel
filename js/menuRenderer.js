@@ -10,6 +10,7 @@ var PDFViewer = require('pdfViewer.js')
 var tabEditor = require('navbar/tabEditor.js')
 var readerView = require('readerView.js')
 var taskOverlay = require('taskOverlay/taskOverlay.js')
+var viewMode = require('viewMode.js')
 
 module.exports = {
   initialize: function () {
@@ -62,7 +63,7 @@ module.exports = {
       tabEditor.show(tabs.getSelected(), '!history ')
     })
 
-    ipc.on('addTab', function (e, data) {
+    ipc.on('addTab', function (e, data = {}) {
       /* new tabs can't be created in modal mode */
       if (modalMode.enabled()) {
         return
@@ -133,6 +134,13 @@ module.exports = {
 
     ipc.on('toggleTaskOverlay', function () {
       taskOverlay.toggle()
+    })
+
+    ipc.on('setDisplayMode', function (e, data) {
+      if (!data || !data.mode) {
+        return
+      }
+      viewMode.applyMode(data.mode)
     })
 
     ipc.on('goBack', function () {
