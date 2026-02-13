@@ -594,6 +594,22 @@ updateNotificationsCheckbox.addEventListener('change', function (e) {
   settings.set('updateNotificationsEnabled', this.checked)
 })
 
+/* mAI sidebar setting */
+
+var maiSidebarEnabledCheckbox = document.getElementById('checkbox-mai-sidebar-enabled')
+
+settings.get('maiSidebarEnabled', function (value) {
+  if (value === false) {
+    maiSidebarEnabledCheckbox.checked = false
+  } else {
+    maiSidebarEnabledCheckbox.checked = true
+  }
+})
+
+maiSidebarEnabledCheckbox.addEventListener('change', function (e) {
+  settings.set('maiSidebarEnabled', this.checked)
+})
+
 /* usage statistics setting */
 
 var usageStatisticsCheckbox = document.getElementById('checkbox-usage-statistics')

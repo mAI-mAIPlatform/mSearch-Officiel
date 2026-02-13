@@ -475,6 +475,20 @@ const newTabPage = {
       return
     }
 
+    function updateMaiVisibility (enabled) {
+      if (enabled === false) {
+        newTabPage.maiToggleButton.hidden = true
+        if (newTabPage.isMaiSidebarOpen) {
+          newTabPage.setMaiSidebarState(false, { persist: false })
+        }
+      } else {
+        newTabPage.maiToggleButton.hidden = false
+      }
+    }
+
+    settings.get('maiSidebarEnabled', updateMaiVisibility)
+    settings.listen('maiSidebarEnabled', updateMaiVisibility)
+
     const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
     newTabPage.setMaiSidebarState(storedState, { persist: false })
 
