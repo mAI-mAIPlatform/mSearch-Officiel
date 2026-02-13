@@ -166,47 +166,6 @@ body:not(.is-ntp) #ntp-content {
     padding: 0.45rem 0.8rem;
 }
 
-#ntp-shortcuts-panel {
-    width: min(820px, 94%);
-    align-self: center;
-    min-height: 0;
-}
-
-#ntp-shortcuts-list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 0.5rem;
-}
-
-.ntp-shortcut-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 0.35rem;
-    align-items: center;
-}
-
-.ntp-shortcut-open {
-    border-radius: 12px;
-    min-height: 2.3rem;
-    background: rgba(8, 13, 31, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #fff;
-    padding: 0.45rem 0.55rem;
-    text-align: left;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.ntp-inline-icon {
-    border-radius: 8px;
-    width: 2rem;
-    height: 2rem;
-    color: rgba(255, 255, 255, 0.9);
-    background: rgba(8, 13, 31, 0.32);
-}
 
 #ntp-quick-actions {
     display: flex;
@@ -400,7 +359,6 @@ body:not(.is-ntp) #ntp-content {
         width: 100%;
     }
 
-    #ntp-shortcuts-panel,
     #ntp-widgets-panel {
         width: 100%;
     }
@@ -596,4 +554,36 @@ body.ntp-density-compact #ntp-grid {
 
 body.ntp-density-compact .ntp-widget-card {
     padding: 0.6rem;
+}
+
+
+#ntp-personalization-hint {
+    margin: 0;
+    font-size: 0.86rem;
+    opacity: 0.86;
+}
+
+.ntp-control-actions {
+    gap: 0.6rem;
+}
+
+.ntp-inline-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.ntp-inline-actions .ntp-subtle-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2.35rem;
+    padding: 0.4rem 0.6rem;
+}
+
+@media (max-width: 760px) {
+    .ntp-inline-actions {
+        grid-template-columns: 1fr;
+    }
 }

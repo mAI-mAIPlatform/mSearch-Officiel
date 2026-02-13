@@ -224,17 +224,6 @@
               <button type="submit">Rechercher</button>
             </form>
 
-            <section id="ntp-shortcuts-panel" class="ntp-panel" aria-label="Raccourcis personnalisables">
-              <div class="ntp-panel-title-row">
-                <h2>Raccourcis personnalisés</h2>
-                <button id="ntp-shortcut-add" type="button" class="ntp-subtle-button">
-                  <i class="i carbon:add"></i>
-                  <span>Ajouter</span>
-                </button>
-              </div>
-              <ul id="ntp-shortcuts-list"></ul>
-            </section>
-
             <section id="ntp-quick-actions" aria-label="Actions rapides">
               <button class="ntp-action" data-ntp-action="open-favorites">
                 <i class="i carbon:star-filled"></i>
@@ -321,6 +310,7 @@
             <section id="ntp-personalization-panel" class="ntp-panel" aria-label="Options de personnalisation">
               <div class="ntp-panel-title-row">
                 <h2>Personnalisation</h2>
+                <p id="ntp-personalization-hint">Ajustez l'affichage et le rendu Liquid Glass selon votre style.</p>
               </div>
               <div id="ntp-personalization-grid">
                 <label class="ntp-control">
@@ -350,6 +340,23 @@
                   <input id="ntp-toggle-history" type="checkbox" checked>
                   <span>Afficher l'historique</span>
                 </label>
+                <div class="ntp-control ntp-control-actions" role="group" aria-label="Raccourcis de personnalisation">
+                  <span>Actions rapides visuelles</span>
+                  <div class="ntp-inline-actions">
+                    <button id="ntp-personalization-random" type="button" class="ntp-subtle-button">
+                      <i class="i carbon:shuffle"></i>
+                      <span>Fond aléatoire</span>
+                    </button>
+                    <button id="ntp-personalization-clear" type="button" class="ntp-subtle-button">
+                      <i class="i carbon:trash-can"></i>
+                      <span>Retirer le fond</span>
+                    </button>
+                    <button id="ntp-personalization-reset" type="button" class="ntp-subtle-button">
+                      <i class="i carbon:reset"></i>
+                      <span>Réinitialiser</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </section>
           </div>
