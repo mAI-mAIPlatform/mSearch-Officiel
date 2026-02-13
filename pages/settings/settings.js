@@ -647,20 +647,26 @@ function saveSearchEngineOptions () {
 searchEngineInput.setAttribute('placeholder', l('customSearchEngineDescription'))
 
 settings.onLoad(function () {
+  const activeEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
+
   if (currentSearchEngine.custom) {
     searchEngineInput.hidden = false
     searchEngineInput.value = currentSearchEngine.searchURL
+    searchEngineDropdown.value = 'custom'
   }
+
+  const optionsFragment = document.createDocumentFragment()
 
   for (var searchEngine in searchEngines) {
     var item = document.createElement('option')
+    item.value = searchEngines[searchEngine].name
     item.textContent = searchEngines[searchEngine].name
 
-    if (searchEngines[searchEngine].name == currentSearchEngine.name) {
+    if (!currentSearchEngine.custom && searchEngines[searchEngine].name === activeEngine) {
       item.setAttribute('selected', 'true')
     }
 
-    searchEngineDropdown.appendChild(item)
+    optionsFragment.appendChild(item)
   }
 
   // add custom option
@@ -670,7 +676,22 @@ settings.onLoad(function () {
   if (currentSearchEngine.custom) {
     item.setAttribute('selected', 'true')
   }
-  searchEngineDropdown.appendChild(item)
+  optionsFragment.appendChild(item)
+
+  searchEngineDropdown.appendChild(optionsFragment)
+
+  settings.get('searchEngine', function (value) {
+    if (value && value.name) {
+      searchEngineDropdown.value = value.name
+      searchEngineInput.hidden = true
+    }
+
+    if (value && value.url) {
+      searchEngineDropdown.value = 'custom'
+      searchEngineInput.hidden = false
+      searchEngineInput.value = value.url
+    }
+  })
 })
 
 settings.get('searchEngineOptions', function (value) {

@@ -299,3 +299,39 @@ body.dark-mode #search-engine-settings-container {
   background: rgba(15, 23, 42, 0.35);
   border-color: rgba(56, 189, 248, 0.6);
 }
+
+
+#default-search-engine,
+#custom-search-engine,
+#search-region,
+#search-language,
+#search-safe-mode,
+#search-extra-params,
+#add-custom-bang {
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  border-radius: 10px;
+  padding: 0.45em 0.6em;
+  min-height: 2.3em;
+}
+
+#custom-search-engine,
+#search-extra-params {
+  min-width: min(520px, 100%);
+  max-width: 100%;
+}
+
+.setting-section {
+  overflow-wrap: anywhere;
+}
+
+body.dark-mode #default-search-engine,
+body.dark-mode #custom-search-engine,
+body.dark-mode #search-region,
+body.dark-mode #search-language,
+body.dark-mode #search-safe-mode,
+body.dark-mode #search-extra-params,
+body.dark-mode #add-custom-bang {
+  background: rgba(25, 32, 45, 0.85);
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.55);
+}
