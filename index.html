@@ -154,6 +154,8 @@
       </div>
     </div>
 
+    <div id="bookmarks-bar" hidden></div>
+
     <button
       id="switch-task-button"
       class="navbar-action-button theme-text-color windowDragHandle i"
@@ -205,38 +207,6 @@
       </div>
       <img id="webview-placeholder" hidden aria-hidden="true" />
       <div id="ntp-content">
-          <div id="ntp-mai-controls">
-            <button
-              id="ntp-mai-new-chat"
-              class="ntp-mai-action i carbon:add"
-              type="button"
-              aria-label="Nouvelle discussion"
-            ></button>
-            <button
-              id="ntp-mai-toggle"
-              class="ntp-mai-action i carbon:menu"
-              type="button"
-              aria-controls="ntp-mai-sidebar"
-              aria-expanded="false"
-              aria-label="Ouvrir la barre mAI"
-            ></button>
-          </div>
-          <aside id="ntp-mai-sidebar" aria-label="mAI" hidden>
-            <header id="ntp-mai-header">
-              <img id="ntp-mai-logo" src="ext/icons/mai-logo.png" alt="" aria-hidden="true" style="width: 2.2rem; height: 2.2rem; border-radius: 50%; background: transparent; object-fit: contain; box-shadow: none;">
-              <div>
-                <h2>mAI</h2>
-                <p>Avec mAI, passez à la vitesse supérieure !</p>
-              </div>
-            </header>
-            <iframe
-              id="ntp-mai-iframe"
-              title=" Discutez avec mAI"
-              src="https://m-ai-officiel.base44.app"
-              loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin"
-            ></iframe>
-          </aside>
           <img id="ntp-background" hidden>
           <div id="ntp-gradient-overlay"></div>
           <div id="ntp-main-shell">
@@ -360,6 +330,7 @@
                 </button>
               </div>
               <div id="ntp-personalization-grid">
+                <h3 class="ntp-grid-header">Apparence</h3>
                 <label class="ntp-control">
                   <span>Densité</span>
                   <select id="ntp-density-selector" aria-label="Densité d'affichage">
@@ -375,6 +346,7 @@
                     <option value="strong">Intense</option>
                   </select>
                 </label>
+                <h3 class="ntp-grid-header">Contenu</h3>
                 <label class="ntp-toggle-control">
                   <input id="ntp-toggle-widgets" type="checkbox" checked>
                   <span>Afficher les widgets</span>
@@ -404,6 +376,32 @@
     </div>
 
     <!-- findinpage ui -->
+
+    <button
+      id="ntp-mai-toggle"
+      type="button"
+      aria-controls="ntp-mai-sidebar"
+      aria-expanded="false"
+      aria-label="Ouvrir la barre mAI"
+    >
+      <span class="ntp-mai-toggle-label">mAI</span>
+    </button>
+    <aside id="ntp-mai-sidebar" aria-label="mAI" hidden>
+      <header id="ntp-mai-header">
+        <img id="ntp-mai-logo" src="ext/icons/mai-logo.png" alt="" aria-hidden="true" style="width: 2.2rem; height: 2.2rem; border-radius: 50%; background: transparent; object-fit: contain; box-shadow: none;">
+        <div>
+          <h2>mAI</h2>
+          <p>Avec mAI, passez à la vitesse supérieure !</p>
+        </div>
+      </header>
+      <iframe
+        id="ntp-mai-iframe"
+        title=" Discutez avec mAI"
+        src="https://m-ai-officiel.base44.app"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+    </aside>
 
     <div
       id="findinpage-bar"

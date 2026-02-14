@@ -327,6 +327,20 @@ showDividerCheckbox.addEventListener('change', function (e) {
   settings.set('showDividerBetweenTabs', this.checked)
 })
 
+/* bookmarks bar setting */
+
+var showBookmarksBarCheckbox = document.getElementById('checkbox-show-bookmarks-bar')
+
+settings.get('showBookmarksBar', function (value) {
+  if (value === true) {
+    showBookmarksBarCheckbox.checked = true
+  }
+})
+
+showBookmarksBarCheckbox.addEventListener('change', function (e) {
+  settings.set('showBookmarksBar', this.checked)
+})
+
 /* language setting */
 
 var languagePicker = document.getElementById('setting-language-picker')
@@ -1035,6 +1049,25 @@ settings.get('maiSidebarOpenStartup', function (value) {
 
 maiSidebarOpenStartupCheckbox.addEventListener('change', function () {
   settings.set('maiSidebarOpenStartup', this.checked)
+})
+
+var maiSidebarGlobalCheckbox = document.getElementById('checkbox-mai-sidebar-global')
+var maiSidebarPositionSelect = document.getElementById('select-mai-sidebar-position')
+
+settings.get('maiSidebarGlobal', function (value) {
+  maiSidebarGlobalCheckbox.checked = value !== false
+})
+
+maiSidebarGlobalCheckbox.addEventListener('change', function () {
+  settings.set('maiSidebarGlobal', this.checked)
+})
+
+settings.get('maiSidebarPosition', function (value) {
+  maiSidebarPositionSelect.value = value || 'right'
+})
+
+maiSidebarPositionSelect.addEventListener('change', function () {
+  settings.set('maiSidebarPosition', this.value)
 })
 
 settings.get('customBangs', (value) => {

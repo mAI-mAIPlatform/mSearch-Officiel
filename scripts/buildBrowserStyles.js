@@ -12,6 +12,8 @@ const modules = [
   'css/taskOverlay.css',
   'css/webviews.css',
   'css/newTabPage.css',
+  'css/maiSidebar.css',
+  'css/bookmarkBar.css',
   'css/searchbar.css',
   'css/listItem.css',
   'css/bookmarkManager.css',
@@ -21,7 +23,7 @@ const modules = [
   'css/passwordCapture.css',
   'css/passwordViewer.css',
   'css/permissionPopup.css',
-  'node_modules/dragula/dist/dragula.min.css'
+  'css/vendor/dragula.min.css'
 ]
 
 function buildBrowserStyles () {

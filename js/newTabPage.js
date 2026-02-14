@@ -93,7 +93,19 @@ const brightBackgroundSeeds = [
   'bright-horizon-02',
   'bright-horizon-03',
   'bright-horizon-04',
-  'bright-horizon-05'
+  'bright-horizon-05',
+  'nature-forest-01',
+  'nature-forest-02',
+  'nature-forest-03',
+  'nature-mountains-01',
+  'nature-mountains-02',
+  'nature-mountains-03',
+  'city-night-01',
+  'city-night-02',
+  'city-night-03',
+  'abstract-art-01',
+  'abstract-art-02',
+  'abstract-art-03'
 ]
 
 const curatedBackgrounds = baseBackgrounds.concat(brightBackgroundSeeds.map(function (seed) {
@@ -130,8 +142,6 @@ const newTabPage = {
   toggleHistory: document.getElementById('ntp-toggle-history'),
   maiSidebar: document.getElementById('ntp-mai-sidebar'),
   maiToggleButton: document.getElementById('ntp-mai-toggle'),
-  maiNewChatButton: document.getElementById('ntp-mai-new-chat'),
-  maiIframe: document.getElementById('ntp-mai-iframe'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
@@ -481,16 +491,10 @@ const newTabPage = {
     if (isEnabled === false) {
       newTabPage.maiToggleButton.hidden = true
       newTabPage.maiSidebar.hidden = true
-      if (newTabPage.maiNewChatButton) {
-        newTabPage.maiNewChatButton.hidden = true
-      }
       return
     }
 
     newTabPage.maiToggleButton.hidden = false
-    if (newTabPage.maiNewChatButton) {
-      newTabPage.maiNewChatButton.hidden = false
-    }
 
     const openOnStartup = settings.get('maiSidebarOpenStartup')
     if (openOnStartup === true) {
@@ -504,22 +508,6 @@ const newTabPage = {
       newTabPage.setMaiSidebarState(!newTabPage.isMaiSidebarOpen)
     })
 
-    if (newTabPage.maiNewChatButton) {
-      newTabPage.maiNewChatButton.addEventListener('click', function () {
-        if (newTabPage.maiIframe) {
-          // Force reload to start new chat
-          const currentSrc = newTabPage.maiIframe.src
-          newTabPage.maiIframe.src = 'about:blank'
-          setTimeout(() => {
-            newTabPage.maiIframe.src = currentSrc
-          }, 10)
-        }
-        if (!newTabPage.isMaiSidebarOpen) {
-          newTabPage.setMaiSidebarState(true)
-        }
-      })
-    }
-
     document.addEventListener('keydown', function (event) {
       if (event.key !== 'Escape' || !newTabPage.isMaiSidebarOpen) {
         return
@@ -527,6 +515,34 @@ const newTabPage = {
 
       newTabPage.setMaiSidebarState(false)
       newTabPage.maiToggleButton.focus()
+    })
+
+    // Handle position setting
+    const position = settings.get('maiSidebarPosition') || 'right'
+    if (position === 'left') {
+      document.body.classList.add('mai-sidebar-left')
+    }
+
+    settings.listen('maiSidebarPosition', function (value) {
+      if (value === 'left') {
+        document.body.classList.add('mai-sidebar-left')
+      } else {
+        document.body.classList.remove('mai-sidebar-left')
+      }
+    })
+
+    // Handle global visibility setting
+    const globalSidebar = settings.get('maiSidebarGlobal') !== false
+    if (!globalSidebar) {
+      document.body.classList.add('mai-sidebar-restricted')
+    }
+
+    settings.listen('maiSidebarGlobal', function (value) {
+      if (value === false) {
+        document.body.classList.add('mai-sidebar-restricted')
+      } else {
+        document.body.classList.remove('mai-sidebar-restricted')
+      }
     })
   },
   renderHistoryAndFavorites: async function () {

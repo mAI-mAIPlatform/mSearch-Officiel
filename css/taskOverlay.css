@@ -53,7 +53,10 @@
   top: calc(var(--control-space-top) + 5px);
   right: var(--control-space-right);
   z-index: 4;
-  padding: 0.5em;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #switch-task-button.active {
@@ -64,7 +67,6 @@
   width: 0.8em;
   height: 0.8em;
   display: block;
-  margin-top: 2px;
 }
 #task-overlay {
   display: flex;
