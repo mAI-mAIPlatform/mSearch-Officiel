@@ -36,13 +36,23 @@ body.ntp-glass-strong {
     padding: 1.25rem;
 }
 
-#ntp-mai-toggle {
+#ntp-mai-controls {
     position: absolute;
     top: 1.25rem;
     right: 1.25rem;
     z-index: 18;
-    border-radius: 999px;
-    padding: 0.5rem 0.9rem;
+    display: flex;
+    gap: 0.65rem;
+}
+
+.ntp-mai-action {
+    border-radius: 14px;
+    width: 2.6rem;
+    height: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
     color: #f9fbff;
     border: 1px solid var(--ntp-glass-border);
     background: color-mix(in srgb, var(--ntp-glass-bg) 90%, rgba(16, 23, 41, 0.6));
@@ -50,10 +60,11 @@ body.ntp-glass-strong {
     -webkit-backdrop-filter: blur(calc(var(--ntp-glass-blur) + 2px)) saturate(160%);
     box-shadow: 0 10px 28px rgba(9, 12, 21, 0.28);
     transition: transform 0.15s ease, background 0.15s ease;
+    cursor: pointer;
 }
 
-#ntp-mai-toggle:hover {
-    transform: translateY(-1px);
+.ntp-mai-action:hover {
+    transform: translateY(-2px);
     background: color-mix(in srgb, var(--ntp-glass-bg) 94%, rgba(36, 49, 80, 0.52));
 }
 
@@ -598,7 +609,7 @@ body.ntp-reduced-motion .ntp-panel,
 body.ntp-reduced-motion #ntp-background-controls button,
 body.ntp-reduced-motion #ntp-theme-selector,
 body.ntp-reduced-motion #ntp-mai-sidebar,
-body.ntp-reduced-motion #ntp-mai-toggle {
+body.ntp-reduced-motion .ntp-mai-action {
     transition: none !important;
 }
 
@@ -646,6 +657,13 @@ body.ntp-reduced-motion #ntp-gradient-overlay {
     padding: 0.55rem 0.65rem;
     background: rgba(8, 13, 31, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.16);
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.ntp-control:hover,
+.ntp-toggle-control:hover {
+    background: rgba(20, 28, 48, 0.55);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .ntp-control {
@@ -671,14 +689,49 @@ body.ntp-reduced-motion #ntp-gradient-overlay {
 }
 
 .ntp-toggle-control {
-    display: inline-flex;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
     min-height: 2.4rem;
+    cursor: pointer;
+    user-select: none;
 }
 
 .ntp-toggle-control input {
-    accent-color: #87a8ff;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 2.4rem;
+    height: 1.35rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.ntp-toggle-control input::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.35rem - 6px);
+    height: calc(1.35rem - 6px);
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.ntp-toggle-control input:checked {
+    background: #5d7dff;
+    border-color: #5d7dff;
+}
+
+.ntp-toggle-control input:checked::after {
+    transform: translateX(1.05rem);
 }
 
 body.ntp-density-compact #ntp-main-shell {

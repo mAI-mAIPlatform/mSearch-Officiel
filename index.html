@@ -205,15 +205,22 @@
       </div>
       <img id="webview-placeholder" hidden aria-hidden="true" />
       <div id="ntp-content">
-          <button
-            id="ntp-mai-toggle"
-            type="button"
-            aria-controls="ntp-mai-sidebar"
-            aria-expanded="false"
-            aria-label="Ouvrir la barre mAI"
-          >
-            <span class="ntp-mai-toggle-label">mAI</span>
-          </button>
+          <div id="ntp-mai-controls">
+            <button
+              id="ntp-mai-new-chat"
+              class="ntp-mai-action i carbon:add"
+              type="button"
+              aria-label="Nouvelle discussion"
+            ></button>
+            <button
+              id="ntp-mai-toggle"
+              class="ntp-mai-action i carbon:menu"
+              type="button"
+              aria-controls="ntp-mai-sidebar"
+              aria-expanded="false"
+              aria-label="Ouvrir la barre mAI"
+            ></button>
+          </div>
           <aside id="ntp-mai-sidebar" aria-label="mAI" hidden>
             <header id="ntp-mai-header">
               <img id="ntp-mai-logo" src="ext/icons/mai-logo.png" alt="" aria-hidden="true" style="width: 2.2rem; height: 2.2rem; border-radius: 50%; background: transparent; object-fit: contain; box-shadow: none;">
