@@ -475,8 +475,22 @@ const newTabPage = {
       return
     }
 
-    const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
-    newTabPage.setMaiSidebarState(storedState, { persist: false })
+    const isEnabled = settings.get('maiSidebarEnabled')
+    if (isEnabled === false) {
+      newTabPage.maiToggleButton.hidden = true
+      newTabPage.maiSidebar.hidden = true
+      return
+    }
+
+    newTabPage.maiToggleButton.hidden = false
+
+    const openOnStartup = settings.get('maiSidebarOpenStartup')
+    if (openOnStartup === true) {
+      newTabPage.setMaiSidebarState(true, { persist: false })
+    } else {
+      const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
+      newTabPage.setMaiSidebarState(storedState, { persist: false })
+    }
 
     newTabPage.maiToggleButton.addEventListener('click', function () {
       newTabPage.setMaiSidebarState(!newTabPage.isMaiSidebarOpen)

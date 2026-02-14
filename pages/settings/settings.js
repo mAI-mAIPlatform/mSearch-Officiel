@@ -872,6 +872,27 @@ proxyTypeInput.addEventListener('change', e => {
 
 proxyInputs.forEach(item => item.addEventListener('change', e => setProxy(e.target.name, e.target.value)))
 
+/* mAI settings */
+
+var maiSidebarEnabledCheckbox = document.getElementById('checkbox-mai-sidebar-enabled')
+var maiSidebarOpenStartupCheckbox = document.getElementById('checkbox-mai-sidebar-open-startup')
+
+settings.get('maiSidebarEnabled', function (value) {
+  maiSidebarEnabledCheckbox.checked = value !== false
+})
+
+maiSidebarEnabledCheckbox.addEventListener('change', function () {
+  settings.set('maiSidebarEnabled', this.checked)
+})
+
+settings.get('maiSidebarOpenStartup', function (value) {
+  maiSidebarOpenStartupCheckbox.checked = value === true
+})
+
+maiSidebarOpenStartupCheckbox.addEventListener('change', function () {
+  settings.set('maiSidebarOpenStartup', this.checked)
+})
+
 settings.get('customBangs', (value) => {
   const bangslist = document.getElementById('custom-bangs')
 
