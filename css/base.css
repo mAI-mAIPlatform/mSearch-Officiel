@@ -3,6 +3,33 @@
   --ui-letter-spacing: 0px;
 }
 
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.58);
+  --glass-border: rgba(148, 163, 184, 0.35);
+}
+
+body.dark-mode {
+  --glass-bg: rgba(15, 23, 42, 0.52);
+  --glass-border: rgba(148, 163, 184, 0.4);
+}
+
+button,
+input,
+select,
+textarea {
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--glass-bg) 78%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -29,8 +56,6 @@ body.mac * {
 /* buttons are styled like normal text by default */
 button {
   -webkit-appearance: none;
-  background: none;
-  border: none;
   color: inherit;
   outline: none;
   border-radius: 6px;

@@ -4,7 +4,11 @@
   top: calc(var(--control-space-top) + 36px);
   left: 0;
   width: 100%;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-top: none;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   color: #000;
   padding-left: var(--control-space-left);
   padding-right: calc(82px + var(--control-space-right));
@@ -129,4 +133,10 @@ body:not(.mac) #searchbar .searchbar-item.has-action-button:hover .icon-image {
 
 .dark-theme .searchbar-shortcut:active {
   background: rgba(255, 255, 255, 0.125);
+}
+
+
+.dark-mode #searchbar {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(148, 163, 184, 0.4);
 }

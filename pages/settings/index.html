@@ -386,6 +386,27 @@
         />
       </div>
 
+      <div class="search-engine-custom-card">
+        <h4>Ajouter un moteur manuellement</h4>
+        <div class="setting-section">
+          <label for="manual-engine-name">Nom</label>
+          <input id="manual-engine-name" placeholder="Ex : Mojeek" />
+        </div>
+        <div class="setting-section">
+          <label for="manual-engine-url">URL de recherche (%s requis)</label>
+          <input id="manual-engine-url" placeholder="https://example.com/search?q=%s" />
+        </div>
+        <div class="setting-section">
+          <label for="manual-engine-suggest-url">URL suggestions (optionnel)</label>
+          <input id="manual-engine-suggest-url" placeholder="https://example.com/suggest?q=%s" />
+        </div>
+        <div class="setting-section">
+          <button id="manual-engine-add-button" class="settings-action-button" type="button">Ajouter le moteur</button>
+          <span id="manual-engine-feedback" class="settings-info-subheading" aria-live="polite"></span>
+        </div>
+        <ul id="manual-engine-list"></ul>
+      </div>
+
       <div class="setting-section">
         <label for="search-region">Région des résultats</label>
         <select id="search-region">

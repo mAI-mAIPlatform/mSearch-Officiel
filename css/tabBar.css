@@ -1,7 +1,7 @@
 #navbar {
   display: flex;
   align-items: center;
-  height: calc(44px + var(--control-space-top));
+  height: calc(46px + var(--control-space-top));
   transition: 0.2s background-color;
   width: 100%;
   -webkit-user-select: none;
@@ -9,6 +9,7 @@
   outline: none;
   z-index: 2;
   padding-top: var(--control-space-top);
+  gap: 0.35rem;
   padding-left: max(var(--control-space-left), 0.35rem);
   padding-right: max(var(--control-space-right), 0.35rem);
   backdrop-filter: blur(14px) saturate(160%);
@@ -63,6 +64,11 @@ body.is-edit-mode #toolbar-navigation-buttons {
   transition: none;
   padding: 0;
   width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 #back-button:disabled,
 #forward-button:disabled {
@@ -470,4 +476,17 @@ body:not(.dark-theme) .progress-bar {
 .p100 {
   transform: translateX(0%);
   transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+#back-button:hover,
+#forward-button:hover,
+#menu-button:hover {
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.dark-mode #back-button:hover,
+.dark-mode #forward-button:hover,
+.dark-mode #menu-button:hover {
+  background: rgba(148, 163, 184, 0.28);
 }
