@@ -337,6 +337,10 @@ var searchEngine = {
 if (typeof module === 'undefined') {
   window.currentSearchEngine = currentSearchEngine
   window.searchEngine = searchEngine
+  window.searchEngines = searchEngines
 } else {
   module.exports = searchEngine
+  if (typeof window !== 'undefined') {
+    window.searchEngines = searchEngines
+  }
 }

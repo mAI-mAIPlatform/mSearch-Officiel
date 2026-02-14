@@ -12,6 +12,8 @@ const modules = [
   'css/taskOverlay.css',
   'css/webviews.css',
   'css/newTabPage.css',
+  'css/maiSidebar.css',
+  'css/bookmarkBar.css',
   'css/searchbar.css',
   'css/listItem.css',
   'css/bookmarkManager.css',

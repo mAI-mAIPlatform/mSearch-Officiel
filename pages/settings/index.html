@@ -20,7 +20,7 @@
 
     <div class="settings-layout">
       <aside class="settings-sidebar">
-        <h4>Sections mSearch</h4>
+        <h4>Sections</h4>
         <a href="#privacy-settings-container">Confidentialité</a>
         <a href="#appearance-settings-container">Apparence</a>
         <a href="#newtab-settings-container">Nouvel onglet</a>
@@ -153,6 +153,11 @@
       </div>
 
       <div class="setting-section">
+        <input type="checkbox" id="checkbox-show-bookmarks-bar" />
+        <label for="checkbox-show-bookmarks-bar">Afficher la barre de favoris</label>
+      </div>
+
+      <div class="setting-section">
         <label for="setting-language-picker" data-string="settingsLanguageSelection"></label>
         <select id="setting-language-picker"></select>
       </div>
@@ -214,7 +219,7 @@
     </div>
 
     <div class="settings-container" id="mai-settings-container">
-      <h3>Assistant mAI</h3>
+      <h3>mAI</h3>
       <div class="setting-section">
         <input type="checkbox" id="checkbox-mai-sidebar-enabled" />
         <label for="checkbox-mai-sidebar-enabled">Activer la barre latérale mAI</label>
@@ -222,6 +227,17 @@
       <div class="setting-section">
         <input type="checkbox" id="checkbox-mai-sidebar-open-startup" />
         <label for="checkbox-mai-sidebar-open-startup">Ouvrir la barre latérale au démarrage</label>
+      </div>
+      <div class="setting-section">
+        <input type="checkbox" id="checkbox-mai-sidebar-global" />
+        <label for="checkbox-mai-sidebar-global">Afficher sur tous les sites</label>
+      </div>
+      <div class="setting-section">
+        <label for="select-mai-sidebar-position">Position de la barre latérale</label>
+        <select id="select-mai-sidebar-position">
+          <option value="right">Droite</option>
+          <option value="left">Gauche</option>
+        </select>
       </div>
     </div>
 
