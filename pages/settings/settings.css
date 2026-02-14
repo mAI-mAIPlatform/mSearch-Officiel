@@ -379,3 +379,64 @@ body.dark-mode #add-custom-bang {
   color: #f8fafc;
   border-color: rgba(148, 163, 184, 0.55);
 }
+
+
+.settings-container {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+body.dark-mode .settings-container {
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(148, 163, 184, 0.34);
+}
+
+.setting-section select,
+.setting-section input,
+.setting-section textarea {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  border-radius: 10px;
+  padding: 0.35rem 0.5rem;
+}
+
+body.dark-mode .setting-section select,
+body.dark-mode .setting-section input,
+body.dark-mode .setting-section textarea {
+  background: rgba(30, 41, 59, 0.72);
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.search-engine-custom-card {
+  margin-top: 1rem;
+  border: 1px solid rgba(56, 189, 248, 0.42);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: rgba(224, 242, 254, 0.45);
+}
+
+body.dark-mode .search-engine-custom-card {
+  background: rgba(14, 116, 144, 0.15);
+}
+
+#manual-engine-list {
+  list-style: none;
+  margin-top: 0.4rem;
+}
+
+.manual-engine-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+}
+
+.manual-engine-remove-button {
+  padding: 0.25rem 0.6rem;
+}

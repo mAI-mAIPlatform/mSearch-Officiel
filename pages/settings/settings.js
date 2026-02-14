@@ -18,6 +18,12 @@ var searchRegionSelect = document.getElementById('search-region')
 var searchLanguageSelect = document.getElementById('search-language')
 var searchSafeModeSelect = document.getElementById('search-safe-mode')
 var searchExtraParamsInput = document.getElementById('search-extra-params')
+var manualEngineNameInput = document.getElementById('manual-engine-name')
+var manualEngineURLInput = document.getElementById('manual-engine-url')
+var manualEngineSuggestURLInput = document.getElementById('manual-engine-suggest-url')
+var manualEngineAddButton = document.getElementById('manual-engine-add-button')
+var manualEngineFeedback = document.getElementById('manual-engine-feedback')
+var manualEngineList = document.getElementById('manual-engine-list')
 
 var dynamicThemeCheckbox = document.getElementById('checkbox-dynamic-theme')
 var liquidGlassAnimationsCheckbox = document.getElementById('checkbox-liquid-glass-animations')
@@ -644,41 +650,176 @@ function saveSearchEngineOptions () {
   })
 }
 
-searchEngineInput.setAttribute('placeholder', l('customSearchEngineDescription'))
-
-settings.onLoad(function () {
-  const activeEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
-
-  if (currentSearchEngine.custom) {
-    searchEngineInput.hidden = false
-    searchEngineInput.value = currentSearchEngine.searchURL
-    searchEngineDropdown.value = 'custom'
+function sanitizeManualEngineInput (item) {
+  if (!item || typeof item !== 'object') {
+    return null
   }
 
-  const optionsFragment = document.createDocumentFragment()
+  var name = (item.name || '').trim()
+  var searchURL = (item.searchURL || '').trim()
+  var suggestionsURL = (item.suggestionsURL || '').trim()
+
+  if (!name || !searchURL || !searchURL.includes('%s')) {
+    return null
+  }
+
+  return {
+    name: name,
+    searchURL: searchURL,
+    suggestionsURL: suggestionsURL
+  }
+}
+
+function setManualEngineFeedback (message, isError) {
+  manualEngineFeedback.textContent = message
+  manualEngineFeedback.style.color = isError ? '#dc2626' : ''
+}
+
+function normalizeManualSearchEngines (value) {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  var result = []
+  var seen = new Set()
+
+  value.forEach(function (item) {
+    var safeItem = sanitizeManualEngineInput(item)
+    if (!safeItem) {
+      return
+    }
+    var uniqueKey = safeItem.name.toLowerCase()
+    if (seen.has(uniqueKey)) {
+      return
+    }
+    seen.add(uniqueKey)
+    result.push(safeItem)
+  })
+
+  return result
+}
+
+function rebuildSearchEngineDropdown (activeEngine, isCustomURL) {
+  empty(searchEngineDropdown)
+
+  var optionsFragment = document.createDocumentFragment()
 
   for (var searchEngine in searchEngines) {
     var item = document.createElement('option')
     item.value = searchEngines[searchEngine].name
     item.textContent = searchEngines[searchEngine].name
 
-    if (!currentSearchEngine.custom && searchEngines[searchEngine].name === activeEngine) {
+    if (!isCustomURL && searchEngines[searchEngine].name === activeEngine) {
       item.setAttribute('selected', 'true')
     }
 
     optionsFragment.appendChild(item)
   }
 
-  // add custom option
-  item = document.createElement('option')
-  item.value = 'custom'
-  item.textContent = 'Personnalisé'
-  if (currentSearchEngine.custom) {
-    item.setAttribute('selected', 'true')
+  var customOption = document.createElement('option')
+  customOption.value = 'custom'
+  customOption.textContent = 'Personnalisé'
+  if (isCustomURL) {
+    customOption.setAttribute('selected', 'true')
   }
-  optionsFragment.appendChild(item)
+  optionsFragment.appendChild(customOption)
 
   searchEngineDropdown.appendChild(optionsFragment)
+}
+
+function renderManualEngineList (items) {
+  empty(manualEngineList)
+
+  items.forEach(function (item, index) {
+    var li = document.createElement('li')
+    li.className = 'manual-engine-list-item'
+
+    var text = document.createElement('span')
+    text.textContent = item.name + ' — ' + item.searchURL
+
+    var removeButton = document.createElement('button')
+    removeButton.type = 'button'
+    removeButton.className = 'settings-action-button manual-engine-remove-button'
+    removeButton.textContent = 'Supprimer'
+    removeButton.addEventListener('click', function () {
+      var updated = items.slice(0, index).concat(items.slice(index + 1))
+      settings.set('customSearchEngines', updated)
+      setManualEngineFeedback('Moteur supprimé.', false)
+    })
+
+    li.appendChild(text)
+    li.appendChild(removeButton)
+    manualEngineList.appendChild(li)
+  })
+}
+
+function setupManualSearchEngineManagement () {
+  settings.get('customSearchEngines', function (value) {
+    var safeItems = normalizeManualSearchEngines(value)
+    renderManualEngineList(safeItems)
+    if (JSON.stringify(safeItems) !== JSON.stringify(value || [])) {
+      settings.set('customSearchEngines', safeItems)
+    }
+  })
+
+  manualEngineAddButton.addEventListener('click', function () {
+    var nextItem = sanitizeManualEngineInput({
+      name: manualEngineNameInput.value,
+      searchURL: manualEngineURLInput.value,
+      suggestionsURL: manualEngineSuggestURLInput.value
+    })
+
+    if (!nextItem) {
+      setManualEngineFeedback('Moteur invalide : nom et URL contenant %s requis.', true)
+      return
+    }
+
+    settings.get('customSearchEngines', function (value) {
+      var safeItems = normalizeManualSearchEngines(value)
+      var exists = safeItems.some(function (item) {
+        return item.name.toLowerCase() === nextItem.name.toLowerCase()
+      })
+
+      if (exists) {
+        setManualEngineFeedback('Ce nom de moteur existe déjà.', true)
+        return
+      }
+
+      safeItems.push(nextItem)
+      settings.set('customSearchEngines', safeItems)
+      settings.set('searchEngine', { name: nextItem.name })
+      manualEngineNameInput.value = ''
+      manualEngineURLInput.value = ''
+      manualEngineSuggestURLInput.value = ''
+      setManualEngineFeedback('Moteur ajouté et activé.', false)
+    })
+  })
+
+  settings.listen('customSearchEngines', function (value) {
+    var safeItems = normalizeManualSearchEngines(value)
+    renderManualEngineList(safeItems)
+    var isCustomURL = searchEngineDropdown.value === 'custom'
+    var activeEngine = !isCustomURL && searchEngineDropdown.value ? searchEngineDropdown.value : (currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo')
+    rebuildSearchEngineDropdown(activeEngine, isCustomURL)
+    if (searchEngineDropdown.value !== 'custom' && activeEngine) {
+      searchEngineDropdown.value = activeEngine
+    }
+  })
+}
+
+searchEngineInput.setAttribute('placeholder', l('customSearchEngineDescription'))
+
+settings.onLoad(function () {
+  var activeEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
+  var isCustomURL = !!currentSearchEngine.custom
+
+  if (currentSearchEngine.custom) {
+    searchEngineInput.hidden = false
+    searchEngineInput.value = currentSearchEngine.searchURL
+  }
+
+  rebuildSearchEngineDropdown(activeEngine, isCustomURL)
+  setupManualSearchEngineManagement()
 
   settings.get('searchEngine', function (value) {
     if (value && value.name) {
@@ -712,7 +853,10 @@ searchEngineDropdown.addEventListener('change', function () {
 })
 
 searchEngineInput.addEventListener('input', function () {
-  settings.set('searchEngine', { url: this.value })
+  settings.set('searchEngine', {
+    url: this.value,
+    suggestionsURL: (manualEngineSuggestURLInput && manualEngineSuggestURLInput.value) ? manualEngineSuggestURLInput.value.trim() : ''
+  })
 })
 
 searchRegionSelect.addEventListener('change', saveSearchEngineOptions)

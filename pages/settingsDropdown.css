@@ -125,3 +125,29 @@ body[theme="sepia"] #settings-dropdown {
     max-width: none;
   }
 }
+
+
+#settings-button {
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+body[theme="dark"] #settings-button {
+  background: rgba(30, 41, 59, 0.62);
+}
+
+#settings-dropdown select,
+#settings-dropdown input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  padding: 0.32rem 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+body[theme="dark"] #settings-dropdown select,
+body[theme="dark"] #settings-dropdown input {
+  background: rgba(15, 23, 42, 0.75);
+}

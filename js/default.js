@@ -162,13 +162,26 @@ require('passwordManager/passwordCapture.js').initialize()
 require('passwordManager/passwordViewer.js').initialize()
 require('util/theme.js').initialize()
 require('userscripts.js').initialize()
-require('statistics.js').initialize()
 require('taskOverlay/taskOverlay.js').initialize()
 require('sessionRestore.js').initialize()
-require('bookmarkConverter.js').initialize()
 require('newTabPage.js').initialize()
-require('productivityHub.js').initialize()
-require('macHandoff.js').initialize()
+
+function runInBackground (fn) {
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(function () {
+      fn()
+    }, { timeout: 1800 })
+  } else {
+    setTimeout(fn, 350)
+  }
+}
+
+runInBackground(function () {
+  require('statistics.js').initialize()
+  require('bookmarkConverter.js').initialize()
+  require('productivityHub.js').initialize()
+  require('macHandoff.js').initialize()
+})
 
 // default searchbar plugins
 
@@ -180,11 +193,14 @@ require('searchbar/searchSuggestionsPlugin.js').initialize()
 require('searchbar/placeSuggestionsPlugin.js').initialize()
 require('searchbar/updateNotifications.js').initialize()
 require('searchbar/restoreTaskPlugin.js').initialize()
-require('searchbar/bookmarkManager.js').initialize()
-require('searchbar/historyViewer.js').initialize()
 require('searchbar/developmentModeNotification.js').initialize()
 require('searchbar/shortcutButtons.js').initialize()
-require('searchbar/calculatorPlugin.js').initialize()
+
+runInBackground(function () {
+  require('searchbar/bookmarkManager.js').initialize()
+  require('searchbar/historyViewer.js').initialize()
+  require('searchbar/calculatorPlugin.js').initialize()
+})
 
 // once everything's loaded, start the session
 require('sessionRestore.js').restore()

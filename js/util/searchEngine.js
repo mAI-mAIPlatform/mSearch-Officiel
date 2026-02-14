@@ -88,6 +88,52 @@ var searchEngines = {
   }
 }
 
+function sanitizeCustomSearchEngine (engine) {
+  if (!engine || typeof engine !== 'object') {
+    return null
+  }
+
+  var name = typeof engine.name === 'string' ? engine.name.trim() : ''
+  var searchURL = typeof engine.searchURL === 'string' ? engine.searchURL.trim() : ''
+  var suggestionsURL = typeof engine.suggestionsURL === 'string' ? engine.suggestionsURL.trim() : ''
+
+  if (!name || !searchURL || !searchURL.includes('%s')) {
+    return null
+  }
+
+  return {
+    name: name,
+    searchURL: searchURL,
+    suggestionsURL: suggestionsURL || undefined,
+    queryParam: 'q',
+    custom: true
+  }
+}
+
+function updateCustomSearchEngines (items) {
+  Object.keys(searchEngines).forEach(function (key) {
+    if (searchEngines[key] && searchEngines[key].custom && !searchEngines[key].builtIn) {
+      delete searchEngines[key]
+    }
+  })
+
+  if (!Array.isArray(items)) {
+    return
+  }
+
+  items.forEach(function (item) {
+    var safeEngine = sanitizeCustomSearchEngine(item)
+    if (!safeEngine) {
+      return
+    }
+    var key = safeEngine.name
+    searchEngines[key] = safeEngine
+    try {
+      searchEngines[key].urlObj = new URL(searchEngines[key].searchURL)
+    } catch (e) {}
+  })
+}
+
 function normalizeSearchOptions (value) {
   if (!value || typeof value !== 'object') {
     return { ...defaultSearchOptions }
@@ -219,6 +265,18 @@ for (const e in searchEngines) {
   } catch (e) {}
 }
 
+if (settings && typeof settings.listen === 'function') {
+  settings.listen('customSearchEngines', function (value) {
+    updateCustomSearchEngines(value)
+  })
+}
+
+if (settings && typeof settings.get === 'function') {
+  settings.get('customSearchEngines', function (value) {
+    updateCustomSearchEngines(value)
+  })
+}
+
 settings.listen('searchEngine', function (value) {
   if (value && value.name) {
     currentSearchEngine = searchEngines[value.name]
@@ -230,6 +288,8 @@ settings.listen('searchEngine', function (value) {
     currentSearchEngine = {
       name: searchDomain || 'custom',
       searchURL: value.url,
+      suggestionsURL: value.suggestionsURL,
+      queryParam: 'q',
       custom: true
     }
   } else {
