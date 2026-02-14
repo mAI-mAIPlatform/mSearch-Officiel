@@ -142,6 +142,8 @@ const newTabPage = {
   toggleHistory: document.getElementById('ntp-toggle-history'),
   maiSidebar: document.getElementById('ntp-mai-sidebar'),
   maiToggleButton: document.getElementById('ntp-mai-toggle'),
+  maiNewChatButton: document.getElementById('ntp-mai-new-chat'),
+  maiIframe: document.getElementById('ntp-mai-iframe'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
@@ -491,10 +493,16 @@ const newTabPage = {
     if (isEnabled === false) {
       newTabPage.maiToggleButton.hidden = true
       newTabPage.maiSidebar.hidden = true
+      if (newTabPage.maiNewChatButton) {
+        newTabPage.maiNewChatButton.hidden = true
+      }
       return
     }
 
     newTabPage.maiToggleButton.hidden = false
+    if (newTabPage.maiNewChatButton) {
+      newTabPage.maiNewChatButton.hidden = false
+    }
 
     const openOnStartup = settings.get('maiSidebarOpenStartup')
     if (openOnStartup === true) {
@@ -507,6 +515,22 @@ const newTabPage = {
     newTabPage.maiToggleButton.addEventListener('click', function () {
       newTabPage.setMaiSidebarState(!newTabPage.isMaiSidebarOpen)
     })
+
+    if (newTabPage.maiNewChatButton) {
+      newTabPage.maiNewChatButton.addEventListener('click', function () {
+        if (newTabPage.maiIframe) {
+          // Force reload to start new chat
+          const currentSrc = newTabPage.maiIframe.src
+          newTabPage.maiIframe.src = 'about:blank'
+          setTimeout(() => {
+            newTabPage.maiIframe.src = currentSrc
+          }, 10)
+        }
+        if (!newTabPage.isMaiSidebarOpen) {
+          newTabPage.setMaiSidebarState(true)
+        }
+      })
+    }
 
     document.addEventListener('keydown', function (event) {
       if (event.key !== 'Escape' || !newTabPage.isMaiSidebarOpen) {
