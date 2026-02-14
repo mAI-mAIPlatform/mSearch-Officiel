@@ -43,7 +43,7 @@ class TaskList {
       resources: task.resources || []
     }
 
-    if (index) {
+    if (typeof index === 'number') {
       this.tasks.splice(index, 0, newTask)
     } else {
       this.tasks.push(newTask)
@@ -114,6 +114,11 @@ class TaskList {
   }
 
   setSelected (id, emit = true, onWindow = windowId) {
+    const targetTask = this.get(id)
+    if (!targetTask) {
+      return
+    }
+
     for (let i = 0; i < this.tasks.length; i++) {
       if (this.tasks[i].selectedInWindow === onWindow) {
         this.tasks[i].selectedInWindow = null
@@ -123,7 +128,7 @@ class TaskList {
       }
     }
     if (onWindow === windowId) {
-      window.tabs = this.get(id).tabs
+      window.tabs = targetTask.tabs
       if (emit) {
         this.emit('task-selected', id)
         if (tabs.getSelected()) {

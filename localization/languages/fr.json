@@ -53,6 +53,7 @@
     "moveToTask": "Déplacer vers ce workspace",
     "nameTask": "Nommer le workspace",
     "taskAddResource": "Ajouter une ressource",
+    "taskAddResourcePrompt": "Entrez une URL ou un chemin de ressource :",
     "addBookmark": "Ajouter un marque-page",
     "searchBookmarks": "Rechercher des signets",
     "bookmarksAddTag": "Ajouter une étiquette de marque-page",
