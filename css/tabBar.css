@@ -12,16 +12,12 @@
   gap: 0.35rem;
   padding-left: max(var(--control-space-left), 0.35rem);
   padding-right: max(var(--control-space-right), 0.35rem);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  background: rgba(250, 252, 255, 0.58);
-  border-bottom: 1px solid rgba(120, 135, 180, 0.2);
+  backdrop-filter: blur(var(--liquid-glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--liquid-glass-blur)) saturate(160%);
+  background: color-mix(in srgb, var(--glass-bg) 92%, rgba(250, 252, 255, 0.35));
+  border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 78%, rgba(120, 135, 180, 0.16));
 }
 
-.dark-mode #navbar {
-  background: rgba(22, 28, 42, 0.5);
-  border-bottom-color: rgba(255, 255, 255, 0.13);
-}
 
 /* when the tab-group is white, we need a line to separate it from the webviews */
 
@@ -348,11 +344,19 @@ body.windows.dark-theme .navbar-action-button:not(:disabled):hover {
 }
 .navbar-right-actions {
   margin-right: 2.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar-right-actions #add-tab-button {
   padding: 0;
   width: 36px;
+  height: 36px;
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.6em !important;
 }
 

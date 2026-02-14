@@ -208,7 +208,9 @@ html {
 }
 
 #font-size-value,
-#font-spacing-value {
+#font-spacing-value,
+#liquid-glass-blur-value,
+#liquid-glass-opacity-value {
   display: inline-block;
   min-width: 3.5em;
   margin-left: 0.5em;
@@ -216,15 +218,10 @@ html {
 }
 
 .settings-action-button {
-  border: 1px solid #94a3b8;
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 0.4em 0.75em;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-body.dark-mode .settings-action-button {
-  background: rgba(39, 45, 56, 0.8);
-  border-color: #5f6b7d;
+  background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
 }
 
 .settings-layout {
@@ -241,11 +238,11 @@ body.dark-mode .settings-action-button {
   top: 1rem;
   margin-top: 2.25em;
   margin-left: 1em;
-  border: 1px solid rgba(148, 163, 184, 0.32);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
+  backdrop-filter: blur(var(--liquid-glass-blur));
 }
 
 .settings-sidebar h4 {
@@ -271,21 +268,11 @@ body.dark-mode .settings-action-button {
 }
 
 #newtab-settings-container {
-  border: 1px solid rgba(96, 165, 250, 0.35);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
-  background: rgba(219, 234, 254, 0.22);
+  background: color-mix(in srgb, var(--glass-bg) 88%, rgba(219, 234, 254, 0.2));
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
-}
-
-body.dark-mode .settings-sidebar {
-  background: rgba(24, 30, 43, 0.75);
-  border-color: rgba(100, 116, 139, 0.5);
-}
-
-body.dark-mode #newtab-settings-container {
-  background: rgba(30, 41, 59, 0.25);
-  border-color: rgba(96, 165, 250, 0.45);
 }
 
 @media all and (max-width: 980px) {
@@ -301,22 +288,17 @@ body.dark-mode #newtab-settings-container {
 
 
 #search-engine-settings-container {
-  border: 1px solid rgba(125, 211, 252, 0.45);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
-  background: rgba(240, 249, 255, 0.5);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  background: color-mix(in srgb, var(--glass-bg) 90%, rgba(240, 249, 255, 0.2));
+  backdrop-filter: blur(var(--liquid-glass-blur)) saturate(130%);
+  -webkit-backdrop-filter: blur(var(--liquid-glass-blur)) saturate(130%);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
 
 #search-engine-settings-container input {
   width: min(100%, 34rem);
-}
-
-body.dark-mode #search-engine-settings-container {
-  background: rgba(15, 23, 42, 0.35);
-  border-color: rgba(56, 189, 248, 0.6);
 }
 
 

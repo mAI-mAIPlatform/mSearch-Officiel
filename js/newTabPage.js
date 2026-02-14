@@ -3,6 +3,7 @@ const path = require('path')
 const statistics = require('js/statistics.js')
 const places = require('places/places.js')
 const searchbar = require('searchbar/searchbar.js')
+const searchEngine = require('js/util/searchEngine.js')
 const tabEditor = require('navbar/tabEditor.js')
 const settings = require('util/settings/settings.js')
 
@@ -125,6 +126,7 @@ const newTabPage = {
   personalizationPanel: document.getElementById('ntp-personalization-panel'),
   densitySelector: document.getElementById('ntp-density-selector'),
   glassSelector: document.getElementById('ntp-glass-selector'),
+  searchEngineSelector: document.getElementById('ntp-search-engine-selector'),
   toggleWidgets: document.getElementById('ntp-toggle-widgets'),
   toggleFavorites: document.getElementById('ntp-toggle-favorites'),
   toggleHistory: document.getElementById('ntp-toggle-history'),
@@ -353,9 +355,6 @@ const newTabPage = {
     const showHistory = newTabPage.getBooleanPreference(SHOW_HISTORY_STORAGE_KEY, true)
 
     document.body.classList.toggle('ntp-density-compact', density === 'compact')
-    document.body.classList.toggle('ntp-glass-soft', glass === 'soft')
-    document.body.classList.toggle('ntp-glass-strong', glass === 'strong')
-
     if (newTabPage.widgetsPanel) {
       newTabPage.widgetsPanel.hidden = !showWidgets
     }
@@ -681,6 +680,49 @@ const newTabPage = {
       })
     })
   },
+  refreshSearchInputPlaceholder: function () {
+    if (!newTabPage.searchInput) {
+      return
+    }
+
+    const currentEngine = searchEngine.getCurrent() && searchEngine.getCurrent().name
+    const safeName = currentEngine || 'DuckDuckGo'
+    newTabPage.searchInput.placeholder = 'Rechercher avec ' + safeName + ' ou entrer une adresse'
+  },
+  bindSearchEngineSelector: function () {
+    if (!newTabPage.searchEngineSelector) {
+      return
+    }
+
+    const engines = searchEngine.getAvailable()
+    newTabPage.searchEngineSelector.textContent = ''
+
+    engines.forEach(function (engine) {
+      const option = document.createElement('option')
+      option.value = engine.name
+      option.textContent = engine.name
+      newTabPage.searchEngineSelector.appendChild(option)
+    })
+
+    const currentEngine = searchEngine.getCurrent() && searchEngine.getCurrent().name
+    if (currentEngine) {
+      newTabPage.searchEngineSelector.value = currentEngine
+    }
+
+    newTabPage.searchEngineSelector.addEventListener('change', function () {
+      settings.set('searchEngine', { name: newTabPage.searchEngineSelector.value })
+      newTabPage.refreshSearchInputPlaceholder()
+    })
+
+    settings.listen('searchEngine', function (value) {
+      if (value && value.name && newTabPage.searchEngineSelector) {
+        newTabPage.searchEngineSelector.value = value.name
+      }
+      newTabPage.refreshSearchInputPlaceholder()
+    })
+
+    newTabPage.refreshSearchInputPlaceholder()
+  },
   bindSearch: function () {
     if (!newTabPage.searchForm || !newTabPage.searchInput) {
       return
@@ -715,6 +757,7 @@ const newTabPage = {
     newTabPage.applyDisplayPreferences()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
+    newTabPage.bindSearchEngineSelector()
     newTabPage.bindSearch()
     newTabPage.bindPersonalizationControls()
     newTabPage.bindMaiSidebarControls()

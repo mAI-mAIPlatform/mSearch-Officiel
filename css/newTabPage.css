@@ -1,7 +1,7 @@
 body {
-    --ntp-glass-bg: rgba(15, 20, 38, 0.45);
+    --ntp-glass-bg: rgba(15, 20, 38, calc(var(--liquid-glass-opacity) + 0.02));
     --ntp-glass-border: rgba(255, 255, 255, 0.22);
-    --ntp-glass-blur: 16px;
+    --ntp-glass-blur: var(--liquid-glass-blur);
     --ntp-panel-padding: 1rem;
     --ntp-action-padding-y: 0.65rem;
     --ntp-action-padding-x: 0.95rem;
@@ -13,17 +13,6 @@ body.ntp-density-compact {
     --ntp-action-padding-x: 0.75rem;
 }
 
-body.ntp-glass-soft {
-    --ntp-glass-bg: rgba(25, 32, 56, 0.34);
-    --ntp-glass-border: rgba(255, 255, 255, 0.17);
-    --ntp-glass-blur: 12px;
-}
-
-body.ntp-glass-strong {
-    --ntp-glass-bg: rgba(9, 13, 27, 0.58);
-    --ntp-glass-border: rgba(255, 255, 255, 0.3);
-    --ntp-glass-blur: 24px;
-}
 
 #ntp-content {
     width: 100%;

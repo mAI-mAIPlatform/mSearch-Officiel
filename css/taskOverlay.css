@@ -51,9 +51,15 @@
 #switch-task-button {
   position: absolute;
   top: calc(var(--control-space-top) + 5px);
-  right: var(--control-space-right);
+  right: calc(var(--control-space-right) + 2.3em);
   z-index: 4;
-  padding: 0.5em;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #switch-task-button.active {

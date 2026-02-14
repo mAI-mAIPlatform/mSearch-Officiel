@@ -277,7 +277,7 @@ if (settings && typeof settings.get === 'function') {
   })
 }
 
-settings.listen('searchEngine', function (value) {
+if (settings && typeof settings.listen === 'function') settings.listen('searchEngine', function (value) {
   if (value && value.name) {
     currentSearchEngine = searchEngines[value.name]
   } else if (value && value.url) {
@@ -331,6 +331,13 @@ var searchEngine = {
       return null
     }
     return applySearchOptionsToURL(currentSearchEngine.suggestionsURL, query, true)
+  },
+  getAvailable: function () {
+    return Object.keys(searchEngines).map(function (key) {
+      return searchEngines[key]
+    }).filter(function (engine) {
+      return engine && engine.name && engine.name !== 'none'
+    })
   }
 }
 

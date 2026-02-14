@@ -1,16 +1,19 @@
 :root {
   --ui-font-scale: 1;
   --ui-letter-spacing: 0px;
+  --liquid-glass-blur: 14px;
+  --liquid-glass-opacity: 0.58;
+  --liquid-glass-border-opacity: 0.35;
 }
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.58);
-  --glass-border: rgba(148, 163, 184, 0.35);
+  --glass-bg: rgba(255, 255, 255, var(--liquid-glass-opacity));
+  --glass-border: rgba(148, 163, 184, var(--liquid-glass-border-opacity));
 }
 
 body.dark-mode {
-  --glass-bg: rgba(15, 23, 42, 0.52);
-  --glass-border: rgba(148, 163, 184, 0.4);
+  --glass-bg: rgba(15, 23, 42, calc(var(--liquid-glass-opacity) - 0.06));
+  --glass-border: rgba(148, 163, 184, calc(var(--liquid-glass-border-opacity) + 0.05));
 }
 
 button,
@@ -19,6 +22,8 @@ select,
 textarea {
   border: 1px solid var(--glass-border);
   background: color-mix(in srgb, var(--glass-bg) 78%, transparent);
+  backdrop-filter: blur(var(--liquid-glass-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--liquid-glass-blur)) saturate(150%);
 }
 
 @media (prefers-reduced-motion: reduce) {

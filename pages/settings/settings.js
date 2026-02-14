@@ -27,6 +27,10 @@ var manualEngineList = document.getElementById('manual-engine-list')
 
 var dynamicThemeCheckbox = document.getElementById('checkbox-dynamic-theme')
 var liquidGlassAnimationsCheckbox = document.getElementById('checkbox-liquid-glass-animations')
+var liquidGlassBlurSlider = document.getElementById('liquid-glass-blur-slider')
+var liquidGlassBlurValue = document.getElementById('liquid-glass-blur-value')
+var liquidGlassOpacitySlider = document.getElementById('liquid-glass-opacity-slider')
+var liquidGlassOpacityValue = document.getElementById('liquid-glass-opacity-value')
 var comfortReadingCheckbox = document.getElementById('checkbox-comfort-reading')
 var fontSizeSlider = document.getElementById('font-size-slider')
 var fontSizeValue = document.getElementById('font-size-value')
@@ -534,6 +538,16 @@ ntpFixTitleOverlapCheckbox.addEventListener('change', function () {
 
 /* dynamic theme, animations and font preferences */
 
+function updateLiquidGlassDisplay () {
+  if (liquidGlassBlurValue && liquidGlassBlurSlider) {
+    liquidGlassBlurValue.textContent = (parseInt(liquidGlassBlurSlider.value, 10) || 14) + 'px'
+  }
+
+  if (liquidGlassOpacityValue && liquidGlassOpacitySlider) {
+    liquidGlassOpacityValue.textContent = Math.round((parseFloat(liquidGlassOpacitySlider.value) || 0.58) * 100) + '%'
+  }
+}
+
 function updateFontDisplay () {
   fontSizeValue.textContent = (parseInt(fontSizeSlider.value) || 100) + '%'
   fontSpacingValue.textContent = (parseFloat(fontSpacingSlider.value) || 0).toFixed(2) + 'px'
@@ -553,6 +567,36 @@ settings.get('liquidGlassAnimations', function (value) {
 
 liquidGlassAnimationsCheckbox.addEventListener('change', function () {
   settings.set('liquidGlassAnimations', this.checked)
+})
+
+settings.get('liquidGlassBlur', function (value) {
+  var safe = Math.max(8, Math.min(32, parseInt(value, 10) || 14))
+  liquidGlassBlurSlider.value = String(safe)
+  updateLiquidGlassDisplay()
+})
+
+liquidGlassBlurSlider.addEventListener('input', function () {
+  settings.set('liquidGlassBlur', Math.max(8, Math.min(32, parseInt(this.value, 10) || 14)))
+  updateLiquidGlassDisplay()
+})
+
+settings.get('liquidGlassOpacity', function (value) {
+  var safe = parseFloat(value)
+  if (isNaN(safe)) {
+    safe = 0.58
+  }
+  safe = Math.max(0.2, Math.min(0.9, safe))
+  liquidGlassOpacitySlider.value = String(safe)
+  updateLiquidGlassDisplay()
+})
+
+liquidGlassOpacitySlider.addEventListener('input', function () {
+  var safe = parseFloat(this.value)
+  if (isNaN(safe)) {
+    safe = 0.58
+  }
+  settings.set('liquidGlassOpacity', Math.max(0.2, Math.min(0.9, safe)))
+  updateLiquidGlassDisplay()
 })
 
 settings.get('comfortReadingMode', function (value) {
