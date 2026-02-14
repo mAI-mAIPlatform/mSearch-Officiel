@@ -272,9 +272,13 @@ if (settings && typeof settings.listen === 'function') {
 }
 
 if (settings && typeof settings.get === 'function') {
-  settings.get('customSearchEngines', function (value) {
-    updateCustomSearchEngines(value)
-  })
+  if (settings.get.length > 1) {
+    settings.get('customSearchEngines', function (value) {
+      updateCustomSearchEngines(value)
+    })
+  } else {
+    updateCustomSearchEngines(settings.get('customSearchEngines'))
+  }
 }
 
 settings.listen('searchEngine', function (value) {

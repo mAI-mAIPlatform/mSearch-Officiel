@@ -4,12 +4,22 @@
 }
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.58);
+  --liquid-glass-blur: 16px;
+  --liquid-glass-opacity: 0.58;
+  --glass-bg-rgb: 255 255 255;
+  --glass-border-rgb: 148 163 184;
+  --glass-bg: rgb(var(--glass-bg-rgb) / var(--liquid-glass-opacity));
   --glass-border: rgba(148, 163, 184, 0.35);
+
+  /* Tokens partagés avec le Nouvel Onglet pour éviter des divergences visuelles. */
+  --ntp-glass-bg: rgb(15 20 38 / calc(var(--liquid-glass-opacity) * 0.78));
+  --ntp-glass-border: rgb(255 255 255 / 0.22);
+  --ntp-glass-blur: var(--liquid-glass-blur);
 }
 
 body.dark-mode {
-  --glass-bg: rgba(15, 23, 42, 0.52);
+  --glass-bg-rgb: 15 23 42;
+  --glass-bg: rgb(var(--glass-bg-rgb) / calc(var(--liquid-glass-opacity) * 0.9));
   --glass-border: rgba(148, 163, 184, 0.4);
 }
 

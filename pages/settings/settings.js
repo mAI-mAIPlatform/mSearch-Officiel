@@ -27,6 +27,10 @@ var manualEngineList = document.getElementById('manual-engine-list')
 
 var dynamicThemeCheckbox = document.getElementById('checkbox-dynamic-theme')
 var liquidGlassAnimationsCheckbox = document.getElementById('checkbox-liquid-glass-animations')
+var liquidGlassBlurSlider = document.getElementById('liquid-glass-blur-slider')
+var liquidGlassBlurValue = document.getElementById('liquid-glass-blur-value')
+var liquidGlassOpacitySlider = document.getElementById('liquid-glass-opacity-slider')
+var liquidGlassOpacityValue = document.getElementById('liquid-glass-opacity-value')
 var comfortReadingCheckbox = document.getElementById('checkbox-comfort-reading')
 var fontSizeSlider = document.getElementById('font-size-slider')
 var fontSizeValue = document.getElementById('font-size-value')
@@ -537,6 +541,8 @@ ntpFixTitleOverlapCheckbox.addEventListener('change', function () {
 function updateFontDisplay () {
   fontSizeValue.textContent = (parseInt(fontSizeSlider.value) || 100) + '%'
   fontSpacingValue.textContent = (parseFloat(fontSpacingSlider.value) || 0).toFixed(2) + 'px'
+  liquidGlassBlurValue.textContent = (parseInt(liquidGlassBlurSlider.value) || 16) + 'px'
+  liquidGlassOpacityValue.textContent = Math.max(0.3, Math.min(0.8, parseFloat(liquidGlassOpacitySlider.value) || 0.58)).toFixed(2)
 }
 
 settings.get('dynamicThemeEnabled', function (value) {
@@ -553,6 +559,30 @@ settings.get('liquidGlassAnimations', function (value) {
 
 liquidGlassAnimationsCheckbox.addEventListener('change', function () {
   settings.set('liquidGlassAnimations', this.checked)
+})
+
+settings.get('liquidGlassBlur', function (value) {
+  var safe = Math.max(8, Math.min(28, parseInt(value, 10) || 16))
+  liquidGlassBlurSlider.value = String(safe)
+  updateFontDisplay()
+})
+
+liquidGlassBlurSlider.addEventListener('input', function () {
+  var safe = Math.max(8, Math.min(28, parseInt(this.value, 10) || 16))
+  settings.set('liquidGlassBlur', safe)
+  updateFontDisplay()
+})
+
+settings.get('liquidGlassOpacity', function (value) {
+  var safe = Math.max(0.3, Math.min(0.8, typeof value === 'number' ? value : parseFloat(value) || 0.58))
+  liquidGlassOpacitySlider.value = String(safe)
+  updateFontDisplay()
+})
+
+liquidGlassOpacitySlider.addEventListener('input', function () {
+  var safe = Math.max(0.3, Math.min(0.8, parseFloat(this.value) || 0.58))
+  settings.set('liquidGlassOpacity', parseFloat(safe.toFixed(2)))
+  updateFontDisplay()
 })
 
 settings.get('comfortReadingMode', function (value) {

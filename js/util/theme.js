@@ -18,6 +18,10 @@ function disableDarkMode () {
   })
 }
 
+function clamp (value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
+
 function applyTypographyPreferences () {
   const fontScale = settings.get('uiFontScale') || 100
   const letterSpacing = settings.get('uiLetterSpacing') || 0
@@ -31,6 +35,16 @@ function applyTypographyPreferences () {
 function applyLiquidGlassPreference () {
   const enabled = settings.get('liquidGlassAnimations') !== false
   document.body.classList.toggle('liquid-glass-animations', enabled)
+}
+
+function applyLiquidGlassTokens () {
+  const blurSetting = Number(settings.get('liquidGlassBlur'))
+  const opacitySetting = Number(settings.get('liquidGlassOpacity'))
+  const blur = Number.isFinite(blurSetting) ? clamp(blurSetting, 8, 28) : 16
+  const opacity = Number.isFinite(opacitySetting) ? clamp(opacitySetting, 0.3, 0.8) : 0.58
+
+  document.documentElement.style.setProperty('--liquid-glass-blur', `${blur}px`)
+  document.documentElement.style.setProperty('--liquid-glass-opacity', opacity.toFixed(2))
 }
 
 function getLocalHour () {
@@ -73,9 +87,12 @@ function initialize () {
   settings.listen('comfortReadingMode', applyTypographyPreferences)
   settings.listen('liquidGlassAnimations', applyLiquidGlassPreference)
   settings.listen('dynamicThemeEnabled', applyDynamicTheme)
+  settings.listen('liquidGlassBlur', applyLiquidGlassTokens)
+  settings.listen('liquidGlassOpacity', applyLiquidGlassTokens)
 
   applyTypographyPreferences()
   applyLiquidGlassPreference()
+  applyLiquidGlassTokens()
   applyDynamicTheme()
 
   setInterval(applyDynamicTheme, 5 * 60 * 1000)

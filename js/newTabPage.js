@@ -3,6 +3,7 @@ const path = require('path')
 const statistics = require('js/statistics.js')
 const places = require('places/places.js')
 const searchbar = require('searchbar/searchbar.js')
+const searchEngine = require('util/searchEngine.js')
 const tabEditor = require('navbar/tabEditor.js')
 const settings = require('util/settings/settings.js')
 
@@ -115,6 +116,7 @@ const newTabPage = {
   historyList: document.getElementById('ntp-history-list'),
   searchForm: document.getElementById('ntp-search-form'),
   searchInput: document.getElementById('ntp-search-input'),
+  searchEngineSelector: document.getElementById('ntp-search-engine-selector'),
   subtitle: document.getElementById('ntp-subtitle'),
   dateOutput: document.getElementById('ntp-date'),
   timeOutput: document.getElementById('ntp-time'),
@@ -681,6 +683,36 @@ const newTabPage = {
       })
     })
   },
+
+  populateSearchEngineSelector: function () {
+    if (!newTabPage.searchEngineSelector) {
+      return
+    }
+
+    var current = settings.get('searchEngine') || {}
+    var preferredName = current && current.name ? current.name : (searchEngine.getCurrent().name || 'DuckDuckGo')
+
+    newTabPage.searchEngineSelector.textContent = ''
+
+    Object.keys(searchEngines).forEach(function (key) {
+      var engine = searchEngines[key]
+      if (!engine || engine.name === 'none') {
+        return
+      }
+      var option = document.createElement('option')
+      option.value = engine.name
+      option.textContent = engine.name
+      newTabPage.searchEngineSelector.appendChild(option)
+    })
+
+    if (preferredName && Array.from(newTabPage.searchEngineSelector.options).some(function (option) { return option.value === preferredName })) {
+      newTabPage.searchEngineSelector.value = preferredName
+    }
+
+    if (!newTabPage.searchEngineSelector.value && newTabPage.searchEngineSelector.options.length > 0) {
+      newTabPage.searchEngineSelector.selectedIndex = 0
+    }
+  },
   bindSearch: function () {
     if (!newTabPage.searchForm || !newTabPage.searchInput) {
       return
@@ -694,9 +726,27 @@ const newTabPage = {
         return
       }
 
+      const selectedEngine = newTabPage.searchEngineSelector ? newTabPage.searchEngineSelector.value : ''
+      const looksLikeURL = newTabPage.normalizeURL(query).includes('://') || query.startsWith('about:') || query.startsWith('min:')
+
+      if (!looksLikeURL && selectedEngine && searchEngines[selectedEngine]) {
+        settings.set('searchEngine', { name: selectedEngine })
+        const searchURL = searchEngine.buildSearchURL(query)
+        searchbar.events.emit('url-selected', { url: searchURL, background: false })
+        return
+      }
+
       const value = newTabPage.normalizeURL(query)
       searchbar.events.emit('url-selected', { url: value, background: false })
     })
+
+    if (newTabPage.searchEngineSelector) {
+      newTabPage.searchEngineSelector.addEventListener('change', function () {
+        if (this.value && searchEngines[this.value]) {
+          settings.set('searchEngine', { name: this.value })
+        }
+      })
+    }
   },
   initialize: function () {
     if (!document.body) {
@@ -714,6 +764,7 @@ const newTabPage = {
     newTabPage.renderReminders()
     newTabPage.applyDisplayPreferences()
     newTabPage.renderHistoryAndFavorites()
+    newTabPage.populateSearchEngineSelector()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
     newTabPage.bindPersonalizationControls()
@@ -721,6 +772,19 @@ const newTabPage = {
 
     settings.listen('liquidGlassAnimations', function (value) {
       document.body.classList.toggle('ntp-reduced-motion', value === false)
+    })
+
+    settings.listen('searchEngine', function (value) {
+      if (!newTabPage.searchEngineSelector || !value || !value.name) {
+        return
+      }
+      if (Array.from(newTabPage.searchEngineSelector.options).some(function (option) { return option.value === value.name })) {
+        newTabPage.searchEngineSelector.value = value.name
+      }
+    })
+
+    settings.listen('customSearchEngines', function () {
+      newTabPage.populateSearchEngineSelector()
     })
 
     if (newTabPage.picker) {

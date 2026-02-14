@@ -1,7 +1,4 @@
 body {
-    --ntp-glass-bg: rgba(15, 20, 38, 0.45);
-    --ntp-glass-border: rgba(255, 255, 255, 0.22);
-    --ntp-glass-blur: 16px;
     --ntp-panel-padding: 1rem;
     --ntp-action-padding-y: 0.65rem;
     --ntp-action-padding-x: 0.95rem;
@@ -14,15 +11,15 @@ body.ntp-density-compact {
 }
 
 body.ntp-glass-soft {
-    --ntp-glass-bg: rgba(25, 32, 56, 0.34);
+    --ntp-glass-bg: rgb(25 32 56 / calc(var(--liquid-glass-opacity) * 0.58));
     --ntp-glass-border: rgba(255, 255, 255, 0.17);
-    --ntp-glass-blur: 12px;
+    --ntp-glass-blur: calc(var(--liquid-glass-blur) - 4px);
 }
 
 body.ntp-glass-strong {
-    --ntp-glass-bg: rgba(9, 13, 27, 0.58);
+    --ntp-glass-bg: rgb(9 13 27 / calc(var(--liquid-glass-opacity) * 1.02));
     --ntp-glass-border: rgba(255, 255, 255, 0.3);
-    --ntp-glass-blur: 24px;
+    --ntp-glass-blur: calc(var(--liquid-glass-blur) + 8px);
 }
 
 #ntp-content {
@@ -219,7 +216,7 @@ body:not(.is-ntp) #ntp-content {
     align-self: center;
     width: min(820px, 94%);
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
     gap: 0.55rem;
     border-radius: 999px;
@@ -250,6 +247,21 @@ body:not(.is-ntp) #ntp-content {
     color: rgba(255, 255, 255, 0.78);
 }
 
+
+.ntp-search-engine-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+#ntp-search-engine-selector {
+    font-size: 0.86rem;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--ntp-glass-border) 85%, rgba(255, 255, 255, 0.2));
+    background: color-mix(in srgb, var(--ntp-glass-bg) 88%, rgba(17, 24, 39, 0.7));
+    color: #f8fafc;
+    min-width: 140px;
+    padding: 0.42rem 0.55rem;
+}
 #ntp-search-form button,
 .ntp-subtle-button {
     cursor: pointer;
@@ -458,6 +470,18 @@ body:not(.is-ntp) #ntp-content {
 
     #ntp-search-form {
         width: 100%;
+    }
+
+    .ntp-search-engine-label {
+        display: none;
+    }
+
+    #ntp-search-form {
+        grid-template-columns: auto 1fr auto auto;
+    }
+
+    #ntp-search-engine-selector {
+        min-width: 100px;
     }
 
     #ntp-widgets-panel {
