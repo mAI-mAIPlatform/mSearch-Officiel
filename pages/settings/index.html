@@ -373,17 +373,12 @@
     <div class="settings-container" id="search-engine-settings-container">
       <h3 data-string="settingsSearchEngineHeading"></h3>
 
-      <div class="setting-section">
-        <label
-          for="defaultSearchEngine"
-          data-string="settingsDefaultSearchEngine"
-        ></label>
-        <select id="default-search-engine" name="defaultSearchEngine"></select>
-        <input
-          id="custom-search-engine"
-          style="margin-left: 0.5em; min-width: 325px"
-          hidden
-        />
+      <div class="search-option-row">
+        <label for="defaultSearchEngine" data-string="settingsDefaultSearchEngine"></label>
+        <div class="search-option-input-group">
+          <select id="default-search-engine" name="defaultSearchEngine"></select>
+          <input id="custom-search-engine" hidden />
+        </div>
       </div>
 
       <div class="search-engine-custom-card">
@@ -407,7 +402,7 @@
         <ul id="manual-engine-list"></ul>
       </div>
 
-      <div class="setting-section">
+      <div class="search-option-row">
         <label for="search-region">Région des résultats</label>
         <select id="search-region">
           <option value="fr-FR">France</option>
@@ -419,7 +414,7 @@
         </select>
       </div>
 
-      <div class="setting-section">
+      <div class="search-option-row">
         <label for="search-language">Langue prioritaire</label>
         <select id="search-language">
           <option value="fr">Français</option>
@@ -430,7 +425,7 @@
         </select>
       </div>
 
-      <div class="setting-section">
+      <div class="search-option-row">
         <label for="search-safe-mode">Filtre de contenu explicite</label>
         <select id="search-safe-mode">
           <option value="strict">Strict</option>
@@ -439,11 +434,11 @@
         </select>
       </div>
 
-      <div class="setting-section">
+      <div class="search-option-row">
         <label for="search-extra-params">Paramètres URL additionnels</label>
         <input id="search-extra-params" placeholder="ex: ref=msearch&source=app" />
-        <div class="settings-info-subheading">Astuce : ces paramètres sont ajoutés aux recherches et suggestions (format clé=valeur&clé2=valeur2).</div>
       </div>
+      <div class="settings-info-subheading" style="margin-left: 0; margin-top: 0.25em;">Astuce : ces paramètres sont ajoutés aux recherches et suggestions (format clé=valeur&clé2=valeur2).</div>
 
       <div
         class="settings-info-subheading"
