@@ -24,6 +24,14 @@ function getTaskRelativeDate (task) {
   }
 }
 
+function getTaskLastTab (task) {
+  if (!task || !task.tabs || task.tabs.isEmpty()) {
+    return null
+  }
+
+  return task.tabs.get().sort((a, b) => b.lastActivity - a.lastActivity)[0] || null
+}
+
 function toggleCollapsed (taskContainer, task) {
   tasks.update(task.id, { collapsed: !tasks.isCollapsed(task.id) })
   taskContainer.classList.toggle('collapsed')
@@ -142,9 +150,15 @@ var TaskOverlayBuilder = {
         addResourceButton.title = l('taskAddResource')
         addResourceButton.addEventListener('click', function (e) {
           e.stopPropagation()
-          var url = window.prompt('Enter resource URL or path:')
+          var url = window.prompt(l('taskAddResourcePrompt') || 'Enter resource URL or path:')
           if (url) {
-            const resources = task.resources || []
+            url = url.trim()
+
+            if (!url) {
+              return
+            }
+
+            const resources = (task.resources || []).slice()
             resources.push({ url, title: url })
             tasks.update(task.id, { resources })
             // Re-render handled by state sync or we could manually update.
@@ -174,7 +188,8 @@ var TaskOverlayBuilder = {
 
         const lastTabEl = document.createElement('span')
         lastTabEl.className = 'task-last-tab-title'
-        let lastTabTitle = task.tabs.get().sort((a, b) => b.lastActivity - a.lastActivity)[0].title
+        const lastTab = getTaskLastTab(task)
+        let lastTabTitle = lastTab ? lastTab.title : ''
 
         if (lastTabTitle) {
           lastTabTitle = searchbarUtils.getRealTitle(lastTabTitle)
