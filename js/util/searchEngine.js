@@ -82,6 +82,31 @@ var searchEngines = {
     suggestionsURL: 'https://search.brave.com/api/suggest?q=%s',
     queryParam: 'q'
   },
+  SearXNG: {
+    name: 'SearXNG',
+    searchURL: 'https://searx.be/search?q=%s',
+    queryParam: 'q'
+  },
+  Swisscows: {
+    name: 'Swisscows',
+    searchURL: 'https://swisscows.com/web?query=%s',
+    queryParam: 'query'
+  },
+  Mojeek: {
+    name: 'Mojeek',
+    searchURL: 'https://www.mojeek.com/search?q=%s',
+    queryParam: 'q'
+  },
+  You: {
+    name: 'You',
+    searchURL: 'https://you.com/search?q=%s',
+    queryParam: 'q'
+  },
+  Naver: {
+    name: 'Naver',
+    searchURL: 'https://search.naver.com/search.naver?query=%s',
+    queryParam: 'query'
+  },
   none: {
     name: 'none',
     searchURL: 'http://%s'
