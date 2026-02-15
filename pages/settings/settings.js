@@ -812,11 +812,22 @@ function setupManualSearchEngineManagement () {
   settings.listen('customSearchEngines', function (value) {
     var safeItems = normalizeManualSearchEngines(value)
     renderManualEngineList(safeItems)
-    var isCustomURL = searchEngineDropdown.value === 'custom'
-    var activeEngine = !isCustomURL && searchEngineDropdown.value ? searchEngineDropdown.value : (currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo')
+
+    var currentValue = searchEngineDropdown.value
+    var isCustomURL = currentValue === 'custom'
+    var fallbackEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
+    var activeEngine = !isCustomURL && currentValue ? currentValue : fallbackEngine
+
     rebuildSearchEngineDropdown(activeEngine, isCustomURL)
-    if (searchEngineDropdown.value !== 'custom' && activeEngine) {
+
+    if (isCustomURL) {
+      searchEngineDropdown.value = 'custom'
+    } else if (searchEngines[activeEngine]) {
       searchEngineDropdown.value = activeEngine
+    } else if (searchEngines[fallbackEngine]) {
+      searchEngineDropdown.value = fallbackEngine
+    } else {
+      searchEngineDropdown.selectedIndex = 0
     }
   })
 }
@@ -1054,6 +1065,10 @@ maiSidebarOpenStartupCheckbox.addEventListener('change', function () {
 var maiSidebarGlobalCheckbox = document.getElementById('checkbox-mai-sidebar-global')
 var maiSidebarPositionSelect = document.getElementById('select-mai-sidebar-position')
 
+function normalizeMaiSidebarPosition (value) {
+  return value === 'left' ? 'left' : 'right'
+}
+
 settings.get('maiSidebarGlobal', function (value) {
   maiSidebarGlobalCheckbox.checked = value !== false
 })
@@ -1063,11 +1078,18 @@ maiSidebarGlobalCheckbox.addEventListener('change', function () {
 })
 
 settings.get('maiSidebarPosition', function (value) {
-  maiSidebarPositionSelect.value = value || 'right'
+  var normalized = normalizeMaiSidebarPosition(value)
+  maiSidebarPositionSelect.value = normalized
+
+  if (value !== normalized) {
+    settings.set('maiSidebarPosition', normalized)
+  }
 })
 
 maiSidebarPositionSelect.addEventListener('change', function () {
-  settings.set('maiSidebarPosition', this.value)
+  var normalized = normalizeMaiSidebarPosition(this.value)
+  this.value = normalized
+  settings.set('maiSidebarPosition', normalized)
 })
 
 settings.get('customBangs', (value) => {

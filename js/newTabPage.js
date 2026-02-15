@@ -619,31 +619,27 @@ const newTabPage = {
     })
 
     // Handle position setting
-    const position = settings.get('maiSidebarPosition') || 'right'
-    if (position === 'left') {
-      document.body.classList.add('mai-sidebar-left')
+    const applyMaiSidebarPosition = function (value) {
+      // Normalize legacy/invalid values to avoid stale class state.
+      const normalized = value === 'left' ? 'left' : 'right'
+      document.body.classList.toggle('mai-sidebar-left', normalized === 'left')
     }
 
+    applyMaiSidebarPosition(settings.get('maiSidebarPosition'))
+
     settings.listen('maiSidebarPosition', function (value) {
-      if (value === 'left') {
-        document.body.classList.add('mai-sidebar-left')
-      } else {
-        document.body.classList.remove('mai-sidebar-left')
-      }
+      applyMaiSidebarPosition(value)
     })
 
     // Handle global visibility setting
-    const globalSidebar = settings.get('maiSidebarGlobal') !== false
-    if (!globalSidebar) {
-      document.body.classList.add('mai-sidebar-restricted')
+    const applyGlobalSidebarVisibility = function (value) {
+      document.body.classList.toggle('mai-sidebar-restricted', value === false)
     }
 
+    applyGlobalSidebarVisibility(settings.get('maiSidebarGlobal'))
+
     settings.listen('maiSidebarGlobal', function (value) {
-      if (value === false) {
-        document.body.classList.add('mai-sidebar-restricted')
-      } else {
-        document.body.classList.remove('mai-sidebar-restricted')
-      }
+      applyGlobalSidebarVisibility(value)
     })
   },
   renderHistoryAndFavorites: async function () {
