@@ -31,7 +31,7 @@ function getDefaultViewWebPreferences () {
 
 function createView (existingViewId, id, webPreferences, boundsString, events) {
   if (viewStateMap[id]) {
-    console.warn("Creating duplicate view")
+    console.warn('Creating duplicate view')
   }
 
   const viewPrefs = Object.assign({}, getDefaultViewWebPreferences(), webPreferences)
@@ -60,7 +60,7 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
       const eventTarget = getWindowFromViewContents(view.webContents) || windows.getCurrent()
 
       if (!eventTarget) {
-        //this can happen during shutdown - windows can be destroyed before the corresponding views, and the view can emit an event during that time
+        // this can happen during shutdown - windows can be destroyed before the corresponding views, and the view can emit an event during that time
         return
       }
 
@@ -138,7 +138,7 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
     const eventTarget = getWindowFromViewContents(view.webContents) || windows.getCurrent()
 
     if (!eventTarget) {
-      //this can happen during shutdown - windows can be destroyed before the corresponding views, and the view can emit an event during that time
+      // this can happen during shutdown - windows can be destroyed before the corresponding views, and the view can emit an event during that time
       return
     }
 
@@ -264,7 +264,6 @@ function destroyAllViews () {
   }
 }
 
-
 function setViews (ids, boundsList, senderContents, focusFirst = true) {
   const win = windows.windowFromContents(senderContents).win
   win.getContentView().children.slice(1).forEach(child => win.getContentView().removeChildView(child))
@@ -295,7 +294,7 @@ function setView (id, senderContents) {
   // changing views can cause flickering, so we only want to call it if the view is actually changing
   // see https://github.com/minbrowser/min/issues/1966
   if (windows.getState(win).selectedView !== viewMap[id]) {
-    //remove all prior views
+    // remove all prior views
     win.getContentView().children.slice(1).forEach(child => win.getContentView().removeChildView(child))
     if (viewStateMap[id].loadedInitialURL) {
       win.getContentView().addChildView(viewMap[id])
@@ -396,7 +395,7 @@ function loadURLInView (id, url, win) {
   // wait until the first URL is loaded to set the background color so that new tabs can use a custom background
   if (!viewStateMap[id].loadedInitialURL) {
     // Give the site a chance to display something before setting the background, in case it has its own dark theme
-    viewMap[id].webContents.once('dom-ready', function() {
+    viewMap[id].webContents.once('dom-ready', function () {
       viewMap[id].setBackgroundColor('#fff')
     })
     // If the view has no URL, it won't be attached yet

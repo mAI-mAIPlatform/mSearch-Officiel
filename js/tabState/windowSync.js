@@ -22,14 +22,14 @@ const windowSync = {
     })
 
     ipc.on('tab-state-change-receive', function (e, data) {
-      const {sourceWindowId, events} = data
+      const { sourceWindowId, events } = data
       events.forEach(function (event) {
         const priorSelectedTask = tasks.getSelected().id
 
         // close window if its task is destroyed
         if (
-          (event[0] === 'task-destroyed' && event[1] === priorSelectedTask)
-          || (event[0] === 'tab-destroyed' && event[2] === priorSelectedTask && tasks.getSelected().tabs.count() === 1)
+          (event[0] === 'task-destroyed' && event[1] === priorSelectedTask) ||
+          (event[0] === 'tab-destroyed' && event[2] === priorSelectedTask && tasks.getSelected().tabs.count() === 1)
         ) {
           ipc.invoke('close')
           ipc.removeAllListeners('tab-state-change-receive')
@@ -79,11 +79,11 @@ const windowSync = {
 
         if (event[0] === 'task-selected' && event[1] === priorSelectedTask) {
           // our task is being taken by another window
-          //switch to an empty task not open in any window, if possible
+          // switch to an empty task not open in any window, if possible
           var newTaskCandidates = tasks.filter(task => task.tabs.isEmpty() && !task.selectedInWindow && !task.name)
-          .sort((a, b) => {
-            return tasks.getLastActivity(b.id) - tasks.getLastActivity(a.id)
-          })
+            .sort((a, b) => {
+              return tasks.getLastActivity(b.id) - tasks.getLastActivity(a.id)
+            })
           if (newTaskCandidates.length > 0) {
             browserUI.switchToTask(newTaskCandidates[0].id)
           } else {
@@ -91,13 +91,13 @@ const windowSync = {
           }
           taskOverlay.show()
         }
-        //if a tab was added or removed from our task, force a rerender
+        // if a tab was added or removed from our task, force a rerender
         if (
-          (event[0] === 'tab-splice' &&  event[1] === priorSelectedTask)
-          || (event[0] === 'tab-destroyed' && event[2] === priorSelectedTask)
-         ) {
-              browserUI.switchToTask(tasks.getSelected().id)
-              browserUI.switchToTab(tabs.getSelected())
+          (event[0] === 'tab-splice' && event[1] === priorSelectedTask) ||
+          (event[0] === 'tab-destroyed' && event[2] === priorSelectedTask)
+        ) {
+          browserUI.switchToTask(tasks.getSelected().id)
+          browserUI.switchToTab(tabs.getSelected())
         }
       })
 

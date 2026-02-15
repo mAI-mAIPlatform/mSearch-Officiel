@@ -292,7 +292,7 @@
     "generatePassword": null, // missing translation
     /* Password viewer */
     "savedPasswordsHeading": null, //missing translation
-    "savedPasswordsEmpty": null,  //missing translation
+    "savedPasswordsEmpty": null, //missing translation
     "savedPasswordsNeverSavedLabel": null, //missing translation
     "deletePassword": "حذف گذرواژه",
     /* Dialogs */
@@ -300,7 +300,7 @@
     "dialogConfirmButton": null, //missing translation
     "dialogSkipButton": null, //missing translation
     "username": "نام کاربری",
-    "email": "رایانامه", 
+    "email": "رایانامه",
     "password": "گذرواژه",
     "secretKey": "کلید امنیتی",
     "openExternalApp": null, //missing translation

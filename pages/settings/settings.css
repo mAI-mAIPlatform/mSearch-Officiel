@@ -200,7 +200,6 @@ html {
   margin-bottom: 0.2em;
 }
 
-
 #font-preferences-section input[type="range"],
 .setting-section input[type="range"] {
   max-width: 18em;
@@ -299,7 +298,6 @@ body.dark-mode #newtab-settings-container {
   }
 }
 
-
 #search-engine-settings-container {
   border: 1px solid rgba(125, 211, 252, 0.45);
   border-radius: 14px;
@@ -318,7 +316,6 @@ body.dark-mode #search-engine-settings-container {
   background: rgba(15, 23, 42, 0.35);
   border-color: rgba(56, 189, 248, 0.6);
 }
-
 
 #default-search-engine,
 #custom-search-engine,
@@ -379,7 +376,6 @@ body.dark-mode #add-custom-bang {
   color: #f8fafc;
   border-color: rgba(148, 163, 184, 0.55);
 }
-
 
 .settings-container {
   border: 1px solid rgba(148, 163, 184, 0.28);

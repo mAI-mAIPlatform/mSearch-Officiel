@@ -163,7 +163,7 @@
     "settingsUserscriptsToggle": "Активиране на потребителски скриптове",
     "settingsLanguageSelection": null, //missing translation
     "settingsSeparateTitlebarToggle": "Използване на отделна лента със заглавието",
-    "settingsAutoplayToggle": null, //missing translation 
+    "settingsAutoplayToggle": null, //missing translation
     "settingsOpenTabsInForegroundToggle": "Отваряне на нови раздели на преден план",
     "settingsUserscriptsExplanation": {
       "unsafeHTML": "Потребителските скриптове Ви позволяват да промените поведението на уеб сайтове - <a href=\"https://github.com/minbrowser/min/wiki/userscripts\">научете повече</a>."

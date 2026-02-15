@@ -299,9 +299,9 @@ function buildAppMenu (options = {}) {
               windows.getAll().forEach(win => sendIPCToWindow(win, 'enterFocusMode'))
 
               // wait to show the message until the tabs have been hidden, to make the message less confusing
-              setTimeout(function() {
+              setTimeout(function () {
                 showFocusModeDialog1()
-              }, 16);
+              }, 16)
             }
           }
         },
@@ -335,8 +335,8 @@ function buildAppMenu (options = {}) {
             sendIPCToWindow(window, 'inspectPage')
           }
         },
-        ...(isDevelopmentMode || isDebuggingEnabled ?
-          [
+        ...(isDevelopmentMode || isDebuggingEnabled
+          ? [
             {
               type: 'separator'
             },
@@ -399,7 +399,7 @@ function buildAppMenu (options = {}) {
             type: 'checkbox',
             checked: settings.get('windowAlwaysOnTop') || false,
             click: function (item, window) {
-              windows.getAll().forEach(function(win) {
+              windows.getAll().forEach(function (win) {
                 win.setAlwaysOnTop(item.checked)
               })
               settings.set('windowAlwaysOnTop', item.checked)

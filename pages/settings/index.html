@@ -17,7 +17,6 @@
       </div>
     </div>
 
-
     <div class="settings-layout">
       <aside class="settings-sidebar">
         <h4>Sections</h4>
@@ -33,527 +32,655 @@
         <a href="#custom-bangs-container">Bangs</a>
       </aside>
       <main class="settings-main-content">
-    <div class="settings-container" id="privacy-settings-container">
-      <h3 data-string="settingsPrivacyHeading"></h3>
+        <div class="settings-container" id="privacy-settings-container">
+          <h3 data-string="settingsPrivacyHeading"></h3>
 
-      <div class="settings-info-subheading" id="content-blocking-statistics">
-        <i class="i carbon:manage-protection"></i>
-        <span
-          data-string="settingsBlockedRequestCount"
-          data-allowHTML
-          id="content-blocking-blocked-requests"
-        >
-        </span>
-      </div>
-
-      <div class="setting-section" id="tracking-level-container">
-        <div class="setting-option">
-          <input type="radio" name="blockingLevel" id="blocking-allow-all" />
-          <label
-            for="blocking-allow-all"
-            data-string="settingsContentBlockingLevel0"
-          ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="blockingLevel" id="blocking-third-party" />
-          <label
-            for="blocking-third-party"
-            data-string="settingsContentBlockingLevel1"
-          ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="blockingLevel" id="blocking-block-all" />
-          <label
-            for="blocking-block-all"
-            data-string="settingsContentBlockingLevel2"
-          ></label>
-        </div>
-
-        <div id="content-blocking-information" hidden>
-          <div>
-            <label
-              for="content-blocking-exceptions"
-              data-string="settingsContentBlockingExceptions"
-            ></label>
-            <textarea
-              spellcheck="false"
-              id="content-blocking-exceptions"
-              style="width: 100%; max-width: 500px"
-              rows="1"
-            ></textarea>
+          <div
+            class="settings-info-subheading"
+            id="content-blocking-statistics"
+          >
+            <i class="i carbon:manage-protection"></i>
+            <span
+              data-string="settingsBlockedRequestCount"
+              data-allowHTML
+              id="content-blocking-blocked-requests"
+            >
+            </span>
           </div>
-          <a
-            id="customize-filters-link"
-            href="https://github.com/minbrowser/min/wiki/Content-blocking-settings"
-            data-string="settingsCustomizeFiltersLink"
-          ></a>
+
+          <div class="setting-section" id="tracking-level-container">
+            <div class="setting-option">
+              <input
+                type="radio"
+                name="blockingLevel"
+                id="blocking-allow-all"
+              />
+              <label
+                for="blocking-allow-all"
+                data-string="settingsContentBlockingLevel0"
+              ></label>
+            </div>
+            <div class="setting-option">
+              <input
+                type="radio"
+                name="blockingLevel"
+                id="blocking-third-party"
+              />
+              <label
+                for="blocking-third-party"
+                data-string="settingsContentBlockingLevel1"
+              ></label>
+            </div>
+            <div class="setting-option">
+              <input
+                type="radio"
+                name="blockingLevel"
+                id="blocking-block-all"
+              />
+              <label
+                for="blocking-block-all"
+                data-string="settingsContentBlockingLevel2"
+              ></label>
+            </div>
+
+            <div id="content-blocking-information" hidden>
+              <div>
+                <label
+                  for="content-blocking-exceptions"
+                  data-string="settingsContentBlockingExceptions"
+                ></label>
+                <textarea
+                  spellcheck="false"
+                  id="content-blocking-exceptions"
+                  style="width: 100%; max-width: 500px"
+                  rows="1"
+                ></textarea>
+              </div>
+              <a
+                id="customize-filters-link"
+                href="https://github.com/minbrowser/min/wiki/Content-blocking-settings"
+                data-string="settingsCustomizeFiltersLink"
+              ></a>
+            </div>
+          </div>
+
+          <div id="content-type-blocking"></div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-clear-history-on-startup" />
+            <label for="checkbox-clear-history-on-startup"
+              >Nettoyer l'historique au démarrage</label
+            >
+          </div>
         </div>
-      </div>
 
-      <div id="content-type-blocking"></div>
+        <div class="settings-container" id="appearance-settings-container">
+          <h3 data-string="settingsAppearanceHeading"></h3>
 
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-clear-history-on-startup" />
-        <label for="checkbox-clear-history-on-startup">Nettoyer l'historique au démarrage</label>
-      </div>
-    </div>
-
-    <div class="settings-container" id="appearance-settings-container">
-      <h3 data-string="settingsAppearanceHeading"></h3>
-
-      <label
-        for="dark-mode-container"
-        data-string="settingsEnableDarkMode"
-      ></label>
-      <div class="setting-section" id="dark-mode-container">
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-never" />
           <label
-            for="dark-mode-never"
-            data-string="settingsDarkModeNever"
+            for="dark-mode-container"
+            data-string="settingsEnableDarkMode"
           ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-night" />
-          <label
-            for="dark-mode-night"
-            data-string="settingsDarkModeNight"
-          ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-always" />
-          <label
-            for="dark-mode-always"
-            data-string="settingsDarkModeAlways"
-          ></label>
-        </div>
-        <div class="setting-option">
-          <input type="radio" name="darkMode" id="dark-mode-system" />
-          <label
-            for="dark-mode-system"
-            data-string="settingsDarkModeSystem"
-          ></label>
-        </div>
-      </div>
+          <div class="setting-section" id="dark-mode-container">
+            <div class="setting-option">
+              <input type="radio" name="darkMode" id="dark-mode-never" />
+              <label
+                for="dark-mode-never"
+                data-string="settingsDarkModeNever"
+              ></label>
+            </div>
+            <div class="setting-option">
+              <input type="radio" name="darkMode" id="dark-mode-night" />
+              <label
+                for="dark-mode-night"
+                data-string="settingsDarkModeNight"
+              ></label>
+            </div>
+            <div class="setting-option">
+              <input type="radio" name="darkMode" id="dark-mode-always" />
+              <label
+                for="dark-mode-always"
+                data-string="settingsDarkModeAlways"
+              ></label>
+            </div>
+            <div class="setting-option">
+              <input type="radio" name="darkMode" id="dark-mode-system" />
+              <label
+                for="dark-mode-system"
+                data-string="settingsDarkModeSystem"
+              ></label>
+            </div>
+          </div>
 
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-site-theme" />
-        <label
-          for="checkbox-site-theme"
-          data-string="settingsSiteThemeToggle"
-        ></label>
-      </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-site-theme" />
+            <label
+              for="checkbox-site-theme"
+              data-string="settingsSiteThemeToggle"
+            ></label>
+          </div>
 
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-show-divider" />
-        <label
-          for="checkbox-show-divider"
-          data-string="settingsShowDividerToggle"
-        ></label>
-      </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-show-divider" />
+            <label
+              for="checkbox-show-divider"
+              data-string="settingsShowDividerToggle"
+            ></label>
+          </div>
 
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-show-bookmarks-bar" />
-        <label for="checkbox-show-bookmarks-bar">Afficher la barre de favoris</label>
-      </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-show-bookmarks-bar" />
+            <label for="checkbox-show-bookmarks-bar"
+              >Afficher la barre de favoris</label
+            >
+          </div>
 
-      <div class="setting-section">
-        <label for="setting-language-picker" data-string="settingsLanguageSelection"></label>
-        <select id="setting-language-picker"></select>
-      </div>
+          <div class="setting-section">
+            <label
+              for="setting-language-picker"
+              data-string="settingsLanguageSelection"
+            ></label>
+            <select id="setting-language-picker"></select>
+          </div>
 
+          <div class="setting-section" id="dynamic-theme-section">
+            <input type="checkbox" id="checkbox-dynamic-theme" />
+            <label for="checkbox-dynamic-theme"
+              >Activer les thèmes dynamiques (heure, météo, site)</label
+            >
+          </div>
 
-      <div class="setting-section" id="dynamic-theme-section">
-        <input type="checkbox" id="checkbox-dynamic-theme" />
-        <label for="checkbox-dynamic-theme">Activer les thèmes dynamiques (heure, météo, site)</label>
-      </div>
+          <div class="setting-section" id="liquid-glass-section">
+            <input type="checkbox" id="checkbox-liquid-glass-animations" />
+            <label for="checkbox-liquid-glass-animations">Animations</label>
+          </div>
 
-      <div class="setting-section" id="liquid-glass-section">
-        <input type="checkbox" id="checkbox-liquid-glass-animations" />
-        <label for="checkbox-liquid-glass-animations">Animations</label>
-      </div>
-
-      <div class="setting-section" id="font-preferences-section">
-        <label for="font-size-slider">Taille du texte</label>
-        <input type="range" id="font-size-slider" min="85" max="130" step="1" />
-        <span id="font-size-value"></span>
-      </div>
-      <div class="setting-section">
-        <label for="font-spacing-slider">Espacement</label>
-        <input type="range" id="font-spacing-slider" min="0" max="1.2" step="0.05" />
-        <span id="font-spacing-value"></span>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-comfort-reading" />
-        <label for="checkbox-comfort-reading">Mode lecture confortable</label>
-      </div>
-    </div>
-
-    <div class="settings-container" id="newtab-settings-container">
-      <h3>Nouvel onglet mSearch</h3>
-
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-ntp-random-background" />
-        <label for="checkbox-ntp-random-background">Activer les backgrounds aléatoires (15 images)</label>
-      </div>
-      <div class="setting-section">
-        <label for="select-ntp-shortcuts-size">Nombre de raccourcis affichés</label>
-        <select id="select-ntp-shortcuts-size">
-          <option value="4">4</option>
-          <option value="6">6</option>
-          <option value="8">8</option>
-        </select>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-ntp-show-history" />
-        <label for="checkbox-ntp-show-history">Afficher la section Historique récent</label>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-ntp-show-favorites" />
-        <label for="checkbox-ntp-show-favorites">Afficher la section Favoris</label>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-ntp-fix-title-overlap" />
-        <label for="checkbox-ntp-fix-title-overlap">Forcer la correction du chevauchement “mSearch / Nouvel onglet”</label>
-      </div>
-    </div>
-
-    <div class="settings-container" id="mai-settings-container">
-      <h3>mAI</h3>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-mai-sidebar-enabled" />
-        <label for="checkbox-mai-sidebar-enabled">Activer la barre latérale mAI</label>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-mai-sidebar-open-startup" />
-        <label for="checkbox-mai-sidebar-open-startup">Ouvrir la barre latérale au démarrage</label>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-mai-sidebar-global" />
-        <label for="checkbox-mai-sidebar-global">Afficher sur tous les sites</label>
-      </div>
-      <div class="setting-section">
-        <label for="select-mai-sidebar-position">Position de la barre latérale</label>
-        <select id="select-mai-sidebar-position">
-          <option value="right">Droite</option>
-          <option value="left">Gauche</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="settings-container" id="additional-settings-container">
-      <h3 data-string="settingsAdditionalFeaturesHeading"></h3>
-
-      <div class="setting-section">
-        <label for="startupOptions" data-string="settingsStartupOptions"></label>
-        <select id="startup-options" name="startupOptions">
-          <option value="1" data-string="settingsStartupCreateTask"></option>
-          <option 
-          value="2" data-string="settingsStartupNewTaskandBackground"></option>
-          <option value="3"
-          data-string="settingsStartupNewTaskOnly"></option>
-        </select>
-      </div>
-
-      <div class="setting-section">
-        <label for="newWindowOptions" data-string="settingsNewWindowOptions"></label>
-        <select id="new-window-options" name="newWindowOptions">
-          <option value="1" data-string="settingsNewWindowCreateTask"></option>
-          <option 
-          value="2" data-string="settingsNewWindowPickTask"></option>
-        </select>
-      </div>
-
-
-      <div class="setting-section">
-        <label for="multi-view-max-views">Multi-vue (nombre de sites visibles)</label>
-        <select id="multi-view-max-views" name="multiViewMaxViews">
-          <option value="1">1 vue</option>
-          <option value="2">2 vues (comparaison)</option>
-          <option value="3">3 vues</option>
-        </select>
-      </div>
-
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-gesture-shortcuts" />
-        <label for="checkbox-gesture-shortcuts">Raccourcis gestuels (swipe/souris)</label>
-      </div>
-      <div class="setting-section setting-secondary-label">
-        <input type="checkbox" id="checkbox-gesture-workspace" />
-        <label for="checkbox-gesture-workspace">Autoriser le changement de workspace par geste</label>
-      </div>
-
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-userscripts" />
-        <label
-          for="checkbox-userscripts"
-          data-string="settingsUserscriptsToggle"
-        ></label>
-        <div
-          class="settings-info-subheading setting-secondary-label"
-          data-string="settingsUserscriptsExplanation"
-          data-allowHTML
-        ></div>
-        <div class="setting-secondary-label" id="userscripts-show-directory" hidden style="margin-top: -0.5em; margin-bottom: 0.5em">
-          <a data-string="settingsUserscriptShowDirectory"></a>
-        </div>
-      </div>
-
-      <div class="setting-section" id="section-separate-titlebar">
-        <input type="checkbox" id="checkbox-separate-titlebar" />
-        <label
-          for="checkbox-separate-titlebar"
-          data-string="settingsSeparateTitlebarToggle"
-        ></label>
-      </div>
-
-      <div class="setting-section" id="section-open-tabs-in-foreground">
-        <input type="checkbox" id="checkbox-open-tabs-in-foreground" />
-        <label
-          for="checkbox-open-tabs-in-foreground"
-          data-string="settingsOpenTabsInForegroundToggle"
-        ></label>
-      </div>
-
-      <div class="setting-section" id="section-user-agent">
-        <input type="checkbox" id="checkbox-user-agent" />
-        <label
-          for="checkbox-user-agent"
-          data-string="settingsUserAgentToggle"
-        ></label>
-        <input
-          type="text"
-          id="input-user-agent"
-          maxlength="200"
-          style="
-            vertical-align: middle;
-            margin-left: 1em;
-            width: 375px;
-            max-width: 80vw;
-            visibility: hidden;
-          "
-        />
-      </div>
-
-      <div class="setting-section">
-			<input type="checkbox" id="checkbox-enable-autoplay">
-			<label for="checkbox-enable-autoplay" data-string="settingsAutoplayToggle"></label>
-		</div>
-
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-search-suggestions" />
-        <label
-          for="checkbox-search-suggestions"
-          data-string="settingsSearchSuggestionsToggle"
-        ></label>
-      </div>
-
-      <div class="setting-section" id="section-search-suggestions-count">
-        <label
-          for="input-search-suggestions-count"
-          data-string="settingsSearchSuggestionsCount"
-        ></label>
-        <input
-          type="number"
-          id="input-search-suggestions-count"
-          min="1"
-          max="8"
-          step="1"
-          value="3"
-        />
-      </div>
-
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-update-notifications" />
-        <label
-          for="checkbox-update-notifications"
-          data-string="settingsUpdateNotificationsToggle"
-        ></label>
-      </div>
-      <div class="setting-section">
-        <input type="checkbox" id="checkbox-usage-statistics" />
-        <label
-          for="checkbox-usage-statistics"
-          data-string="settingsUsageStatisticsToggle"
-          data-allowHTML
-        ></label>
-      </div>
-
-
-      <div class="setting-section">
-        <button id="button-open-ephemeral-tab" class="settings-action-button">Ouvrir un onglet éphémère</button>
-        <span class="settings-info-subheading" style="margin-left: 0.5em;">Sera fermé automatiquement en fin de session.</span>
-      </div>
-    </div>
-
-    <div class="settings-container" id="search-engine-settings-container">
-      <h3 data-string="settingsSearchEngineHeading"></h3>
-
-      <div class="search-option-row">
-        <label for="defaultSearchEngine" data-string="settingsDefaultSearchEngine"></label>
-        <div class="search-option-input-group">
-          <select id="default-search-engine" name="defaultSearchEngine"></select>
-          <input id="custom-search-engine" hidden />
-        </div>
-      </div>
-
-      <div class="search-engine-custom-card">
-        <h4>Ajouter un moteur manuellement</h4>
-        <div class="setting-section">
-          <label for="manual-engine-name">Nom</label>
-          <input id="manual-engine-name" placeholder="Ex : Mojeek" />
-        </div>
-        <div class="setting-section">
-          <label for="manual-engine-url">URL de recherche (%s requis)</label>
-          <input id="manual-engine-url" placeholder="https://example.com/search?q=%s" />
-        </div>
-        <div class="setting-section">
-          <label for="manual-engine-suggest-url">URL suggestions (optionnel)</label>
-          <input id="manual-engine-suggest-url" placeholder="https://example.com/suggest?q=%s" />
-        </div>
-        <div class="setting-section">
-          <button id="manual-engine-add-button" class="settings-action-button" type="button">Ajouter le moteur</button>
-          <span id="manual-engine-feedback" class="settings-info-subheading" aria-live="polite"></span>
-        </div>
-        <ul id="manual-engine-list"></ul>
-      </div>
-
-      <div class="search-option-row">
-        <label for="search-region">Région des résultats</label>
-        <select id="search-region">
-          <option value="fr-FR">France</option>
-          <option value="fr-CA">Canada (français)</option>
-          <option value="fr-BE">Belgique</option>
-          <option value="fr-CH">Suisse</option>
-          <option value="en-US">États-Unis</option>
-          <option value="all">International</option>
-        </select>
-      </div>
-
-      <div class="search-option-row">
-        <label for="search-language">Langue prioritaire</label>
-        <select id="search-language">
-          <option value="fr">Français</option>
-          <option value="en">Anglais</option>
-          <option value="es">Espagnol</option>
-          <option value="de">Allemand</option>
-          <option value="all">Toutes les langues</option>
-        </select>
-      </div>
-
-      <div class="search-option-row">
-        <label for="search-safe-mode">Filtre de contenu explicite</label>
-        <select id="search-safe-mode">
-          <option value="strict">Strict</option>
-          <option value="moderate">Modéré</option>
-          <option value="off">Désactivé</option>
-        </select>
-      </div>
-
-      <div class="search-option-row">
-        <label for="search-extra-params">Paramètres URL additionnels</label>
-        <input id="search-extra-params" placeholder="ex: ref=msearch&source=app" />
-      </div>
-      <div class="settings-info-subheading" style="margin-left: 0; margin-top: 0.25em;">Astuce : ces paramètres sont ajoutés aux recherches et suggestions (format clé=valeur&clé2=valeur2).</div>
-
-      <div
-        class="settings-info-subheading"
-        style="padding-top: 0.4em"
-        data-string="settingsDDGExplanation"
-      ></div>
-    </div>
-
-    <div class="settings-container" id="password-autofill-container">
-      <h3 data-string="settingsPasswordAutoFillHeadline"></h3>
-
-      <div class="setting-section">
-        <label
-          for="selectedPasswordManagers"
-          data-string="settingsSelectPasswordManager"
-        ></label>
-        <select
-          id="selected-password-manager"
-          name="selectedPasswordManager"
-        ></select>
-      </div>
-
-      <div class="setting-section" id="keychain-view-link" hidden>
-        <a data-string="keychainViewPasswords"></a>
-      </div>
-    </div>
-
-    <div class="settings-container" id="proxy-settings-container">
-      <h3 data-string="settingsProxyHeading"></h3>
-
-      <div class="setting-section" id="proxy-type-container">
-        <select id="selected-proxy-type">
-          <option data-string="settingsNoProxy"></option>
-          <option data-string="settingsManualProxy"></option>
-          <option data-string="settingsAutomaticProxy"></option>
-        </select>
-      </div>
-
-      <div class="setting-section" id="manual-proxy-section">
-        <div class="setting-option">
-          <label
-            for="proxy-rules-input"
-            data-string="settingsProxyRules"
-          ></label>
-          <input
-            id="proxy-rules-input"
-            type="text"
-            name="proxyRules"
-            placeholder="proxy.example.com:8080"
-          />
+          <div class="setting-section" id="font-preferences-section">
+            <label for="font-size-slider">Taille du texte</label>
+            <input
+              type="range"
+              id="font-size-slider"
+              min="85"
+              max="130"
+              step="1"
+            />
+            <span id="font-size-value"></span>
+          </div>
+          <div class="setting-section">
+            <label for="font-spacing-slider">Espacement</label>
+            <input
+              type="range"
+              id="font-spacing-slider"
+              min="0"
+              max="1.2"
+              step="0.05"
+            />
+            <span id="font-spacing-value"></span>
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-comfort-reading" />
+            <label for="checkbox-comfort-reading"
+              >Mode lecture confortable</label
+            >
+          </div>
         </div>
 
-        <div class="setting-option">
-          <label
-            for="proxy-bypass-rules-input"
-            data-string="settingsProxyBypassRules"
-          ></label>
-          <input
-            name="proxyBypassRules"
-            id="proxy-bypass-rules-input"
-            placeholder="localhost, 127.0.0.1/8, ::1"
-          />
+        <div class="settings-container" id="newtab-settings-container">
+          <h3>Nouvel onglet mSearch</h3>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-ntp-random-background" />
+            <label for="checkbox-ntp-random-background"
+              >Activer les backgrounds aléatoires (15 images)</label
+            >
+          </div>
+          <div class="setting-section">
+            <label for="select-ntp-shortcuts-size"
+              >Nombre de raccourcis affichés</label
+            >
+            <select id="select-ntp-shortcuts-size">
+              <option value="4">4</option>
+              <option value="6">6</option>
+              <option value="8">8</option>
+            </select>
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-ntp-show-history" />
+            <label for="checkbox-ntp-show-history"
+              >Afficher la section Historique récent</label
+            >
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-ntp-show-favorites" />
+            <label for="checkbox-ntp-show-favorites"
+              >Afficher la section Favoris</label
+            >
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-ntp-fix-title-overlap" />
+            <label for="checkbox-ntp-fix-title-overlap"
+              >Forcer la correction du chevauchement “mSearch / Nouvel
+              onglet”</label
+            >
+          </div>
         </div>
-      </div>
 
-      <div class="setting-option" id="pac-option">
-        <label
-          for="pac-url-input"
-          data-string="settingsProxyConfigurationURL"
-        ></label>
-        <input
-          type="text"
-          id="pac-url-input"
-          placeholder="https://example.com/proxy.pac"
-        />
-      </div>
-    </div>
+        <div class="settings-container" id="mai-settings-container">
+          <h3>mAI</h3>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-mai-sidebar-enabled" />
+            <label for="checkbox-mai-sidebar-enabled"
+              >Activer la barre latérale mAI</label
+            >
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-mai-sidebar-open-startup" />
+            <label for="checkbox-mai-sidebar-open-startup"
+              >Ouvrir la barre latérale au démarrage</label
+            >
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-mai-sidebar-global" />
+            <label for="checkbox-mai-sidebar-global"
+              >Afficher sur tous les sites</label
+            >
+          </div>
+          <div class="setting-section">
+            <label for="select-mai-sidebar-position"
+              >Position de la barre latérale</label
+            >
+            <select id="select-mai-sidebar-position">
+              <option value="right">Droite</option>
+              <option value="left">Gauche</option>
+            </select>
+          </div>
+        </div>
 
-    <div class="settings-container" id="keymap-settings-container">
-      <h3 data-string="settingsKeyboardShortcutsHeading"></h3>
-      <div
-        class="settings-info-subheading"
-        data-string="settingsKeyboardShortcutsHelp"
-      ></div>
+        <div class="settings-container" id="additional-settings-container">
+          <h3 data-string="settingsAdditionalFeaturesHeading"></h3>
 
-      <div class="setting-section">
-        <ul id="key-map-list"></ul>
-      </div>
-    </div>
-    <div class="settings-container" id="custom-bangs-container">
-      <h3 data-string="settingsCustomBangs"></h3>
-      <div class="setting-section">
-        <ul id="custom-bangs"></ul>
-        <button
-          data-string="settingsCustomBangsAdd"
-          id="add-custom-bang"
-        ></button>
-      </div>
-    </div>
+          <div class="setting-section">
+            <label
+              for="startupOptions"
+              data-string="settingsStartupOptions"
+            ></label>
+            <select id="startup-options" name="startupOptions">
+              <option
+                value="1"
+                data-string="settingsStartupCreateTask"
+              ></option>
+              <option
+                value="2"
+                data-string="settingsStartupNewTaskandBackground"
+              ></option>
+              <option
+                value="3"
+                data-string="settingsStartupNewTaskOnly"
+              ></option>
+            </select>
+          </div>
+
+          <div class="setting-section">
+            <label
+              for="newWindowOptions"
+              data-string="settingsNewWindowOptions"
+            ></label>
+            <select id="new-window-options" name="newWindowOptions">
+              <option
+                value="1"
+                data-string="settingsNewWindowCreateTask"
+              ></option>
+              <option
+                value="2"
+                data-string="settingsNewWindowPickTask"
+              ></option>
+            </select>
+          </div>
+
+          <div class="setting-section">
+            <label for="multi-view-max-views"
+              >Multi-vue (nombre de sites visibles)</label
+            >
+            <select id="multi-view-max-views" name="multiViewMaxViews">
+              <option value="1">1 vue</option>
+              <option value="2">2 vues (comparaison)</option>
+              <option value="3">3 vues</option>
+            </select>
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-gesture-shortcuts" />
+            <label for="checkbox-gesture-shortcuts"
+              >Raccourcis gestuels (swipe/souris)</label
+            >
+          </div>
+          <div class="setting-section setting-secondary-label">
+            <input type="checkbox" id="checkbox-gesture-workspace" />
+            <label for="checkbox-gesture-workspace"
+              >Autoriser le changement de workspace par geste</label
+            >
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-userscripts" />
+            <label
+              for="checkbox-userscripts"
+              data-string="settingsUserscriptsToggle"
+            ></label>
+            <div
+              class="settings-info-subheading setting-secondary-label"
+              data-string="settingsUserscriptsExplanation"
+              data-allowHTML
+            ></div>
+            <div
+              class="setting-secondary-label"
+              id="userscripts-show-directory"
+              hidden
+              style="margin-top: -0.5em; margin-bottom: 0.5em"
+            >
+              <a data-string="settingsUserscriptShowDirectory"></a>
+            </div>
+          </div>
+
+          <div class="setting-section" id="section-separate-titlebar">
+            <input type="checkbox" id="checkbox-separate-titlebar" />
+            <label
+              for="checkbox-separate-titlebar"
+              data-string="settingsSeparateTitlebarToggle"
+            ></label>
+          </div>
+
+          <div class="setting-section" id="section-open-tabs-in-foreground">
+            <input type="checkbox" id="checkbox-open-tabs-in-foreground" />
+            <label
+              for="checkbox-open-tabs-in-foreground"
+              data-string="settingsOpenTabsInForegroundToggle"
+            ></label>
+          </div>
+
+          <div class="setting-section" id="section-user-agent">
+            <input type="checkbox" id="checkbox-user-agent" />
+            <label
+              for="checkbox-user-agent"
+              data-string="settingsUserAgentToggle"
+            ></label>
+            <input
+              type="text"
+              id="input-user-agent"
+              maxlength="200"
+              style="
+                vertical-align: middle;
+                margin-left: 1em;
+                width: 375px;
+                max-width: 80vw;
+                visibility: hidden;
+              "
+            />
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-enable-autoplay" />
+            <label
+              for="checkbox-enable-autoplay"
+              data-string="settingsAutoplayToggle"
+            ></label>
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-search-suggestions" />
+            <label
+              for="checkbox-search-suggestions"
+              data-string="settingsSearchSuggestionsToggle"
+            ></label>
+          </div>
+
+          <div class="setting-section" id="section-search-suggestions-count">
+            <label
+              for="input-search-suggestions-count"
+              data-string="settingsSearchSuggestionsCount"
+            ></label>
+            <input
+              type="number"
+              id="input-search-suggestions-count"
+              min="1"
+              max="8"
+              step="1"
+              value="3"
+            />
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-update-notifications" />
+            <label
+              for="checkbox-update-notifications"
+              data-string="settingsUpdateNotificationsToggle"
+            ></label>
+          </div>
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-usage-statistics" />
+            <label
+              for="checkbox-usage-statistics"
+              data-string="settingsUsageStatisticsToggle"
+              data-allowHTML
+            ></label>
+          </div>
+
+          <div class="setting-section">
+            <button
+              id="button-open-ephemeral-tab"
+              class="settings-action-button"
+            >
+              Ouvrir un onglet éphémère
+            </button>
+            <span class="settings-info-subheading" style="margin-left: 0.5em"
+              >Sera fermé automatiquement en fin de session.</span
+            >
+          </div>
+        </div>
+
+        <div class="settings-container" id="search-engine-settings-container">
+          <h3 data-string="settingsSearchEngineHeading"></h3>
+
+          <div class="search-option-row">
+            <label
+              for="defaultSearchEngine"
+              data-string="settingsDefaultSearchEngine"
+            ></label>
+            <div class="search-option-input-group">
+              <select
+                id="default-search-engine"
+                name="defaultSearchEngine"
+              ></select>
+              <input id="custom-search-engine" hidden />
+            </div>
+          </div>
+
+          <div class="search-engine-custom-card">
+            <h4>Ajouter un moteur manuellement</h4>
+            <div class="setting-section">
+              <label for="manual-engine-name">Nom</label>
+              <input id="manual-engine-name" placeholder="Ex : Mojeek" />
+            </div>
+            <div class="setting-section">
+              <label for="manual-engine-url"
+                >URL de recherche (%s requis)</label
+              >
+              <input
+                id="manual-engine-url"
+                placeholder="https://example.com/search?q=%s"
+              />
+            </div>
+            <div class="setting-section">
+              <label for="manual-engine-suggest-url"
+                >URL suggestions (optionnel)</label
+              >
+              <input
+                id="manual-engine-suggest-url"
+                placeholder="https://example.com/suggest?q=%s"
+              />
+            </div>
+            <div class="setting-section">
+              <button
+                id="manual-engine-add-button"
+                class="settings-action-button"
+                type="button"
+              >
+                Ajouter le moteur
+              </button>
+              <span
+                id="manual-engine-feedback"
+                class="settings-info-subheading"
+                aria-live="polite"
+              ></span>
+            </div>
+            <ul id="manual-engine-list"></ul>
+          </div>
+
+          <div class="search-option-row">
+            <label for="search-region">Région des résultats</label>
+            <select id="search-region">
+              <option value="fr-FR">France</option>
+              <option value="fr-CA">Canada (français)</option>
+              <option value="fr-BE">Belgique</option>
+              <option value="fr-CH">Suisse</option>
+              <option value="en-US">États-Unis</option>
+              <option value="all">International</option>
+            </select>
+          </div>
+
+          <div class="search-option-row">
+            <label for="search-language">Langue prioritaire</label>
+            <select id="search-language">
+              <option value="fr">Français</option>
+              <option value="en">Anglais</option>
+              <option value="es">Espagnol</option>
+              <option value="de">Allemand</option>
+              <option value="all">Toutes les langues</option>
+            </select>
+          </div>
+
+          <div class="search-option-row">
+            <label for="search-safe-mode">Filtre de contenu explicite</label>
+            <select id="search-safe-mode">
+              <option value="strict">Strict</option>
+              <option value="moderate">Modéré</option>
+              <option value="off">Désactivé</option>
+            </select>
+          </div>
+
+          <div class="search-option-row">
+            <label for="search-extra-params">Paramètres URL additionnels</label>
+            <input
+              id="search-extra-params"
+              placeholder="ex: ref=msearch&source=app"
+            />
+          </div>
+          <div
+            class="settings-info-subheading"
+            style="margin-left: 0; margin-top: 0.25em"
+          >
+            Astuce : ces paramètres sont ajoutés aux recherches et suggestions
+            (format clé=valeur&clé2=valeur2).
+          </div>
+
+          <div
+            class="settings-info-subheading"
+            style="padding-top: 0.4em"
+            data-string="settingsDDGExplanation"
+          ></div>
+        </div>
+
+        <div class="settings-container" id="password-autofill-container">
+          <h3 data-string="settingsPasswordAutoFillHeadline"></h3>
+
+          <div class="setting-section">
+            <label
+              for="selectedPasswordManagers"
+              data-string="settingsSelectPasswordManager"
+            ></label>
+            <select
+              id="selected-password-manager"
+              name="selectedPasswordManager"
+            ></select>
+          </div>
+
+          <div class="setting-section" id="keychain-view-link" hidden>
+            <a data-string="keychainViewPasswords"></a>
+          </div>
+        </div>
+
+        <div class="settings-container" id="proxy-settings-container">
+          <h3 data-string="settingsProxyHeading"></h3>
+
+          <div class="setting-section" id="proxy-type-container">
+            <select id="selected-proxy-type">
+              <option data-string="settingsNoProxy"></option>
+              <option data-string="settingsManualProxy"></option>
+              <option data-string="settingsAutomaticProxy"></option>
+            </select>
+          </div>
+
+          <div class="setting-section" id="manual-proxy-section">
+            <div class="setting-option">
+              <label
+                for="proxy-rules-input"
+                data-string="settingsProxyRules"
+              ></label>
+              <input
+                id="proxy-rules-input"
+                type="text"
+                name="proxyRules"
+                placeholder="proxy.example.com:8080"
+              />
+            </div>
+
+            <div class="setting-option">
+              <label
+                for="proxy-bypass-rules-input"
+                data-string="settingsProxyBypassRules"
+              ></label>
+              <input
+                name="proxyBypassRules"
+                id="proxy-bypass-rules-input"
+                placeholder="localhost, 127.0.0.1/8, ::1"
+              />
+            </div>
+          </div>
+
+          <div class="setting-option" id="pac-option">
+            <label
+              for="pac-url-input"
+              data-string="settingsProxyConfigurationURL"
+            ></label>
+            <input
+              type="text"
+              id="pac-url-input"
+              placeholder="https://example.com/proxy.pac"
+            />
+          </div>
+        </div>
+
+        <div class="settings-container" id="keymap-settings-container">
+          <h3 data-string="settingsKeyboardShortcutsHeading"></h3>
+          <div
+            class="settings-info-subheading"
+            data-string="settingsKeyboardShortcutsHelp"
+          ></div>
+
+          <div class="setting-section">
+            <ul id="key-map-list"></ul>
+          </div>
+        </div>
+        <div class="settings-container" id="custom-bangs-container">
+          <h3 data-string="settingsCustomBangs"></h3>
+          <div class="setting-section">
+            <ul id="custom-bangs"></ul>
+            <button
+              data-string="settingsCustomBangsAdd"
+              id="add-custom-bang"
+            ></button>
+          </div>
+        </div>
       </main>
     </div>
 

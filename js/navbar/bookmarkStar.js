@@ -26,24 +26,24 @@ const bookmarkStar = {
       isBookmarked: true,
       title: tabs.get(tabId).title // if this page is open in a private tab, the title may not be saved already, so it needs to be included here
     })
-    .then(function () {
-      star.classList.remove('carbon:star')
-      star.classList.add('carbon:star-filled')
-      star.setAttribute('aria-pressed', true)
+      .then(function () {
+        star.classList.remove('carbon:star')
+        star.classList.add('carbon:star-filled')
+        star.setAttribute('aria-pressed', true)
 
-      var editorInsertionPoint = document.createElement('div')
-      searchbarPlugins.getContainer('simpleBookmarkTagInput').appendChild(editorInsertionPoint)
-      bookmarkEditor.show(tabs.get(tabs.getSelected()).url, editorInsertionPoint, function (newBookmark) {
-        if (!newBookmark) {
+        var editorInsertionPoint = document.createElement('div')
+        searchbarPlugins.getContainer('simpleBookmarkTagInput').appendChild(editorInsertionPoint)
+        bookmarkEditor.show(tabs.get(tabs.getSelected()).url, editorInsertionPoint, function (newBookmark) {
+          if (!newBookmark) {
           // bookmark was deleted
-          star.classList.add('carbon:star')
-          star.classList.remove('carbon:star-filled')
-          star.setAttribute('aria-pressed', false)
-          searchbar.showResults('')
-          searchbar.associatedInput.focus()
-        }
-      }, { simplified: true, autoFocus: true })
-    })
+            star.classList.add('carbon:star')
+            star.classList.remove('carbon:star-filled')
+            star.setAttribute('aria-pressed', false)
+            searchbar.showResults('')
+            searchbar.associatedInput.focus()
+          }
+        }, { simplified: true, autoFocus: true })
+      })
   },
   update: function (tabId, star) {
     star.setAttribute('data-tab', tabId)

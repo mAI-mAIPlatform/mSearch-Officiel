@@ -29,11 +29,11 @@ const permissionRequests = {
     var buttons = []
     permissionRequests.requests.forEach(function (request) {
       const icons = permissionRequests.getIcons(request)
-      //don't display buttons for unsupported permission types
+      // don't display buttons for unsupported permission types
       if (icons.length === 0) {
         return
       }
-  
+
       if (request.tabId === tabId) {
         var button = document.createElement('button')
         button.className = 'tab-icon permission-request-icon'

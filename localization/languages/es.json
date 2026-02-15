@@ -46,7 +46,7 @@
     "clearHistory": "Limpiar todo el historial",
     "enableBlocking": "Activar bloqueo de contenido",
     "disableBlocking": "Desactivar bloqueo de contenido",
-    "clearHistoryConfirmation": "¿Borrar todo el historial y los datos de navegación?", 
+    "clearHistoryConfirmation": "¿Borrar todo el historial y los datos de navegación?",
     "switchToTask": "Cambiar a la tarea",
     "createTask": "Crear una tarea",
     "closeTask": "Cerrar una tarea",
@@ -59,7 +59,7 @@
     "bookmarksDeleteTag": "Eliminar etiqueta",
     "deleteBookmarksWithTag": "Eliminar marcadores con etiqueta",
     "bookmarksSimilarItems": "Elementos similares",
-    "searchHistory": "Historial de búsqueda",  //noun?
+    "searchHistory": "Historial de búsqueda", //noun?
     "importBookmarks": "Importar marcadores",
     "exportBookmarks": "Exportar marcadores",
     "runUserscript": "Correr userscript", //userscript doesn't have a Spanish translation, afaik maybe "script de usuario"
@@ -157,14 +157,14 @@
     "settingsDarkModeNever": "Nunca", // googled
     "settingsDarkModeNight": "Por la noche", // googled
     "settingsDarkModeAlways": "Siempre", // googled
-    "settingsDarkModeSystem": "Seguir aspecto del sistema", 
+    "settingsDarkModeSystem": "Seguir aspecto del sistema",
     "settingsSiteThemeToggle": "Habilitar tema del sitio",
     "settingsAdditionalFeaturesHeading": "Características adicionales",
     "settingsUserscriptsToggle": "Habilitar userscripts", //userscript doesn't have a Spanish translation, afaik maybe "script de usuario"
     "settingsShowDividerToggle": "Mostrar divisor de pestañas",
     "settingsLanguageSelection": null, //missing translation
     "settingsSeparateTitlebarToggle": "Separar barra de título", //"Usar barra de título separada"
-    "settingsAutoplayToggle": "Habilitar reproducción automática", 
+    "settingsAutoplayToggle": "Habilitar reproducción automática",
     "settingsOpenTabsInForegroundToggle": "Abrir nuevas pestañas en primer plano",
     "settingsUserscriptsExplanation": {
       "unsafeHTML": "Los userscripts te permiten modificar el comportamiento de los sitios web - <a href=\"https://github.com/minbrowser/min/wiki/userscripts\">Más información</a>."
@@ -175,10 +175,10 @@
     "settingsUsageStatisticsToggle": {
       "unsafeHTML": "Enviar estadísticas de uso (<a href=\"https://github.com/minbrowser/min/blob/master/docs/statistics.md\">Más información</a>)"
     },
-    "settingsStartupOptions": "Cuando inicie Min:", 
-    "settingsStartupCreateTask": "Restaurar pestañas anteriores", 
-    "settingsStartupNewTaskandBackground": "Mover pestañas anteriores a tarea en segundo plano", 
-    "settingsStartupNewTaskOnly": "Abrir nueva pestaña", 
+    "settingsStartupOptions": "Cuando inicie Min:",
+    "settingsStartupCreateTask": "Restaurar pestañas anteriores",
+    "settingsStartupNewTaskandBackground": "Mover pestañas anteriores a tarea en segundo plano",
+    "settingsStartupNewTaskOnly": "Abrir nueva pestaña",
     "settingsNewWindowOptions": null, //missing translation
     "settingsNewWindowCreateTask": null, //missing translation
     "settingsNewWindowPickTask": null, //missing translation

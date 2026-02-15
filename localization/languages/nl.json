@@ -27,11 +27,11 @@
     "goBack": "Ga terug",
     "goForward": "Ga verder",
     "inspectElement": "Inspecteer element",
-    "translatePage": "Vertaal pagina", 
+    "translatePage": "Vertaal pagina",
     /* searchbar */
-    "placesPluginOpenAgain": "Opnieuw openen", 
+    "placesPluginOpenAgain": "Opnieuw openen",
     "placesPluginSwitchToTab": "Overschakelen naar tabblad",
-    "placesPluginSwitchToTask": "Overschakelen naar \"%t\"", 
+    "placesPluginSwitchToTask": "Overschakelen naar \"%t\"",
     "pasteAndGo": "Plakken en bezoeken", //context menu item
     "DDGAnswerSubtitle": "Antwoord", //this is a noun - it is used as a subtitle when displaying Instant Answers from DuckDuckGo in the searchbar
     "suggestedSite": "Voorgestelde site", //this is used to label suggested websites from the DuckDuckGo API,

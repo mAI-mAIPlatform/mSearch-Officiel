@@ -488,20 +488,27 @@ const newTabPage = {
     }
 
     const isEnabled = settings.get('maiSidebarEnabled')
+
+    newTabPage.maiToggleButton.hidden = (isEnabled === false)
     if (isEnabled === false) {
-      newTabPage.maiToggleButton.hidden = true
       newTabPage.maiSidebar.hidden = true
-      return
     }
 
-    newTabPage.maiToggleButton.hidden = false
+    settings.listen('maiSidebarEnabled', function (value) {
+      newTabPage.maiToggleButton.hidden = (value === false)
+      if (value === false) {
+        newTabPage.setMaiSidebarState(false)
+      }
+    })
 
-    const openOnStartup = settings.get('maiSidebarOpenStartup')
-    if (openOnStartup === true) {
-      newTabPage.setMaiSidebarState(true, { persist: false })
-    } else {
-      const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
-      newTabPage.setMaiSidebarState(storedState, { persist: false })
+    if (isEnabled !== false) {
+      const openOnStartup = settings.get('maiSidebarOpenStartup')
+      if (openOnStartup === true) {
+        newTabPage.setMaiSidebarState(true, { persist: false })
+      } else {
+        const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
+        newTabPage.setMaiSidebarState(storedState, { persist: false })
+      }
     }
 
     newTabPage.maiToggleButton.addEventListener('click', function () {
