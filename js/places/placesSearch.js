@@ -83,6 +83,7 @@ function searchPlaces (searchText, callback, options) {
   const oneWeekAgo = Date.now() - (oneDayInMS * 7)
 
   const matches = []
+  const seenURLs = new Set()
   const st = searchFormatURL(searchText)
   const stl = searchText.length
   const searchWords = st.split(' ')
@@ -91,7 +92,7 @@ function searchPlaces (searchText, callback, options) {
   const itemStartBoost = Math.min(2.5 * stl, 10)
   const exactMatchBoost = 0.4 + (0.075 * stl)
   const limitToBookmarks = options && options.searchBookmarks
-  const resultsLimit = (options && options.limit) || 100
+  const resultsLimit = (options && options.limit) || 500
 
   if (searchText.indexOf(' ') !== -1) {
     substringSearchEnabled = true
@@ -101,7 +102,12 @@ function searchPlaces (searchText, callback, options) {
     if (matches.length > (resultsLimit * 2)) {
       break
     }
-    processSearchItem(historyInMemoryCache[i])
+    const item = historyInMemoryCache[i]
+    // Filtrage strict : ignorer les URLs invalides ou vides
+    if (item.url && item.url !== 'about:blank' && !seenURLs.has(item.url)) {
+      seenURLs.add(item.url)
+      processSearchItem(item)
+    }
   }
 
   matches.sort(function (a, b) { // we have to re-sort to account for the boosts applied to the items

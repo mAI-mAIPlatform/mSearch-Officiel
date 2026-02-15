@@ -80,6 +80,7 @@ body:not(.is-ntp) #ntp-content {
 #ntp-main-shell,
 #ntp-grid,
 #ntp-widgets-panel,
+#ntp-shortcuts-panel,
 #ntp-personalization-panel {
     content-visibility: auto;
     contain-intrinsic-size: 420px;
@@ -370,7 +371,7 @@ body:not(.is-ntp) #ntp-content {
         width: 100%;
     }
 
-    #ntp-widgets-panel {
+    #ntp-widgets-panel, #ntp-shortcuts-panel {
         width: 100%;
     }
 
@@ -399,9 +400,53 @@ body:not(.is-ntp) #ntp-content {
 }
 
 
-#ntp-widgets-panel {
+#ntp-widgets-panel, #ntp-shortcuts-panel {
     width: min(1020px, 94%);
     align-self: center;
+}
+
+#ntp-shortcuts-panel {
+    min-height: auto;
+}
+
+#ntp-shortcuts-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.7rem;
+    padding: 0;
+}
+
+.ntp-shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    background: rgba(8, 13, 31, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    transition: background 0.15s, transform 0.15s;
+}
+
+.ntp-shortcut-item:hover {
+    background: rgba(22, 29, 52, 0.6);
+    transform: translateY(-1px);
+}
+
+.ntp-shortcut-item .ntp-link-button {
+    font-weight: 500;
+    font-size: 0.92rem;
+}
+
+#ntp-add-shortcut-button {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 0;
 }
 
 #ntp-widget-grid {

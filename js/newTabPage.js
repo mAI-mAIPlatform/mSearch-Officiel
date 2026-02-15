@@ -7,6 +7,7 @@ const tabEditor = require('navbar/tabEditor.js')
 const settings = require('util/settings/settings.js')
 
 const REMINDER_STORAGE_KEY = 'msearch.ntp.reminders'
+const SHORTCUTS_STORAGE_KEY = 'msearch.ntp.shortcuts'
 const THEME_STORAGE_KEY = 'msearch.ntp.theme'
 const RANDOM_BG_STORAGE_KEY = 'msearch.ntp.randomBackground'
 const DENSITY_STORAGE_KEY = 'msearch.ntp.density'
@@ -123,6 +124,9 @@ const newTabPage = {
   reminderForm: document.getElementById('ntp-reminder-form'),
   reminderInput: document.getElementById('ntp-reminder-input'),
   reminderList: document.getElementById('ntp-reminder-list'),
+  shortcutsList: document.getElementById('ntp-shortcuts-list'),
+  shortcutsPanel: document.getElementById('ntp-shortcuts-panel'),
+  addShortcutButton: document.getElementById('ntp-add-shortcut-button'),
   favoritesList: document.getElementById('ntp-favorites-list'),
   historyList: document.getElementById('ntp-history-list'),
   searchForm: document.getElementById('ntp-search-form'),
@@ -145,6 +149,7 @@ const newTabPage = {
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
+  shortcuts: [],
   clockTimer: null,
   historyRefreshTimer: null,
   isMaiSidebarOpen: false,
@@ -226,6 +231,77 @@ const newTabPage = {
   },
   saveReminders: function () {
     localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(newTabPage.reminders.slice(0, MAX_REMINDERS)))
+  },
+  loadShortcuts: function () {
+    try {
+      const raw = localStorage.getItem(SHORTCUTS_STORAGE_KEY)
+      if (raw) {
+        newTabPage.shortcuts = JSON.parse(raw)
+      } else {
+        newTabPage.shortcuts = [
+          { title: 'Téléchargements', url: 'min://downloads' },
+          { title: 'Paramètres', url: 'min://settings' },
+          { title: 'Favoris', url: 'min://bookmarks' }
+        ]
+        newTabPage.saveShortcuts()
+      }
+    } catch (e) {
+      newTabPage.shortcuts = []
+    }
+  },
+  saveShortcuts: function () {
+    localStorage.setItem(SHORTCUTS_STORAGE_KEY, JSON.stringify(newTabPage.shortcuts))
+  },
+  renderShortcuts: function () {
+    if (!newTabPage.shortcutsList) return
+
+    newTabPage.shortcutsList.textContent = ''
+
+    let max = settings.get('ntpMaxShortcuts')
+    if (!max) max = 8
+    // Ensure we handle the new 10/12 options if they come as strings
+    max = parseInt(max, 10)
+
+    const visibleShortcuts = newTabPage.shortcuts.slice(0, max)
+
+    if (visibleShortcuts.length === 0) {
+      const emptyState = document.createElement('li')
+      emptyState.className = 'ntp-empty-state'
+      emptyState.textContent = 'Aucun raccourci.'
+      newTabPage.shortcutsList.appendChild(emptyState)
+      return
+    }
+
+    const fragment = document.createDocumentFragment()
+
+    visibleShortcuts.forEach(function (shortcut, index) {
+      const item = document.createElement('li')
+      item.className = 'ntp-list-item ntp-shortcut-item'
+
+      const link = document.createElement('button')
+      link.className = 'ntp-link-button'
+      link.textContent = shortcut.title || shortcut.url
+      link.title = shortcut.url
+      link.addEventListener('click', function () {
+        searchbar.events.emit('url-selected', { url: shortcut.url, background: false })
+      })
+
+      const removeButton = document.createElement('button')
+      removeButton.className = 'ntp-inline-delete i carbon:close'
+      removeButton.setAttribute('aria-label', 'Supprimer le raccourci')
+      removeButton.addEventListener('click', function (e) {
+        e.stopPropagation()
+        newTabPage.shortcuts.splice(index, 1)
+        newTabPage.saveShortcuts()
+        newTabPage.renderShortcuts()
+      })
+
+      item.appendChild(link)
+      item.appendChild(removeButton)
+      fragment.appendChild(item)
+    })
+
+    newTabPage.shortcutsList.appendChild(fragment)
   },
   normalizeURL: function (value) {
     const trimmed = (value || '').trim()
@@ -469,6 +545,17 @@ const newTabPage = {
       return
     }
 
+    // Si la sidebar est désactivée globalement, on force la fermeture et le masquage
+    const isEnabled = settings.get('maiSidebarEnabled')
+    if (isEnabled === false) {
+      newTabPage.isMaiSidebarOpen = false
+      newTabPage.maiSidebar.hidden = true
+      newTabPage.maiSidebar.setAttribute('aria-hidden', 'true')
+      document.body.classList.remove('ntp-mai-open')
+      newTabPage.syncMaiSidebarA11y(false)
+      return
+    }
+
     const shouldOpen = Boolean(isOpen)
     const shouldPersist = options.persist !== false
 
@@ -487,21 +574,13 @@ const newTabPage = {
       return
     }
 
+    // Initialisation : gestion de l'état activé/désactivé et ouverture au démarrage
     const isEnabled = settings.get('maiSidebarEnabled')
-
     newTabPage.maiToggleButton.hidden = (isEnabled === false)
+
     if (isEnabled === false) {
-      newTabPage.maiSidebar.hidden = true
-    }
-
-    settings.listen('maiSidebarEnabled', function (value) {
-      newTabPage.maiToggleButton.hidden = (value === false)
-      if (value === false) {
-        newTabPage.setMaiSidebarState(false)
-      }
-    })
-
-    if (isEnabled !== false) {
+      newTabPage.setMaiSidebarState(false)
+    } else {
       const openOnStartup = settings.get('maiSidebarOpenStartup')
       if (openOnStartup === true) {
         newTabPage.setMaiSidebarState(true, { persist: false })
@@ -510,6 +589,21 @@ const newTabPage = {
         newTabPage.setMaiSidebarState(storedState, { persist: false })
       }
     }
+
+    settings.listen('maiSidebarEnabled', function (value) {
+      newTabPage.maiToggleButton.hidden = (value === false)
+      if (value === false) {
+        newTabPage.setMaiSidebarState(false)
+      } else {
+        // Restaurer l'état précédent ou laisser fermé par défaut ?
+        // On laisse fermé par défaut lors de la réactivation pour éviter les surprises
+        newTabPage.setMaiSidebarState(false, { persist: false })
+      }
+    })
+
+    settings.listen('maiSidebarOpenStartup', function (value) {
+      // Pas d'action immédiate requise, affecte le prochain démarrage
+    })
 
     newTabPage.maiToggleButton.addEventListener('click', function () {
       newTabPage.setMaiSidebarState(!newTabPage.isMaiSidebarOpen)
@@ -757,8 +851,9 @@ const newTabPage = {
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
-    localStorage.removeItem('msearch.ntp.shortcuts')
+    newTabPage.loadShortcuts()
     newTabPage.renderReminders()
+    newTabPage.renderShortcuts()
     newTabPage.applyDisplayPreferences()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
@@ -836,6 +931,30 @@ const newTabPage = {
         newTabPage.saveReminders()
         newTabPage.renderReminders()
         newTabPage.reminderInput.value = ''
+      })
+    }
+
+    if (newTabPage.addShortcutButton) {
+      newTabPage.addShortcutButton.addEventListener('click', function () {
+        const result = ipc.sendSync('prompt', {
+          text: 'Ajouter un raccourci',
+          values: [
+            { placeholder: 'Titre', id: 'title', type: 'text' },
+            { placeholder: 'URL (https://...)', id: 'url', type: 'text' }
+          ],
+          ok: 'Ajouter',
+          cancel: 'Annuler',
+          height: 240
+        })
+
+        if (result && result.title && result.url) {
+          newTabPage.shortcuts.push({
+            title: result.title,
+            url: newTabPage.normalizeURL(result.url)
+          })
+          newTabPage.saveShortcuts()
+          newTabPage.renderShortcuts()
+        }
       })
     }
 

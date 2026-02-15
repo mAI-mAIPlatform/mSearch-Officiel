@@ -197,6 +197,15 @@
 
     <div id="overlay"></div>
 
+    <div id="pin-lock-overlay" hidden>
+      <div class="lock-container">
+        <h2>Verrouillage</h2>
+        <p>Veuillez entrer votre code PIN mSearch</p>
+        <input type="password" id="pin-lock-input" placeholder="PIN" autocomplete="off">
+        <button id="pin-lock-submit">Déverrouiller</button>
+      </div>
+    </div>
+
     <div id="webviews">
       <div id="leftArrowContainer" class="arrow-indicator">
         <i id="leftArrow" class="i carbon:chevron-left"></i>
@@ -245,6 +254,16 @@
                 <i class="i carbon:newspaper"></i>
                 <span>News</span>
               </button>
+            </section>
+
+            <section id="ntp-shortcuts-panel" class="ntp-panel" aria-label="Raccourcis">
+              <div class="ntp-panel-title-row">
+                <h2>Raccourcis</h2>
+                <button id="ntp-add-shortcut-button" class="ntp-subtle-button" aria-label="Ajouter un raccourci">
+                  <i class="i carbon:add"></i>
+                </button>
+              </div>
+              <ul id="ntp-shortcuts-list"></ul>
             </section>
 
             <section id="ntp-widgets-panel" class="ntp-panel" aria-label="Widgets rapides">
