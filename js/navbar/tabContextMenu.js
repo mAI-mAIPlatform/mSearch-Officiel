@@ -73,7 +73,7 @@ const tabContextMenu = {
       }
     }
 
-    tabMenu[0].push( {
+    tabMenu[0].push({
       label: l('tabMenuReload'),
       click: function () {
         if (tabs.get(tabId).url.startsWith(webviews.internalPages.error)) {

@@ -57,8 +57,8 @@
     "addBookmark": "Ajouter un marque-page",
     "searchBookmarks": "Rechercher des signets",
     "bookmarksAddTag": "Ajouter une étiquette de marque-page",
-    "bookmarksRenameTag": "Renommer l'étiquette de marque-page", 
-    "bookmarksDeleteTag": "Supprimer l'étiquette de marque-page", 
+    "bookmarksRenameTag": "Renommer l'étiquette de marque-page",
+    "bookmarksDeleteTag": "Supprimer l'étiquette de marque-page",
     "deleteBookmarksWithTag": "Supprimer l'étiquette de marque-page avec la balise",
     "bookmarksSimilarItems": "Éléments similaires",
     "searchHistory": "Rechercher dans l'historique",
@@ -81,7 +81,7 @@
     "taskDeleteWarning": {
       "unsafeHTML": "Workspace supprimé. <a>Annuler ?</a>"
     },
-    "tasksSearchTabs": "Rechercher dans les onglets", 
+    "tasksSearchTabs": "Rechercher dans les onglets",
     "returnToTask": "Revenir au workspace précédent",
     "taskDescriptionTwo": "%t et %t",
     "taskDescriptionThree": "%t, %t, et %n",
@@ -166,7 +166,7 @@
     "settingsShowDividerToggle": "Afficher un séparateur entre les onglets",
     "settingsLanguageSelection": "Langue: ",
     "settingsSeparateTitlebarToggle": "Afficher une barre de titre séparée",
-    "settingsAutoplayToggle": "Activer la lecture automatique", 
+    "settingsAutoplayToggle": "Activer la lecture automatique",
     "settingsSearchSuggestionsToggle": "Afficher les suggestions de recherche",
     "settingsSearchSuggestionsCount": "Nombre maximal de suggestions de recherche :",
     "settingsOpenTabsInForegroundToggle": "Ouvrir les nouveaux onglets au premiers plan",
@@ -179,9 +179,9 @@
     "settingsUsageStatisticsToggle": {
       "unsafeHTML": "Envoyer des statistiques d'utilisation - <a href=\"https://github.com/minbrowser/min/blob/master/docs/statistics.md\">En savoir plus sur les statistiques envoyées (en anglais)</a>"
     },
-    "settingsStartupOptions": "Les paramétres de démarrage de Min", 
-    "settingsStartupCreateTask": "Ré-ouverture des onglets précédents", 
-    "settingsStartupNewTaskandBackground": "Déplacer les onglets précédents en arrière plan", 
+    "settingsStartupOptions": "Les paramétres de démarrage de Min",
+    "settingsStartupCreateTask": "Ré-ouverture des onglets précédents",
+    "settingsStartupNewTaskandBackground": "Déplacer les onglets précédents en arrière plan",
     "settingsStartupNewTaskOnly": "Ouvrir un nouveau workspace",
     "settingsNewWindowOptions": "Dans une nouvelle fenêtre",
     "settingsNewWindowCreateTask": "Créer un nouveau workspace",
@@ -205,7 +205,7 @@
     "appMenuDuplicateTab": "Dupliquer l'onglet",
     "appMenuNewPrivateTab": "Nouvel onglet de navigation privée",
     "appMenuNewTask": "Nouveau workspace",
-    "appMenuNewWindow": "Ouvrir une nouvelle fenêtre", 
+    "appMenuNewWindow": "Ouvrir une nouvelle fenêtre",
     "appMenuSavePageAs": "Enregistrer la page sous",
     "appMenuPrint": "Imprimer",
     "appMenuEdit": "Editer",
@@ -287,7 +287,7 @@
     "passwordManagerSetupStep2": "Puis cliquer-glisser l'outil dans le cadre ci-dessous :",
     "passwordManagerSetupDragBox": "Déposer l'outil ici",
     "passwordManagerSetupInstalling": "En cours d'installation...",
-    "passwordManagerBitwardenSignIn": "Pour connecter votre compte Bitwarden, accédez à vault.bitwarden.com/#/settings/account, faites défiler vers le bas et choisissez «View API Key». Collez ensuite les valeurs dans les champs ci-dessous.", 
+    "passwordManagerBitwardenSignIn": "Pour connecter votre compte Bitwarden, accédez à vault.bitwarden.com/#/settings/account, faites défiler vers le bas et choisissez «View API Key». Collez ensuite les valeurs dans les champs ci-dessous.",
     "passwordManagerSetupSignIn": "Connectez-vous à votre gestionnaire de mots de pass pour commencer à utiliser le remplissage automatique. Vos informations de connexion ne seront jamais stockées par Min.",
     "disableAutofill": "Désactiver le remplissage automatique",
     "passwordManagerSetupUnlockError": "Échec d'ouverture de la bibliothèque de mots passe : ",
@@ -302,7 +302,7 @@
     /* Password viewer */
     "savedPasswordsHeading": "Mots de passe enregistrés",
     "savedPasswordsEmpty": "Pas de mots de passe enregistrés.",
-    "savedPasswordsNeverSavedLabel": "Ne jamais enregistrer", 
+    "savedPasswordsNeverSavedLabel": "Ne jamais enregistrer",
     "deletePassword": "Supprimer le mot de passe pour %s?",
     /* Dialogs */
     "loginPromptTitle": "Connectez-vous à %h", //%h is replaced with host, %r with realm (title of protected part of site)
@@ -313,7 +313,7 @@
     "password": "Mot de passe",
     "secretKey": "Clé privée",
     "openExternalApp": "Ouvrir avec %s", // %s est le nom de l'application
-    "clickToCopy": "cliquer-glisser", 
-    "copied": "Copier" 
+    "clickToCopy": "cliquer-glisser",
+    "copied": "Copier"
   }
 }

@@ -293,12 +293,12 @@
     "passwordCaptureSavePassword": "% için parola kaydedilsin mi?",
     "passwordCaptureSave": "Kaydet",
     "passwordCaptureDontSave": "Kaydetme",
-    "passwordCaptureNeverSave": "Asla kaydetme", 
+    "passwordCaptureNeverSave": "Asla kaydetme",
     "generatePassword": "Parola Oluştur",
     /* Password viewer */
     "savedPasswordsHeading": "Kayıtlı Parolalar",
     "savedPasswordsEmpty": "Kaydedilmiş parola yok.",
-    "savedPasswordsNeverSavedLabel": "Daha önce kaydedilmedi", 
+    "savedPasswordsNeverSavedLabel": "Daha önce kaydedilmedi",
     "deletePassword": "% için parola silinsin mi?",
     /* Dialogs */
     "loginPromptTitle": "Giriş yapın %h", //%h is replaced with host, %r with realm (title of protected part of site)
@@ -308,8 +308,8 @@
     "email": "E-Posta",
     "password": "Parola",
     "secretKey": "Gizli anahtar",
-    "openExternalApp": "Harici uygulamayı aç", 
-    "clickToCopy": "Kopyalamak için Tıkla", 
-    "copied": "Kopyalandı" 
+    "openExternalApp": "Harici uygulamayı aç",
+    "clickToCopy": "Kopyalamak için Tıkla",
+    "copied": "Kopyalandı"
   }
 }
