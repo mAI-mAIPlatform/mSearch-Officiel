@@ -15,7 +15,9 @@ const SHOW_WIDGETS_STORAGE_KEY = 'msearch.ntp.showWidgets'
 const SHOW_FAVORITES_STORAGE_KEY = 'msearch.ntp.showFavorites'
 const SHOW_HISTORY_STORAGE_KEY = 'msearch.ntp.showHistory'
 const MAI_SIDEBAR_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
+const SHORTCUTS_STORAGE_KEY = 'msearch.ntp.shortcuts'
 const MAX_REMINDERS = 12
+const MAX_SHORTCUTS = 12
 
 const themes = {
   aurora: 'linear-gradient(120deg, rgba(49, 87, 255, 0.45), rgba(65, 230, 180, 0.25), rgba(203, 124, 255, 0.35))',
@@ -125,6 +127,8 @@ const newTabPage = {
   reminderList: document.getElementById('ntp-reminder-list'),
   favoritesList: document.getElementById('ntp-favorites-list'),
   historyList: document.getElementById('ntp-history-list'),
+  shortcutsList: document.getElementById('ntp-shortcuts-list'),
+  shortcutsAddButton: document.getElementById('ntp-shortcuts-add'),
   searchForm: document.getElementById('ntp-search-form'),
   searchInput: document.getElementById('ntp-search-input'),
   subtitle: document.getElementById('ntp-subtitle'),
@@ -145,6 +149,7 @@ const newTabPage = {
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
   blobInstance: null,
   reminders: [],
+  shortcuts: [],
   clockTimer: null,
   historyRefreshTimer: null,
   isMaiSidebarOpen: false,
@@ -226,6 +231,109 @@ const newTabPage = {
   },
   saveReminders: function () {
     localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(newTabPage.reminders.slice(0, MAX_REMINDERS)))
+  },
+
+  loadShortcuts: function () {
+    const defaults = [
+      { id: 'downloads', title: 'Téléchargements', url: 'min://downloads' },
+      { id: 'settings', title: 'Paramètres', url: 'min://settings' },
+      { id: 'bookmarks', title: 'Favoris', url: 'min://bookmarks' }
+    ]
+
+    try {
+      const raw = localStorage.getItem(SHORTCUTS_STORAGE_KEY)
+      if (!raw) {
+        newTabPage.shortcuts = defaults
+        return
+      }
+
+      const parsed = JSON.parse(raw)
+      if (!Array.isArray(parsed)) {
+        newTabPage.shortcuts = defaults
+        return
+      }
+
+      newTabPage.shortcuts = parsed
+        .filter(item => item && typeof item.title === 'string' && typeof item.url === 'string')
+        .slice(0, MAX_SHORTCUTS)
+    } catch (e) {
+      newTabPage.shortcuts = defaults
+    }
+  },
+  saveShortcuts: function () {
+    localStorage.setItem(SHORTCUTS_STORAGE_KEY, JSON.stringify(newTabPage.shortcuts.slice(0, MAX_SHORTCUTS)))
+  },
+  renderShortcuts: function () {
+    if (!newTabPage.shortcutsList) {
+      return
+    }
+
+    newTabPage.shortcutsList.textContent = ''
+    const maxShortcutsSetting = parseInt(settings.get('ntpMaxShortcuts'), 10)
+    const maxShortcuts = [4, 6, 8, 10, 12].includes(maxShortcutsSetting) ? maxShortcutsSetting : 8
+    const shortcuts = newTabPage.shortcuts.slice(0, maxShortcuts)
+
+    if (shortcuts.length === 0) {
+      const emptyState = document.createElement('li')
+      emptyState.className = 'ntp-empty-state'
+      emptyState.textContent = 'Ajoutez un raccourci pour accéder rapidement à vos pages.'
+      newTabPage.shortcutsList.appendChild(emptyState)
+      return
+    }
+
+    const fragment = document.createDocumentFragment()
+
+    shortcuts.forEach(function (shortcut) {
+      const item = document.createElement('li')
+      item.className = 'ntp-list-item'
+
+      const link = document.createElement('button')
+      link.className = 'ntp-link-button'
+      link.textContent = shortcut.title
+      link.title = shortcut.url
+      link.addEventListener('click', function () {
+        searchbar.events.emit('url-selected', { url: newTabPage.normalizeURL(shortcut.url), background: false })
+      })
+
+      const removeButton = document.createElement('button')
+      removeButton.className = 'ntp-inline-delete i carbon:close'
+      removeButton.setAttribute('aria-label', 'Supprimer le raccourci')
+      removeButton.addEventListener('click', function () {
+        newTabPage.shortcuts = newTabPage.shortcuts.filter(s => s.id !== shortcut.id)
+        newTabPage.saveShortcuts()
+        newTabPage.renderShortcuts()
+      })
+
+      item.appendChild(link)
+      item.appendChild(removeButton)
+      fragment.appendChild(item)
+    })
+
+    newTabPage.shortcutsList.appendChild(fragment)
+  },
+  addShortcut: function () {
+    const title = window.prompt('Nom du raccourci')
+    if (!title) {
+      return
+    }
+
+    const url = window.prompt('URL ou page interne (ex: min://downloads)')
+    if (!url) {
+      return
+    }
+
+    newTabPage.shortcuts.unshift({
+      id: Date.now() + '-' + Math.random().toString(36).slice(2),
+      title: title.trim(),
+      url: url.trim()
+    })
+
+    if (newTabPage.shortcuts.length > MAX_SHORTCUTS) {
+      newTabPage.shortcuts = newTabPage.shortcuts.slice(0, MAX_SHORTCUTS)
+    }
+
+    newTabPage.saveShortcuts()
+    newTabPage.renderShortcuts()
   },
   normalizeURL: function (value) {
     const trimmed = (value || '').trim()
@@ -421,6 +529,7 @@ const newTabPage = {
       newTabPage.toggleFavorites.addEventListener('change', function () {
         localStorage.setItem(SHOW_FAVORITES_STORAGE_KEY, String(newTabPage.toggleFavorites.checked))
         newTabPage.applyDisplayPreferences()
+        newTabPage.renderHistoryAndFavorites()
       })
     }
 
@@ -428,6 +537,7 @@ const newTabPage = {
       newTabPage.toggleHistory.addEventListener('change', function () {
         localStorage.setItem(SHOW_HISTORY_STORAGE_KEY, String(newTabPage.toggleHistory.checked))
         newTabPage.applyDisplayPreferences()
+        newTabPage.renderHistoryAndFavorites()
       })
     }
 
@@ -473,7 +583,7 @@ const newTabPage = {
     const shouldPersist = options.persist !== false
 
     newTabPage.isMaiSidebarOpen = shouldOpen
-    newTabPage.maiSidebar.hidden = false
+    newTabPage.maiSidebar.hidden = !shouldOpen
     newTabPage.maiSidebar.setAttribute('aria-hidden', String(!shouldOpen))
     document.body.classList.toggle('ntp-mai-open', shouldOpen)
     newTabPage.syncMaiSidebarA11y(shouldOpen)
@@ -498,6 +608,11 @@ const newTabPage = {
       newTabPage.maiToggleButton.hidden = (value === false)
       if (value === false) {
         newTabPage.setMaiSidebarState(false)
+      } else {
+        const openOnStartup = settings.get('maiSidebarOpenStartup')
+        if (openOnStartup === true) {
+          newTabPage.setMaiSidebarState(true, { persist: false })
+        }
       }
     })
 
@@ -526,9 +641,7 @@ const newTabPage = {
 
     // Handle position setting
     const position = settings.get('maiSidebarPosition') || 'right'
-    if (position === 'left') {
-      document.body.classList.add('mai-sidebar-left')
-    }
+    document.body.classList.toggle('mai-sidebar-left', position === 'left')
 
     settings.listen('maiSidebarPosition', function (value) {
       if (value === 'left') {
@@ -572,21 +685,30 @@ const newTabPage = {
       }
 
       const [favorites, historyItems] = await Promise.all([
-        showFavorites ? places.searchPlaces('', { limit: 8, searchBookmarks: true }) : Promise.resolve([]),
-        showHistory ? places.searchPlaces('', { limit: 8 }) : Promise.resolve([])
+        showFavorites ? places.searchPlaces('', { limit: 30, searchBookmarks: true }) : Promise.resolve([]),
+        showHistory ? places.searchPlaces('', { limit: 30 }) : Promise.resolve([])
       ])
-      const historyWithoutBookmarks = historyItems.filter(item => !item.isBookmarked).slice(0, 8)
+
+      const uniqueFavorites = favorites
+        .filter(item => item && item.isBookmarked && item.url)
+        .filter((item, index, arr) => arr.findIndex(a => a.url === item.url) === index)
+        .slice(0, 8)
+
+      const historyWithoutBookmarks = historyItems
+        .filter(item => item && item.url && !item.isBookmarked)
+        .filter((item, index, arr) => arr.findIndex(a => a.url === item.url) === index)
+        .slice(0, 8)
 
       const favoritesFragment = document.createDocumentFragment()
       const historyFragment = document.createDocumentFragment()
 
-      if (favorites.length === 0) {
+      if (uniqueFavorites.length === 0) {
         const emptyFavorites = document.createElement('li')
         emptyFavorites.className = 'ntp-empty-state'
         emptyFavorites.textContent = 'Ajoutez vos sites préférés pour les retrouver ici.'
         favoritesFragment.appendChild(emptyFavorites)
       } else {
-        favorites.forEach(item => {
+        uniqueFavorites.forEach(item => {
           favoritesFragment.appendChild(newTabPage.createPageListItem(item))
         })
       }
@@ -757,14 +879,21 @@ const newTabPage = {
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
-    localStorage.removeItem('msearch.ntp.shortcuts')
+    newTabPage.loadShortcuts()
     newTabPage.renderReminders()
+    newTabPage.renderShortcuts()
     newTabPage.applyDisplayPreferences()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
     newTabPage.bindPersonalizationControls()
     newTabPage.bindMaiSidebarControls()
+
+    if (newTabPage.shortcutsAddButton) {
+      newTabPage.shortcutsAddButton.addEventListener('click', function () {
+        newTabPage.addShortcut()
+      })
+    }
 
     settings.listen('liquidGlassAnimations', function (value) {
       document.body.classList.toggle('ntp-reduced-motion', value === false)
@@ -841,6 +970,11 @@ const newTabPage = {
 
     searchbar.events.on('url-selected', function () {
       newTabPage.scheduleHistoryRefresh()
+      newTabPage.renderShortcuts()
+    })
+
+    settings.listen('ntpMaxShortcuts', function () {
+      newTabPage.renderShortcuts()
     })
 
     newTabPage.updateLiveHeader()

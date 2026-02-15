@@ -508,7 +508,7 @@ ntpRandomBackgroundCheckbox.addEventListener('change', function () {
 
 settings.get('ntpMaxShortcuts', function (value) {
   var safe = parseInt(value, 10)
-  if (![4, 6, 8].includes(safe)) {
+  if (![4, 6, 8, 10, 12].includes(safe)) {
     safe = 8
   }
   ntpShortcutsSizeSelect.value = String(safe)
@@ -516,7 +516,7 @@ settings.get('ntpMaxShortcuts', function (value) {
 
 ntpShortcutsSizeSelect.addEventListener('change', function () {
   var safe = parseInt(this.value, 10)
-  if (![4, 6, 8].includes(safe)) {
+  if (![4, 6, 8, 10, 12].includes(safe)) {
     safe = 8
   }
   settings.set('ntpMaxShortcuts', safe)

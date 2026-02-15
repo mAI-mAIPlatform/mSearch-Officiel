@@ -224,6 +224,17 @@
               <button type="submit">Rechercher</button>
             </form>
 
+            <section id="ntp-shortcuts-panel" class="ntp-panel" aria-label="Raccourcis">
+              <div class="ntp-panel-title-row">
+                <h2>Raccourcis</h2>
+                <button class="ntp-subtle-button" type="button" id="ntp-shortcuts-add">
+                  <i class="i carbon:add"></i>
+                  <span>Ajouter</span>
+                </button>
+              </div>
+              <ul id="ntp-shortcuts-list"></ul>
+            </section>
+
             <section id="ntp-quick-actions" aria-label="Actions rapides">
               <button class="ntp-action" data-ntp-action="open-favorites">
                 <i class="i carbon:star-filled"></i>
@@ -528,6 +539,12 @@
         hidden
       ></div>
       <div id="password-viewer-list"></div>
+      <h3>Adresses pré-enregistrées</h3>
+      <div id="password-address-list"></div>
+      <button id="password-address-add" type="button">Ajouter une adresse</button>
+      <h3>Cartes bancaires pré-enregistrées</h3>
+      <div id="password-card-list"></div>
+      <button id="password-card-add" type="button">Ajouter une carte</button>
       <div id="password-viewer-import-container">
         <button id="password-viewer-import"><span class="i carbon:document-import"></span><span data-string="importCredentials"></span></button>
         <button id="password-viewer-export"><span class="i carbon:export"></span><span data-string="exportCredentials"></span></button>

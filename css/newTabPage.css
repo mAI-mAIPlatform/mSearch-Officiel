@@ -214,6 +214,20 @@ body:not(.is-ntp) #ntp-content {
     background: rgba(23, 30, 57, 0.6);
 }
 
+
+#ntp-shortcuts-panel {
+    min-height: 0;
+}
+
+#ntp-shortcuts-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.5rem;
+}
+
 #ntp-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(220px, 1fr));
