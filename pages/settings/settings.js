@@ -1389,3 +1389,25 @@ document.addEventListener('click', (e) => {
 PersonalData.updatePinUI()
 PersonalData.renderAddresses()
 PersonalData.renderCards()
+
+/* Manual Save Button Logic */
+const manualSaveFab = document.getElementById('manual-save-fab')
+if (manualSaveFab) {
+  manualSaveFab.addEventListener('click', function () {
+    // Trigger change event on focused input by blurring
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'SELECT')) {
+      document.activeElement.blur()
+    }
+
+    const originalContent = this.innerHTML
+    this.innerHTML = '<i class="i carbon:checkmark"></i> <span>Sauvegardé !</span>'
+    this.style.background = '#10b981' // Success Green
+    this.style.borderColor = '#059669'
+
+    setTimeout(() => {
+      this.innerHTML = originalContent
+      this.style.background = ''
+      this.style.borderColor = ''
+    }, 2000)
+  })
+}

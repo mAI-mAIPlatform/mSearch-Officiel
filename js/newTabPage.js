@@ -139,8 +139,6 @@ const newTabPage = {
   favoritesPanel: document.getElementById('ntp-favorites-panel'),
   historyPanel: document.getElementById('ntp-history-panel'),
   personalizationPanel: document.getElementById('ntp-personalization-panel'),
-  densitySelector: document.getElementById('ntp-density-selector'),
-  glassSelector: document.getElementById('ntp-glass-selector'),
   toggleWidgets: document.getElementById('ntp-toggle-widgets'),
   toggleFavorites: document.getElementById('ntp-toggle-favorites'),
   toggleHistory: document.getElementById('ntp-toggle-history'),
@@ -283,6 +281,10 @@ const newTabPage = {
       link.textContent = shortcut.title || shortcut.url
       link.title = shortcut.url
       link.addEventListener('click', function () {
+        if (shortcut.url === 'min://bookmarks') {
+          tabEditor.show(tabs.getSelected(), '!bookmarks ')
+          return
+        }
         searchbar.events.emit('url-selected', { url: shortcut.url, background: false })
       })
 
@@ -454,12 +456,6 @@ const newTabPage = {
       newTabPage.historyPanel.hidden = !showHistory
     }
 
-    if (newTabPage.densitySelector) {
-      newTabPage.densitySelector.value = density
-    }
-    if (newTabPage.glassSelector) {
-      newTabPage.glassSelector.value = glass
-    }
     if (newTabPage.toggleWidgets) {
       newTabPage.toggleWidgets.checked = showWidgets
     }
@@ -471,21 +467,6 @@ const newTabPage = {
     }
   },
   bindPersonalizationControls: function () {
-    if (newTabPage.densitySelector) {
-      newTabPage.densitySelector.addEventListener('change', function () {
-        localStorage.setItem(DENSITY_STORAGE_KEY, newTabPage.densitySelector.value === 'compact' ? 'compact' : 'comfortable')
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
-    if (newTabPage.glassSelector) {
-      newTabPage.glassSelector.addEventListener('change', function () {
-        const value = ['balanced', 'soft', 'strong'].includes(newTabPage.glassSelector.value) ? newTabPage.glassSelector.value : 'balanced'
-        localStorage.setItem(GLASS_STORAGE_KEY, value)
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
     if (newTabPage.toggleWidgets) {
       newTabPage.toggleWidgets.addEventListener('change', function () {
         localStorage.setItem(SHOW_WIDGETS_STORAGE_KEY, String(newTabPage.toggleWidgets.checked))
@@ -546,8 +527,8 @@ const newTabPage = {
     }
 
     // Si la sidebar est désactivée globalement, on force la fermeture et le masquage
-    const isEnabled = settings.get('maiSidebarEnabled')
-    if (isEnabled === false) {
+    const isEnabled = settings.get('maiSidebarEnabled') !== false
+    if (!isEnabled) {
       newTabPage.isMaiSidebarOpen = false
       newTabPage.maiSidebar.hidden = true
       newTabPage.maiSidebar.setAttribute('aria-hidden', 'true')
@@ -575,10 +556,10 @@ const newTabPage = {
     }
 
     // Initialisation : gestion de l'état activé/désactivé et ouverture au démarrage
-    const isEnabled = settings.get('maiSidebarEnabled')
-    newTabPage.maiToggleButton.hidden = (isEnabled === false)
+    const isEnabled = settings.get('maiSidebarEnabled') !== false
+    newTabPage.maiToggleButton.hidden = !isEnabled
 
-    if (isEnabled === false) {
+    if (!isEnabled) {
       newTabPage.setMaiSidebarState(false)
     } else {
       const openOnStartup = settings.get('maiSidebarOpenStartup')
@@ -591,8 +572,9 @@ const newTabPage = {
     }
 
     settings.listen('maiSidebarEnabled', function (value) {
-      newTabPage.maiToggleButton.hidden = (value === false)
-      if (value === false) {
+      const enabled = value !== false
+      newTabPage.maiToggleButton.hidden = !enabled
+      if (!enabled) {
         newTabPage.setMaiSidebarState(false)
       } else {
         // Restaurer l'état précédent ou laisser fermé par défaut ?
@@ -619,31 +601,33 @@ const newTabPage = {
     })
 
     // Handle position setting
-    const position = settings.get('maiSidebarPosition') || 'right'
-    if (position === 'left') {
-      document.body.classList.add('mai-sidebar-left')
-    }
-
-    settings.listen('maiSidebarPosition', function (value) {
+    const applyPosition = (value) => {
       if (value === 'left') {
         document.body.classList.add('mai-sidebar-left')
       } else {
         document.body.classList.remove('mai-sidebar-left')
       }
+    }
+
+    applyPosition(settings.get('maiSidebarPosition'))
+
+    settings.listen('maiSidebarPosition', function (value) {
+      applyPosition(value)
     })
 
     // Handle global visibility setting
-    const globalSidebar = settings.get('maiSidebarGlobal') !== false
-    if (!globalSidebar) {
-      document.body.classList.add('mai-sidebar-restricted')
-    }
-
-    settings.listen('maiSidebarGlobal', function (value) {
+    const applyGlobalVisibility = (value) => {
       if (value === false) {
         document.body.classList.add('mai-sidebar-restricted')
       } else {
         document.body.classList.remove('mai-sidebar-restricted')
       }
+    }
+
+    applyGlobalVisibility(settings.get('maiSidebarGlobal'))
+
+    settings.listen('maiSidebarGlobal', function (value) {
+      applyGlobalVisibility(value)
     })
   },
   renderHistoryAndFavorites: async function () {
