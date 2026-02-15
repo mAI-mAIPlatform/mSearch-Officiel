@@ -215,3 +215,69 @@ body.dynamic-theme-enabled.dynamic-theme-night {
   background: #333;
   border-color: #555;
 }
+
+/* PIN Lock Overlay */
+#pin-lock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(10, 14, 25, 0.98);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.lock-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  width: 300px;
+  text-align: center;
+}
+
+.lock-container h2 {
+  font-weight: 300;
+  margin: 0;
+}
+
+.lock-container input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.8rem;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 0.2rem;
+}
+
+.lock-container button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.lock-container button:hover {
+  background: #2563eb;
+}
+
+.lock-container input.error {
+  border-color: #ef4444;
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}

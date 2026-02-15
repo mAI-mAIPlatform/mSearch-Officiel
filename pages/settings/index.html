@@ -27,6 +27,7 @@
         <a href="#additional-settings-container">Fonctions</a>
         <a href="#search-engine-settings-container">Recherche</a>
         <a href="#password-autofill-container">Mots de passe</a>
+        <a href="#personal-data-settings-container">Données personnelles</a>
         <a href="#proxy-settings-container">Proxy</a>
         <a href="#keymap-settings-container">Raccourcis clavier</a>
         <a href="#custom-bangs-container">Bangs</a>
@@ -242,6 +243,8 @@
               <option value="4">4</option>
               <option value="6">6</option>
               <option value="8">8</option>
+              <option value="10">10</option>
+              <option value="12">12</option>
             </select>
           </div>
           <div class="setting-section">
@@ -609,6 +612,31 @@
           </div>
         </div>
 
+        <div class="settings-container" id="personal-data-settings-container">
+          <h3>Données personnelles</h3>
+
+          <div class="setting-section">
+            <h4>Code PIN de sécurité</h4>
+            <div id="pin-setup-section">
+              <button id="setup-pin-button" class="settings-action-button">Configurer un code PIN</button>
+              <button id="change-pin-button" class="settings-action-button" hidden>Changer le code PIN</button>
+              <button id="remove-pin-button" class="settings-action-button" hidden>Supprimer le code PIN</button>
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <h4>Adresses</h4>
+            <ul id="addresses-list" class="data-list"></ul>
+            <button id="add-address-button" class="settings-action-button">Ajouter une adresse</button>
+          </div>
+
+          <div class="setting-section">
+            <h4>Cartes de paiement</h4>
+            <ul id="cards-list" class="data-list"></ul>
+            <button id="add-card-button" class="settings-action-button">Ajouter une carte</button>
+          </div>
+        </div>
+
         <div class="settings-container" id="proxy-settings-container">
           <h3 data-string="settingsProxyHeading"></h3>
 
@@ -682,6 +710,17 @@
           </div>
         </div>
       </main>
+    </div>
+
+    <div id="personal-data-editor" class="modal-overlay" hidden>
+      <div class="modal-content">
+        <h3 id="personal-data-editor-title">Édition</h3>
+        <form id="personal-data-form"></form>
+        <div class="modal-actions">
+          <button id="personal-data-cancel">Annuler</button>
+          <button id="personal-data-save" class="settings-action-button">Enregistrer</button>
+        </div>
+      </div>
     </div>
 
     <!-- this needs to be placed at the bottom so that sticky positioning works correctly -->

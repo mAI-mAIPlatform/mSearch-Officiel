@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron')
+const fs = require('fs')
 
 const settings = require('util/settings/settings.js')
 const webviews = require('webviews.js')
@@ -18,6 +19,62 @@ const PasswordManagers = {
     new OnePassword(),
     new Keychain()
   ],
+  // PIN & Data Helpers
+  async hashPin (pin) {
+    const msgBuffer = new TextEncoder().encode(pin)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  },
+  async setPin (pin) {
+    const hash = await this.hashPin(pin)
+    localStorage.setItem('msearch.security.pinHash', hash)
+  },
+  async verifyPin (pin) {
+    const stored = localStorage.getItem('msearch.security.pinHash')
+    if (!stored) return true
+    const hash = await this.hashPin(pin)
+    return hash === stored
+  },
+  hasPin () {
+    return !!localStorage.getItem('msearch.security.pinHash')
+  },
+  // Address & Card Helpers
+  getAddresses () {
+    try {
+      return JSON.parse(localStorage.getItem('msearch.autofill.addresses') || '[]')
+    } catch (e) { return [] }
+  },
+  saveAddress (address) {
+    const list = this.getAddresses()
+    address.id = address.id || Date.now().toString()
+    const idx = list.findIndex(i => i.id === address.id)
+    if (idx !== -1) list[idx] = address
+    else list.push(address)
+    localStorage.setItem('msearch.autofill.addresses', JSON.stringify(list))
+  },
+  deleteAddress (id) {
+    const list = this.getAddresses().filter(i => i.id !== id)
+    localStorage.setItem('msearch.autofill.addresses', JSON.stringify(list))
+  },
+  getCards () {
+    try {
+      return JSON.parse(localStorage.getItem('msearch.autofill.cards') || '[]')
+    } catch (e) { return [] }
+  },
+  saveCard (card) {
+    // Basic Luhn check could be done in UI before calling this, or here.
+    const list = this.getCards()
+    card.id = card.id || Date.now().toString()
+    const idx = list.findIndex(i => i.id === card.id)
+    if (idx !== -1) list[idx] = card
+    else list.push(card)
+    localStorage.setItem('msearch.autofill.cards', JSON.stringify(list))
+  },
+  deleteCard (id) {
+    const list = this.getCards().filter(i => i.id !== id)
+    localStorage.setItem('msearch.autofill.cards', JSON.stringify(list))
+  },
   // Returns an active password manager, which is the one that is selected in app's
   // settings.
   getActivePasswordManager: function () {

@@ -508,7 +508,7 @@ ntpRandomBackgroundCheckbox.addEventListener('change', function () {
 
 settings.get('ntpMaxShortcuts', function (value) {
   var safe = parseInt(value, 10)
-  if (![4, 6, 8].includes(safe)) {
+  if (![4, 6, 8, 10, 12].includes(safe)) {
     safe = 8
   }
   ntpShortcutsSizeSelect.value = String(safe)
@@ -516,7 +516,7 @@ settings.get('ntpMaxShortcuts', function (value) {
 
 ntpShortcutsSizeSelect.addEventListener('change', function () {
   var safe = parseInt(this.value, 10)
-  if (![4, 6, 8].includes(safe)) {
+  if (![4, 6, 8, 10, 12].includes(safe)) {
     safe = 8
   }
   settings.set('ntpMaxShortcuts', safe)
@@ -1145,3 +1145,247 @@ function createBang (bang, snippet, redirect) {
 
   return li
 }
+
+/* Personal Data & PIN Logic */
+
+async function sha256 (message) {
+  const msgBuffer = new TextEncoder().encode(message)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+const PersonalData = {
+  updatePinUI: function () {
+    const hasPin = !!localStorage.getItem('msearch.security.pinHash')
+    document.getElementById('setup-pin-button').hidden = hasPin
+    document.getElementById('change-pin-button').hidden = !hasPin
+    document.getElementById('remove-pin-button').hidden = !hasPin
+  },
+  renderAddresses: function () {
+    const list = document.getElementById('addresses-list')
+    if (!list) return
+    list.innerHTML = ''
+    let addresses = []
+    try {
+      addresses = JSON.parse(localStorage.getItem('msearch.autofill.addresses') || '[]')
+    } catch (e) {}
+
+    addresses.forEach(addr => {
+      const li = document.createElement('li')
+      li.className = 'data-list-item'
+      li.innerHTML = `
+        <div class="data-list-content">
+          <span class="data-list-title">${addr.name || 'Sans nom'}</span>
+          <span class="data-list-subtitle">${addr.address}, ${addr.city}</span>
+        </div>
+        <button class="settings-action-button delete-data-btn" data-id="${addr.id}" data-type="address">Supprimer</button>
+      `
+      list.appendChild(li)
+    })
+  },
+  renderCards: function () {
+    const list = document.getElementById('cards-list')
+    if (!list) return
+    list.innerHTML = ''
+    let cards = []
+    try {
+      cards = JSON.parse(localStorage.getItem('msearch.autofill.cards') || '[]')
+    } catch (e) {}
+
+    cards.forEach(card => {
+      const last4 = card.number ? card.number.slice(-4) : '????'
+      const li = document.createElement('li')
+      li.className = 'data-list-item'
+      li.innerHTML = `
+        <div class="data-list-content">
+          <span class="data-list-title">${card.name || 'Carte'}</span>
+          <span class="data-list-subtitle">•••• ${last4} (Exp: ${card.expiry})</span>
+        </div>
+        <button class="settings-action-button delete-data-btn" data-id="${card.id}" data-type="card">Supprimer</button>
+      `
+      list.appendChild(li)
+    })
+  },
+  openEditor: function (type) {
+    const modal = document.getElementById('personal-data-editor')
+    const form = document.getElementById('personal-data-form')
+    const title = document.getElementById('personal-data-editor-title')
+
+    form.innerHTML = ''
+    form.setAttribute('data-type', type)
+
+    if (type === 'address') {
+      title.textContent = 'Ajouter une adresse'
+      form.innerHTML = `
+        <input name="name" placeholder="Nom complet" required>
+        <input name="address" placeholder="Adresse" required>
+        <input name="city" placeholder="Ville" required>
+        <input name="zip" placeholder="Code postal" required>
+        <input name="country" placeholder="Pays" required>
+        <input name="phone" placeholder="Téléphone">
+        <input name="email" placeholder="Email" type="email">
+      `
+    } else if (type === 'card') {
+      title.textContent = 'Ajouter une carte'
+      form.innerHTML = `
+        <input name="name" placeholder="Nom sur la carte" required>
+        <input name="number" placeholder="Numéro de carte" required maxlength="19">
+        <input name="expiry" placeholder="MM/YY" required maxlength="5">
+        <input name="cvv" placeholder="CVV" maxlength="4">
+      `
+    } else if (type === 'pin-setup') {
+      title.textContent = 'Configurer le code PIN'
+      form.innerHTML = `
+        <input name="pin1" type="password" placeholder="Nouveau code PIN" required autofocus>
+        <input name="pin2" type="password" placeholder="Confirmer le code PIN" required>
+      `
+    } else if (type === 'pin-change') {
+      title.textContent = 'Changer le code PIN'
+      form.innerHTML = `
+        <input name="current" type="password" placeholder="Code PIN actuel" required autofocus>
+        <input name="pin1" type="password" placeholder="Nouveau code PIN" required>
+        <input name="pin2" type="password" placeholder="Confirmer le code PIN" required>
+      `
+    } else if (type === 'pin-remove') {
+      title.textContent = 'Supprimer le code PIN'
+      form.innerHTML = `
+        <input name="current" type="password" placeholder="Code PIN actuel" required autofocus>
+        <p style="margin-top:0.5em; opacity:0.8">Le verrouillage au démarrage sera désactivé.</p>
+      `
+    }
+
+    modal.hidden = false
+    const firstInput = form.querySelector('input')
+    if (firstInput) firstInput.focus()
+  },
+  closeEditor: function () {
+    document.getElementById('personal-data-editor').hidden = true
+  },
+  luhnCheck: function (val) {
+    let sum = 0
+    let shouldDouble = false
+    val = val.replace(/\s+/g, '')
+    for (let i = val.length - 1; i >= 0; i--) {
+      let digit = parseInt(val.charAt(i))
+      if (shouldDouble) {
+        if ((digit *= 2) > 9) digit -= 9
+      }
+      sum += digit
+      shouldDouble = !shouldDouble
+    }
+    return (sum % 10) === 0
+  }
+}
+
+// Bindings
+document.getElementById('setup-pin-button').addEventListener('click', () => PersonalData.openEditor('pin-setup'))
+document.getElementById('change-pin-button').addEventListener('click', () => PersonalData.openEditor('pin-change'))
+document.getElementById('remove-pin-button').addEventListener('click', () => PersonalData.openEditor('pin-remove'))
+document.getElementById('add-address-button').addEventListener('click', () => PersonalData.openEditor('address'))
+document.getElementById('add-card-button').addEventListener('click', () => PersonalData.openEditor('card'))
+
+document.getElementById('personal-data-cancel').addEventListener('click', (e) => {
+  e.preventDefault()
+  PersonalData.closeEditor()
+})
+
+document.getElementById('personal-data-save').addEventListener('click', async (e) => {
+  e.preventDefault()
+  const form = document.getElementById('personal-data-form')
+  const type = form.getAttribute('data-type')
+
+  const data = { id: Date.now().toString() }
+  const inputs = form.querySelectorAll('input')
+  let valid = true
+  inputs.forEach(input => {
+    if (input.hasAttribute('required') && !input.value.trim()) valid = false
+    data[input.name] = input.value.trim()
+  })
+
+  if (!valid) {
+    alert('Veuillez remplir tous les champs obligatoires.')
+    return
+  }
+
+  // PIN Logic
+  if (type === 'pin-setup' || type === 'pin-change') {
+    if (data.pin1 !== data.pin2) {
+      alert('Les codes PIN ne correspondent pas.')
+      return
+    }
+  }
+
+  if (type === 'pin-change' || type === 'pin-remove') {
+    const stored = localStorage.getItem('msearch.security.pinHash')
+    const hash = await sha256(data.current)
+    if (hash !== stored) {
+      alert('Code PIN actuel incorrect.')
+      return
+    }
+  }
+
+  if (type === 'pin-setup' || type === 'pin-change') {
+    const newHash = await sha256(data.pin1)
+    localStorage.setItem('msearch.security.pinHash', newHash)
+    PersonalData.updatePinUI()
+    PersonalData.closeEditor()
+    return
+  }
+
+  if (type === 'pin-remove') {
+    localStorage.removeItem('msearch.security.pinHash')
+    PersonalData.updatePinUI()
+    PersonalData.closeEditor()
+    return
+  }
+
+  // Data Logic
+  if (type === 'card') {
+    if (!PersonalData.luhnCheck(data.number)) {
+      alert('Numéro de carte invalide.')
+      return
+    }
+  }
+
+  if (type === 'address') {
+    const list = JSON.parse(localStorage.getItem('msearch.autofill.addresses') || '[]')
+    list.push(data)
+    localStorage.setItem('msearch.autofill.addresses', JSON.stringify(list))
+    PersonalData.renderAddresses()
+  } else if (type === 'card') {
+    const list = JSON.parse(localStorage.getItem('msearch.autofill.cards') || '[]')
+    list.push(data)
+    localStorage.setItem('msearch.autofill.cards', JSON.stringify(list))
+    PersonalData.renderCards()
+  }
+
+  PersonalData.closeEditor()
+})
+
+// Delegation for delete buttons
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('delete-data-btn')) {
+    const id = e.target.getAttribute('data-id')
+    const type = e.target.getAttribute('data-type')
+
+    if (!confirm('Supprimer cet élément ?')) return
+
+    if (type === 'address') {
+      const list = JSON.parse(localStorage.getItem('msearch.autofill.addresses') || '[]')
+      const newList = list.filter(i => i.id !== id)
+      localStorage.setItem('msearch.autofill.addresses', JSON.stringify(newList))
+      PersonalData.renderAddresses()
+    } else if (type === 'card') {
+      const list = JSON.parse(localStorage.getItem('msearch.autofill.cards') || '[]')
+      const newList = list.filter(i => i.id !== id)
+      localStorage.setItem('msearch.autofill.cards', JSON.stringify(newList))
+      PersonalData.renderCards()
+    }
+  }
+})
+
+// Initialize
+PersonalData.updatePinUI()
+PersonalData.renderAddresses()
+PersonalData.renderCards()

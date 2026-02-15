@@ -203,5 +203,37 @@ runInBackground(function () {
   require('searchbar/calculatorPlugin.js').initialize()
 })
 
-// once everything's loaded, start the session
-require('sessionRestore.js').restore()
+// Check PIN before restoring session
+const passwordManager = require('passwordManager/passwordManager.js')
+if (passwordManager.hasPin()) {
+  const overlay = document.getElementById('pin-lock-overlay')
+  const input = document.getElementById('pin-lock-input')
+  const submit = document.getElementById('pin-lock-submit')
+
+  if (overlay) {
+    overlay.hidden = false
+    input.focus()
+
+    const checkPin = async () => {
+      const val = input.value
+      if (await passwordManager.verifyPin(val)) {
+        overlay.hidden = true
+        require('sessionRestore.js').restore()
+      } else {
+        input.value = ''
+        input.classList.add('error')
+        setTimeout(() => input.classList.remove('error'), 500)
+      }
+    }
+
+    submit.addEventListener('click', checkPin)
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPin()
+    })
+  } else {
+    require('sessionRestore.js').restore()
+  }
+} else {
+  // once everything's loaded, start the session
+  require('sessionRestore.js').restore()
+}
