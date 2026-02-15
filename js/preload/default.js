@@ -69,4 +69,12 @@ window.addEventListener('message', function (e) {
   if (e.data?.message === 'toggle-multi-view') {
     ipc.send('toggle-multi-view', { tabId: e.data.tabId })
   }
+
+  if (e.data?.message === 'getSettingsData') {
+    ipc.send('getSettingsData')
+  }
+
+  if (e.data?.message === 'setSetting') {
+    ipc.send('setSetting', { key: e.data.key, value: e.data.value })
+  }
 })
