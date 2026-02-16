@@ -598,3 +598,47 @@ body.dark-mode .liquid-glass-panel {
   background: color-mix(in srgb, rgba(15, 23, 42, 0.4) 74%, rgba(8, 47, 73, 0.34));
   border-color: rgba(56, 189, 248, 0.55);
 }
+
+#experience-settings-container .setting-section {
+  padding: 0.6rem 0;
+}
+
+#experience-settings-container select {
+  min-width: 260px;
+}
+
+body.ui-density-compact .setting-section {
+  gap: 0.35rem 0.5rem;
+}
+
+body.ui-density-spacious .setting-section {
+  gap: 0.8rem 0.9rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+body.ui-motion-soft .settings-container,
+body.ui-motion-soft .settings-sidebar,
+body.ui-motion-soft .settings-action-button {
+  transition: all 120ms ease-out;
+}
+
+body.ui-motion-normal .settings-container,
+body.ui-motion-normal .settings-sidebar,
+body.ui-motion-normal .settings-action-button {
+  transition: all 220ms ease;
+}
+
+body.ui-motion-vivid .settings-container,
+body.ui-motion-vivid .settings-sidebar,
+body.ui-motion-vivid .settings-action-button {
+  transition: all 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body:not(.ui-surface-reflections-off) .liquid-glass-panel,
+body:not(.ui-surface-reflections-off) .settings-sidebar,
+body:not(.ui-surface-reflections-off) .search-engine-custom-card {
+  box-shadow:
+    0 8px 20px rgba(56, 189, 248, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
