@@ -133,7 +133,7 @@ const newTabPage = {
   actionButtons: document.querySelectorAll('#ntp-quick-actions [data-ntp-action]'),
   widgetsPanel: document.getElementById('ntp-widgets-panel'),
   widgetGrid: document.getElementById('ntp-widget-grid'),
-  keywordsList: document.getElementById('ntp-keywords-list'),
+  addWidgetButton: document.getElementById('ntp-add-widget-button'),
   resetWidgetsButton: document.getElementById('ntp-reset-widgets-button'),
   favoritesPanel: document.getElementById('ntp-favorites-panel'),
   historyPanel: document.getElementById('ntp-history-panel'),
@@ -202,6 +202,12 @@ const newTabPage = {
     const safeTheme = themes[themeId] ? themeId : 'aurora'
     document.body.setAttribute('data-ntp-theme', safeTheme)
     localStorage.setItem(THEME_STORAGE_KEY, safeTheme)
+
+    if (newTabPage.addWidgetButton) {
+      newTabPage.addWidgetButton.addEventListener('click', function () {
+        newTabPage.promptAddWidget()
+      })
+    }
 
     if (newTabPage.resetWidgetsButton) {
       newTabPage.resetWidgetsButton.addEventListener('click', function () {
@@ -318,20 +324,69 @@ const newTabPage = {
       { id: 'analytics', action: 'open-analysis', icon: 'carbon:chart-line', title: 'Analyses', subtitle: 'Tendances et statistiques' }
     ]
   },
+  sanitizeWidget: function (item) {
+    if (!item || typeof item !== 'object') {
+      return null
+    }
+
+    var fallbackId = 'widget-' + Date.now() + '-' + Math.floor(Math.random() * 10000)
+    var action = item.action || 'open-url'
+    var title = (item.title || '').trim()
+    if (!title) {
+      title = action === 'open-url' ? 'Widget perso' : 'Widget'
+    }
+
+    var normalized = {
+      id: item.id || fallbackId,
+      action: action,
+      icon: item.icon || 'carbon:flash',
+      title: title,
+      subtitle: (item.subtitle || '').trim()
+    }
+
+    if (action === 'open-url') {
+      normalized.url = newTabPage.normalizeURL(item.url || '')
+      if (!normalized.url) {
+        return null
+      }
+      if (!normalized.subtitle) {
+        normalized.subtitle = normalized.url
+      }
+    }
+
+    return normalized
+  },
   loadWidgets: function () {
     try {
       var parsed = JSON.parse(localStorage.getItem(WIDGETS_STORAGE_KEY) || '[]')
-      var defaults = newTabPage.getDefaultWidgets()
+      var defaults = newTabPage.getDefaultWidgets().map(function (item) {
+        return newTabPage.sanitizeWidget(item)
+      }).filter(Boolean)
+
       if (!Array.isArray(parsed) || parsed.length === 0) {
         newTabPage.widgets = defaults
-      } else {
-        var allowed = new Set(defaults.map(item => item.id))
-        newTabPage.widgets = parsed.filter(item => item && allowed.has(item.id)).map(function (item) {
-          return defaults.find(d => d.id === item.id)
-        }).filter(Boolean)
-        if (newTabPage.widgets.length === 0) {
-          newTabPage.widgets = defaults
+        return
+      }
+
+      var defaultMap = {}
+      defaults.forEach(function (item) {
+        defaultMap[item.id] = item
+      })
+
+      newTabPage.widgets = parsed.map(function (item) {
+        if (!item) {
+          return null
         }
+
+        if (item.id && defaultMap[item.id] && !item.url) {
+          return defaultMap[item.id]
+        }
+
+        return newTabPage.sanitizeWidget(item)
+      }).filter(Boolean)
+
+      if (newTabPage.widgets.length === 0) {
+        newTabPage.widgets = defaults
       }
     } catch (e) {
       newTabPage.widgets = newTabPage.getDefaultWidgets()
@@ -339,8 +394,71 @@ const newTabPage = {
   },
   saveWidgets: function () {
     localStorage.setItem(WIDGETS_STORAGE_KEY, JSON.stringify(newTabPage.widgets.map(function (item) {
-      return { id: item.id }
+      return {
+        id: item.id,
+        action: item.action,
+        icon: item.icon,
+        title: item.title,
+        subtitle: item.subtitle,
+        url: item.url
+      }
     })))
+  },
+  promptAddWidget: function () {
+    var result = ipc.sendSync('prompt', {
+      text: 'Ajouter un widget rapide',
+      values: [
+        { placeholder: 'Titre du widget', id: 'title', type: 'text' },
+        { placeholder: 'URL de destination (https://...)', id: 'url', type: 'text' }
+      ],
+      ok: 'Créer',
+      cancel: 'Annuler',
+      height: 240
+    })
+
+    if (!result || !result.title || !result.url) {
+      return
+    }
+
+    var widget = newTabPage.sanitizeWidget({
+      id: 'custom-' + Date.now(),
+      action: 'open-url',
+      icon: 'carbon:launch',
+      title: result.title,
+      subtitle: 'Widget personnalisé',
+      url: result.url
+    })
+
+    if (!widget) {
+      return
+    }
+
+    newTabPage.widgets.push(widget)
+    newTabPage.saveWidgets()
+    newTabPage.renderWidgets()
+  },
+  promptEditWidgetURL: function (index) {
+    var widget = newTabPage.widgets[index]
+    if (!widget || widget.action !== 'open-url') {
+      return
+    }
+
+    var nextURL = window.prompt('Modifier l’URL du widget', widget.url || '')
+    if (nextURL === null) {
+      return
+    }
+
+    widget.url = newTabPage.normalizeURL(nextURL)
+    if (!widget.url) {
+      return
+    }
+
+    if (!widget.subtitle || widget.subtitle === widget.url) {
+      widget.subtitle = widget.url
+    }
+
+    newTabPage.saveWidgets()
+    newTabPage.renderWidgets()
   },
   renderWidgets: function () {
     if (!newTabPage.widgetGrid) {
@@ -352,7 +470,7 @@ const newTabPage = {
     if (newTabPage.widgets.length === 0) {
       var emptyState = document.createElement('p')
       emptyState.className = 'ntp-empty-state'
-      emptyState.textContent = 'Aucun widget. Utilisez Réinitialiser pour restaurer la grille.'
+      emptyState.textContent = 'Aucun widget. Utilisez Ajouter ou Réinitialiser.'
       newTabPage.widgetGrid.appendChild(emptyState)
       return
     }
@@ -363,6 +481,9 @@ const newTabPage = {
       var button = document.createElement('button')
       button.className = 'ntp-widget-card'
       button.setAttribute('data-ntp-action', widget.action)
+      if (widget.url) {
+        button.setAttribute('data-widget-url', widget.url)
+      }
 
       var icon = document.createElement('i')
       icon.className = 'i ' + widget.icon
@@ -408,6 +529,17 @@ const newTabPage = {
         newTabPage.renderWidgets()
       })
 
+      if (widget.action === 'open-url') {
+        var edit = document.createElement('button')
+        edit.className = 'ntp-widget-control i carbon:edit'
+        edit.setAttribute('aria-label', 'Modifier l’URL du widget')
+        edit.addEventListener('click', function (event) {
+          event.stopPropagation()
+          newTabPage.promptEditWidgetURL(index)
+        })
+        controls.appendChild(edit)
+      }
+
       var remove = document.createElement('button')
       remove.className = 'ntp-widget-control i carbon:close'
       remove.setAttribute('aria-label', 'Supprimer le widget')
@@ -431,66 +563,6 @@ const newTabPage = {
 
     newTabPage.widgetGrid.appendChild(fragment)
     newTabPage.bindWidgetActions()
-  },
-  renderSmartKeywords: async function () {
-    if (!newTabPage.keywordsList) {
-      return
-    }
-
-    newTabPage.keywordsList.textContent = ''
-
-    try {
-      var historyItems = await places.getAllInRange(Date.now() - (14 * 24 * 60 * 60 * 1000), Date.now(), 120)
-      var tokens = {}
-      historyItems.forEach(function (item) {
-        var src = ((item.title || '') + ' ' + (item.url || '')).toLowerCase()
-        src.split(/[^a-z0-9àâçéèêëîïôûùüÿñæœ-]+/i).forEach(function (word) {
-          if (!word || word.length < 4 || /^https?$/.test(word) || word.includes('www')) {
-            return
-          }
-          tokens[word] = (tokens[word] || 0) + 1
-        })
-      })
-
-      var top = Object.keys(tokens).map(function (word) {
-        return { word: word, count: tokens[word] }
-      }).sort(function (a, b) {
-        return b.count - a.count
-      }).slice(0, 8)
-
-      if (top.length === 0) {
-        var emptyItem = document.createElement('li')
-        emptyItem.className = 'ntp-empty-state'
-        emptyItem.textContent = 'Pas assez de données pour extraire des mots clés.'
-        newTabPage.keywordsList.appendChild(emptyItem)
-        return
-      }
-
-      top.forEach(function (entry) {
-        var li = document.createElement('li')
-        li.className = 'ntp-list-item'
-
-        var keywordButton = document.createElement('button')
-        keywordButton.className = 'ntp-link-button'
-        keywordButton.textContent = entry.word
-        keywordButton.addEventListener('click', function () {
-          searchbar.events.emit('url-selected', { url: entry.word, background: false })
-        })
-
-        var meta = document.createElement('span')
-        meta.className = 'ntp-item-meta'
-        meta.textContent = String(entry.count) + ' vues'
-
-        li.appendChild(keywordButton)
-        li.appendChild(meta)
-        newTabPage.keywordsList.appendChild(li)
-      })
-    } catch (e) {
-      var errorItem = document.createElement('li')
-      errorItem.className = 'ntp-empty-state'
-      errorItem.textContent = 'Extraction de mots clés indisponible.'
-      newTabPage.keywordsList.appendChild(errorItem)
-    }
   },
   normalizeURL: function (value) {
     const trimmed = (value || '').trim()
@@ -627,8 +699,9 @@ const newTabPage = {
     }
 
     // Si la sidebar est désactivée globalement, on force la fermeture et le masquage
-    const isEnabled = settings.get('maiSidebarEnabled')
-    if (isEnabled === false) {
+    const enabledValue = settings.get('maiSidebarEnabled')
+    const isEnabled = enabledValue !== false && enabledValue !== 'false'
+    if (!isEnabled) {
       newTabPage.isMaiSidebarOpen = false
       newTabPage.maiSidebar.hidden = true
       newTabPage.maiSidebar.setAttribute('aria-hidden', 'true')
@@ -659,10 +732,11 @@ const newTabPage = {
     }
 
     // Initialisation : gestion de l'état activé/désactivé et ouverture au démarrage
-    const isEnabled = settings.get('maiSidebarEnabled')
-    newTabPage.maiToggleButton.hidden = (isEnabled === false)
+    const enabledValue = settings.get('maiSidebarEnabled')
+    const isEnabled = enabledValue !== false && enabledValue !== 'false'
+    newTabPage.maiToggleButton.hidden = !isEnabled
 
-    if (isEnabled === false) {
+    if (!isEnabled) {
       newTabPage.setMaiSidebarState(false)
     } else {
       const openOnStartup = settings.get('maiSidebarOpenStartup')
@@ -675,13 +749,13 @@ const newTabPage = {
     }
 
     settings.listen('maiSidebarEnabled', function (value) {
-      newTabPage.maiToggleButton.hidden = (value === false)
-      if (value === false) {
+      var nextEnabled = value !== false && value !== 'false'
+      newTabPage.maiToggleButton.hidden = !nextEnabled
+      if (!nextEnabled) {
         newTabPage.setMaiSidebarState(false)
       } else {
-        // Restaurer l'état précédent ou laisser fermé par défaut ?
-        // On laisse fermé par défaut lors de la réactivation pour éviter les surprises
         newTabPage.setMaiSidebarState(false, { persist: false })
+        newTabPage.maiSidebar.hidden = false
       }
     })
 
@@ -756,7 +830,7 @@ const newTabPage = {
       if (favorites.length === 0) {
         const emptyFavorites = document.createElement('li')
         emptyFavorites.className = 'ntp-empty-state'
-        emptyFavorites.textContent = 'Ajoutez vos sites préférés pour les retrouver ici.'
+        emptyFavorites.textContent = 'Aucun favoris n\'est disponible pour le moment.'
         favoritesFragment.appendChild(emptyFavorites)
       } else {
         favorites.forEach(item => {
@@ -767,7 +841,7 @@ const newTabPage = {
       if (historyWithoutBookmarks.length === 0) {
         const emptyHistory = document.createElement('li')
         emptyHistory.className = 'ntp-empty-state'
-        emptyHistory.textContent = 'Votre historique récent apparaîtra ici.'
+        emptyHistory.textContent = 'Aucun historique n\'est disponible pour le moment.'
         historyFragment.appendChild(emptyHistory)
       } else {
         historyWithoutBookmarks.forEach(item => {
@@ -859,7 +933,7 @@ const newTabPage = {
       newTabPage.setBackgroundSource(url)
     })
   },
-  handleNtpAction: function (action) {
+  handleNtpAction: function (action, targetURL) {
     const tabId = tabs.getSelected()
 
     if (action === 'open-search') {
@@ -867,13 +941,13 @@ const newTabPage = {
       return
     }
 
-    if (action === 'open-history') {
-      tabEditor.show(tabId, '!history ')
+    if (action === 'open-history' || action === 'open-history-page') {
+      searchbar.events.emit('url-selected', { url: 'min://app/pages/history/index.html', background: false })
       return
     }
 
-    if (action === 'open-favorites') {
-      tabEditor.show(tabId, '!bookmarks ')
+    if (action === 'open-favorites' || action === 'open-favorites-page') {
+      searchbar.events.emit('url-selected', { url: 'min://app/pages/bookmarks/index.html', background: false })
       return
     }
 
@@ -915,6 +989,11 @@ const newTabPage = {
 
     if (action === 'open-analysis') {
       searchbar.events.emit('url-selected', { url: 'min://app/pages/settings/index.html#search-engine-settings-container', background: false })
+      return
+    }
+
+    if (action === 'open-url' && targetURL) {
+      searchbar.events.emit('url-selected', { url: targetURL, background: false })
     }
   },
   bindWidgetActions: function () {
@@ -926,7 +1005,8 @@ const newTabPage = {
     buttons.forEach(function (button) {
       button.addEventListener('click', function () {
         var action = button.getAttribute('data-ntp-action')
-        newTabPage.handleNtpAction(action)
+        var targetURL = button.getAttribute('data-widget-url')
+        newTabPage.handleNtpAction(action, targetURL)
       })
     })
   },
@@ -973,7 +1053,6 @@ const newTabPage = {
     newTabPage.renderShortcuts()
     newTabPage.renderWidgets()
     newTabPage.renderHistoryAndFavorites()
-    newTabPage.renderSmartKeywords()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
     newTabPage.bindMaiSidebarControls()
@@ -1021,6 +1100,12 @@ const newTabPage = {
       })
     }
 
+
+    if (newTabPage.addWidgetButton) {
+      newTabPage.addWidgetButton.addEventListener('click', function () {
+        newTabPage.promptAddWidget()
+      })
+    }
 
     if (newTabPage.resetWidgetsButton) {
       newTabPage.resetWidgetsButton.addEventListener('click', function () {
@@ -1086,8 +1171,7 @@ const newTabPage = {
 
     searchbar.events.on('url-selected', function () {
       newTabPage.scheduleHistoryRefresh()
-      newTabPage.renderSmartKeywords()
-    })
+      })
 
     newTabPage.updateLiveHeader()
     clearInterval(newTabPage.clockTimer)

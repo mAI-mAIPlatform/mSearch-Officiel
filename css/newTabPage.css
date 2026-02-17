@@ -40,6 +40,12 @@ body.ntp-mai-open #ntp-main-shell {
     padding-right: clamp(1rem, 38vw, 30rem);
 }
 
+
+body.mai-sidebar-left.ntp-mai-open #ntp-main-shell {
+    padding-left: clamp(1rem, 38vw, 30rem);
+    padding-right: clamp(1rem, 3vw, 2rem);
+}
+
 body:not(.is-ntp) #ntp-content {
     opacity: 0;
     visibility: hidden;

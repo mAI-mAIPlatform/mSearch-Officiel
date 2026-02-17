@@ -270,6 +270,9 @@
               <div class="ntp-panel-title-row">
                 <h2>Widgets rapides</h2>
                 <div class="ntp-panel-title-actions">
+                  <button id="ntp-add-widget-button" class="ntp-subtle-button" aria-label="Ajouter un widget">
+                    <i class="i carbon:add"></i>
+                  </button>
                   <button id="ntp-reset-widgets-button" class="ntp-subtle-button" aria-label="Réinitialiser les widgets">
                     <i class="i carbon:reset"></i>
                   </button>
@@ -298,6 +301,9 @@
               <section class="ntp-panel" id="ntp-favorites-panel">
                 <div class="ntp-panel-title-row">
                   <h2>Favoris</h2>
+                  <button class="ntp-subtle-button" data-ntp-action="open-favorites-page" aria-label="Ouvrir la page complète des favoris">
+                    Voir tout
+                  </button>
                 </div>
                 <ul id="ntp-favorites-list"></ul>
               </section>
@@ -305,15 +311,11 @@
               <section class="ntp-panel" id="ntp-history-panel">
                 <div class="ntp-panel-title-row">
                   <h2>Historique récent</h2>
+                  <button class="ntp-subtle-button" data-ntp-action="open-history-page" aria-label="Ouvrir la page complète de l'historique">
+                    Voir tout
+                  </button>
                 </div>
                 <ul id="ntp-history-list"></ul>
-              </section>
-
-              <section class="ntp-panel" id="ntp-keywords-panel">
-                <div class="ntp-panel-title-row">
-                  <h2>Extraction intelligente des mots clés</h2>
-                </div>
-                <ul id="ntp-keywords-list"></ul>
               </section>
             </div>
 
