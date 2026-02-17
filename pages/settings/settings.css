@@ -647,3 +647,27 @@ body.dark-mode #mai-settings-container {
   background: rgba(15, 23, 42, 0.35);
   border-color: rgba(56, 189, 248, 0.6);
 }
+
+
+.screen-time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.liquid-glass-panel,
+#newtab-settings-container,
+#privacy-settings-container {
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.84) 82%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .liquid-glass-panel,
+body.dark-mode #newtab-settings-container,
+body.dark-mode #privacy-settings-container {
+  background: color-mix(in srgb, rgba(12, 18, 35, 0.78) 88%, transparent);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}

@@ -46,6 +46,13 @@ var ntpFixTitleOverlapCheckbox = document.getElementById('checkbox-ntp-fix-title
 var uiDensitySelect = document.getElementById('ui-density-select')
 var uiMotionIntensitySelect = document.getElementById('ui-motion-intensity-select')
 var uiSurfaceReflectionsCheckbox = document.getElementById('checkbox-ui-surface-reflections')
+var screenTimeEnabledCheckbox = document.getElementById('checkbox-screen-time-enabled')
+var screenTimeWeeklyHoursInput = document.getElementById('input-screen-time-weekly-hours')
+var screenTimeMonthlyHoursInput = document.getElementById('input-screen-time-monthly-hours')
+var screenTimePinLockCheckbox = document.getElementById('checkbox-screen-time-pin-lock')
+var cookieControlsEnabledCheckbox = document.getElementById('checkbox-cookie-controls-enabled')
+var cookiePolicySelect = document.getElementById('select-cookie-policy')
+var historySmartModeSelect = document.getElementById('select-history-smart-mode')
 
 function showRestartRequiredBanner () {
   banner.hidden = false
@@ -227,6 +234,146 @@ settings.get('clearHistoryOnStartup', function (value) {
 
 clearHistoryOnStartupCheckbox.addEventListener('change', function (e) {
   settings.set('clearHistoryOnStartup', this.checked)
+})
+
+
+/* screen time, cookie and smart history settings */
+
+
+function requestPinValidationIfNeeded (onSuccess) {
+  if (settings.get('screenTimePinProtected') !== true) {
+    onSuccess()
+    return
+  }
+
+  var storedPinHash = localStorage.getItem('msearch.security.pinHash')
+  if (!storedPinHash) {
+    onSuccess()
+    return
+  }
+
+  var provided = window.prompt('Code PIN requis pour modifier le temps d’écran')
+  if (!provided) {
+    return
+  }
+
+  sha256(provided).then(function (hash) {
+    if (hash !== storedPinHash) {
+      alert('Code PIN incorrect.')
+      return
+    }
+    onSuccess()
+  })
+}
+
+function normalizeScreenTimeHours (value, fallback, min, max) {
+  var parsed = parseInt(value, 10)
+  if (!Number.isInteger(parsed) || parsed < min) {
+    return fallback
+  }
+  if (parsed > max) {
+    return max
+  }
+  return parsed
+}
+
+function normalizeCookiePolicy (value) {
+  return ['balanced', 'strict', 'custom'].includes(value) ? value : 'balanced'
+}
+
+function normalizeHistorySmartMode (value) {
+  return ['adaptive', 'private-first', 'off'].includes(value) ? value : 'adaptive'
+}
+
+settings.get('screenTimeEnabled', function (value) {
+  screenTimeEnabledCheckbox.checked = value === true
+})
+
+screenTimeEnabledCheckbox.addEventListener('change', function () {
+  settings.set('screenTimeEnabled', this.checked)
+})
+
+settings.get('screenTimeWeeklyHours', function (value) {
+  var normalized = normalizeScreenTimeHours(value, 35, 1, 168)
+  screenTimeWeeklyHoursInput.value = String(normalized)
+  if (normalized !== value) {
+    settings.set('screenTimeWeeklyHours', normalized)
+  }
+})
+
+screenTimeWeeklyHoursInput.addEventListener('change', function () {
+  var self = this
+  var normalized = normalizeScreenTimeHours(this.value, 35, 1, 168)
+  requestPinValidationIfNeeded(function () {
+    self.value = String(normalized)
+    settings.set('screenTimeWeeklyHours', normalized)
+  })
+})
+
+settings.get('screenTimeMonthlyHours', function (value) {
+  var normalized = normalizeScreenTimeHours(value, 140, 1, 744)
+  screenTimeMonthlyHoursInput.value = String(normalized)
+  if (normalized !== value) {
+    settings.set('screenTimeMonthlyHours', normalized)
+  }
+})
+
+screenTimeMonthlyHoursInput.addEventListener('change', function () {
+  var self = this
+  var normalized = normalizeScreenTimeHours(this.value, 140, 1, 744)
+  requestPinValidationIfNeeded(function () {
+    self.value = String(normalized)
+    settings.set('screenTimeMonthlyHours', normalized)
+  })
+})
+
+settings.get('screenTimePinProtected', function (value) {
+  screenTimePinLockCheckbox.checked = value === true
+})
+
+screenTimePinLockCheckbox.addEventListener('change', async function () {
+  if (this.checked && !localStorage.getItem('msearch.security.pinHash')) {
+    this.checked = false
+    alert('Veuillez d’abord configurer un code PIN dans Données personnelles.')
+    return
+  }
+  settings.set('screenTimePinProtected', this.checked)
+})
+
+settings.get('cookieControlsEnabled', function (value) {
+  cookieControlsEnabledCheckbox.checked = value !== false
+})
+
+cookieControlsEnabledCheckbox.addEventListener('change', function () {
+  settings.set('cookieControlsEnabled', this.checked)
+})
+
+settings.get('cookiePolicy', function (value) {
+  var normalized = normalizeCookiePolicy(value)
+  cookiePolicySelect.value = normalized
+  if (normalized !== value) {
+    settings.set('cookiePolicy', normalized)
+  }
+})
+
+cookiePolicySelect.addEventListener('change', function () {
+  var normalized = normalizeCookiePolicy(this.value)
+  this.value = normalized
+  settings.set('cookiePolicy', normalized)
+})
+
+settings.get('historySmartMode', function (value) {
+  var normalized = normalizeHistorySmartMode(value)
+  historySmartModeSelect.value = normalized
+  if (normalized !== value) {
+    settings.set('historySmartMode', normalized)
+  }
+})
+
+historySmartModeSelect.addEventListener('change', function () {
+  var normalized = normalizeHistorySmartMode(this.value)
+  this.value = normalized
+  settings.set('historySmartMode', normalized)
 })
 
 /* dark mode setting */
