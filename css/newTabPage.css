@@ -80,8 +80,7 @@ body:not(.is-ntp) #ntp-content {
 #ntp-main-shell,
 #ntp-grid,
 #ntp-widgets-panel,
-#ntp-shortcuts-panel,
-#ntp-personalization-panel {
+#ntp-shortcuts-panel {
     content-visibility: auto;
     contain-intrinsic-size: 420px;
 }
@@ -563,37 +562,10 @@ body.ntp-reduced-motion #ntp-gradient-overlay {
 }
 
 
-#ntp-personalization-panel {
-    width: min(1020px, 94%);
-    align-self: center;
-    min-height: 0;
-}
 
-#ntp-personalization-grid {
-    display: grid;
-    gap: 0.65rem;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
 
-#ntp-personalization-help {
-    margin: 0 0 0.65rem;
-    opacity: 0.88;
-    font-size: 0.9rem;
-}
 
-#ntp-personalization-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-}
 
-#ntp-personalization-actions .ntp-subtle-button {
-    min-height: 2.3rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-}
 
 .ntp-control,
 .ntp-toggle-control {

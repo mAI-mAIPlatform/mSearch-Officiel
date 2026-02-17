@@ -317,8 +317,7 @@ body.dark-mode #search-engine-settings-container {
   border-color: rgba(56, 189, 248, 0.6);
 }
 
-#default-search-engine,
-#custom-search-engine,
+#search-engine-choice,
 #search-region,
 #search-language,
 #search-safe-mode,
@@ -330,7 +329,6 @@ body.dark-mode #search-engine-settings-container {
   min-height: 2.3em;
 }
 
-#custom-search-engine,
 #search-extra-params {
   min-width: min(520px, 100%);
   max-width: 100%;
@@ -365,8 +363,7 @@ body.dark-mode #search-engine-settings-container {
   }
 }
 
-body.dark-mode #default-search-engine,
-body.dark-mode #custom-search-engine,
+body.dark-mode #search-engine-choice,
 body.dark-mode #search-region,
 body.dark-mode #search-language,
 body.dark-mode #search-safe-mode,
@@ -466,9 +463,6 @@ body.dark-mode .search-engine-custom-card {
   flex: 0 0 auto;
 }
 
-#custom-search-engine {
-  min-width: 325px;
-}
 
 @media all and (max-width: 720px) {
   .search-option-row {
@@ -483,9 +477,6 @@ body.dark-mode .search-engine-custom-card {
     width: 100%;
   }
 
-  #custom-search-engine {
-    min-width: 100%;
-  }
 }
 
 /* Personal Data Section */
@@ -641,4 +632,18 @@ body:not(.ui-surface-reflections-off) .search-engine-custom-card {
   box-shadow:
     0 8px 20px rgba(56, 189, 248, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+
+#mai-settings-container {
+  border: 1px solid rgba(125, 211, 252, 0.45);
+  border-radius: 14px;
+  background: rgba(240, 249, 255, 0.45);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+
+body.dark-mode #mai-settings-container {
+  background: rgba(15, 23, 42, 0.35);
+  border-color: rgba(56, 189, 248, 0.6);
 }

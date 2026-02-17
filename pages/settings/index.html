@@ -23,6 +23,7 @@
         <a href="#privacy-settings-container">Confidentialité</a>
         <a href="#appearance-settings-container">Apparence</a>
         <a href="#newtab-settings-container">Nouvel onglet</a>
+        <a href="#mai-settings-container">mAI</a>
         <a href="#experience-settings-container">Expérience</a>
         <a href="#additional-settings-container">Fonctions</a>
         <a href="#search-engine-settings-container">Recherche</a>
@@ -268,6 +269,23 @@
           </div>
         </div>
 
+        <div class="settings-container" id="mai-settings-container">
+          <h3>Paramètres mAI</h3>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-mai-sidebar-enabled" />
+            <label for="checkbox-mai-sidebar-enabled">Activer la sidebar mAI</label>
+          </div>
+
+          <div class="setting-section search-option-row">
+            <label for="mai-sidebar-position">Emplacement de la sidebar mAI</label>
+            <select id="mai-sidebar-position">
+              <option value="right">Droite</option>
+              <option value="left">Gauche</option>
+            </select>
+          </div>
+        </div>
+
         <div class="settings-container liquid-glass-panel" id="experience-settings-container">
           <h3>Expérience Liquid Glass</h3>
           <p class="settings-section-description">Affinez la densité visuelle, les animations et la fluidité de l’interface.</p>
@@ -482,17 +500,21 @@
           <h3 data-string="settingsSearchEngineHeading"></h3>
 
           <div class="search-option-row">
-            <label
-              for="defaultSearchEngine"
-              data-string="settingsDefaultSearchEngine"
-            ></label>
-            <div class="search-option-input-group">
-              <select
-                id="default-search-engine"
-                name="defaultSearchEngine"
-              ></select>
-              <input id="custom-search-engine" hidden />
-            </div>
+            <label for="search-engine-choice">Moteur de recherche</label>
+            <select id="search-engine-choice" name="searchEngineChoice">
+              <option value="DuckDuckGo">DuckDuckGo</option>
+              <option value="Google">Google</option>
+              <option value="Bing">Bing</option>
+              <option value="Yahoo">Yahoo</option>
+              <option value="Ecosia">Ecosia</option>
+              <option value="Qwant">Qwant</option>
+              <option value="Brave">Brave</option>
+              <option value="StartPage">StartPage</option>
+              <option value="Mojeek">Mojeek</option>
+              <option value="SearXNG">SearXNG</option>
+              <option value="Wikipedia">Wikipedia</option>
+              <option value="Yandex">Yandex</option>
+            </select>
           </div>
 
           <div class="search-engine-custom-card">

@@ -10,11 +10,6 @@ const REMINDER_STORAGE_KEY = 'msearch.ntp.reminders'
 const SHORTCUTS_STORAGE_KEY = 'msearch.ntp.shortcuts'
 const THEME_STORAGE_KEY = 'msearch.ntp.theme'
 const RANDOM_BG_STORAGE_KEY = 'msearch.ntp.randomBackground'
-const DENSITY_STORAGE_KEY = 'msearch.ntp.density'
-const GLASS_STORAGE_KEY = 'msearch.ntp.glass'
-const SHOW_WIDGETS_STORAGE_KEY = 'msearch.ntp.showWidgets'
-const SHOW_FAVORITES_STORAGE_KEY = 'msearch.ntp.showFavorites'
-const SHOW_HISTORY_STORAGE_KEY = 'msearch.ntp.showHistory'
 const MAI_SIDEBAR_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
 const MAX_REMINDERS = 12
 
@@ -138,12 +133,6 @@ const newTabPage = {
   widgetsPanel: document.getElementById('ntp-widgets-panel'),
   favoritesPanel: document.getElementById('ntp-favorites-panel'),
   historyPanel: document.getElementById('ntp-history-panel'),
-  personalizationPanel: document.getElementById('ntp-personalization-panel'),
-  densitySelector: document.getElementById('ntp-density-selector'),
-  glassSelector: document.getElementById('ntp-glass-selector'),
-  toggleWidgets: document.getElementById('ntp-toggle-widgets'),
-  toggleFavorites: document.getElementById('ntp-toggle-favorites'),
-  toggleHistory: document.getElementById('ntp-toggle-history'),
   maiSidebar: document.getElementById('ntp-mai-sidebar'),
   maiToggleButton: document.getElementById('ntp-mai-toggle'),
   imagePath: path.join(window.globalArgs['user-data-path'], 'newTabBackground'),
@@ -424,114 +413,6 @@ const newTabPage = {
     localStorage.setItem(storageKey, defaultValue)
     return defaultValue
   },
-  resetPersonalizationPreferences: function () {
-    localStorage.setItem(DENSITY_STORAGE_KEY, 'comfortable')
-    localStorage.setItem(GLASS_STORAGE_KEY, 'balanced')
-    localStorage.setItem(SHOW_WIDGETS_STORAGE_KEY, 'true')
-    localStorage.setItem(SHOW_FAVORITES_STORAGE_KEY, 'true')
-    localStorage.setItem(SHOW_HISTORY_STORAGE_KEY, 'true')
-    newTabPage.applyDisplayPreferences()
-    newTabPage.renderHistoryAndFavorites()
-  },
-  applyDisplayPreferences: function () {
-    const density = newTabPage.sanitizeDisplayPreference(DENSITY_STORAGE_KEY, ['comfortable', 'compact'], 'comfortable')
-    const glass = newTabPage.sanitizeDisplayPreference(GLASS_STORAGE_KEY, ['balanced', 'soft', 'strong'], 'balanced')
-    const showWidgets = newTabPage.getBooleanPreference(SHOW_WIDGETS_STORAGE_KEY, true)
-    const showFavorites = newTabPage.getBooleanPreference(SHOW_FAVORITES_STORAGE_KEY, true)
-    const showHistory = newTabPage.getBooleanPreference(SHOW_HISTORY_STORAGE_KEY, true)
-
-    document.body.classList.toggle('ntp-density-compact', density === 'compact')
-    document.body.classList.toggle('ntp-glass-soft', glass === 'soft')
-    document.body.classList.toggle('ntp-glass-strong', glass === 'strong')
-
-    if (newTabPage.widgetsPanel) {
-      newTabPage.widgetsPanel.hidden = !showWidgets
-    }
-    if (newTabPage.favoritesPanel) {
-      newTabPage.favoritesPanel.hidden = !showFavorites
-    }
-    if (newTabPage.historyPanel) {
-      newTabPage.historyPanel.hidden = !showHistory
-    }
-
-    if (newTabPage.densitySelector) {
-      newTabPage.densitySelector.value = density
-    }
-    if (newTabPage.glassSelector) {
-      newTabPage.glassSelector.value = glass
-    }
-    if (newTabPage.toggleWidgets) {
-      newTabPage.toggleWidgets.checked = showWidgets
-    }
-    if (newTabPage.toggleFavorites) {
-      newTabPage.toggleFavorites.checked = showFavorites
-    }
-    if (newTabPage.toggleHistory) {
-      newTabPage.toggleHistory.checked = showHistory
-    }
-  },
-  bindPersonalizationControls: function () {
-    if (newTabPage.densitySelector) {
-      newTabPage.densitySelector.addEventListener('change', function () {
-        localStorage.setItem(DENSITY_STORAGE_KEY, newTabPage.densitySelector.value === 'compact' ? 'compact' : 'comfortable')
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
-    if (newTabPage.glassSelector) {
-      newTabPage.glassSelector.addEventListener('change', function () {
-        const value = ['balanced', 'soft', 'strong'].includes(newTabPage.glassSelector.value) ? newTabPage.glassSelector.value : 'balanced'
-        localStorage.setItem(GLASS_STORAGE_KEY, value)
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
-    if (newTabPage.toggleWidgets) {
-      newTabPage.toggleWidgets.addEventListener('change', function () {
-        localStorage.setItem(SHOW_WIDGETS_STORAGE_KEY, String(newTabPage.toggleWidgets.checked))
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
-    if (newTabPage.toggleFavorites) {
-      newTabPage.toggleFavorites.addEventListener('change', function () {
-        localStorage.setItem(SHOW_FAVORITES_STORAGE_KEY, String(newTabPage.toggleFavorites.checked))
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
-    if (newTabPage.toggleHistory) {
-      newTabPage.toggleHistory.addEventListener('change', function () {
-        localStorage.setItem(SHOW_HISTORY_STORAGE_KEY, String(newTabPage.toggleHistory.checked))
-        newTabPage.applyDisplayPreferences()
-      })
-    }
-
-    if (newTabPage.personalizationPanel) {
-      newTabPage.personalizationPanel.addEventListener('click', function (event) {
-        const actionButton = event.target.closest('[data-ntp-action]')
-        if (!actionButton || !newTabPage.personalizationPanel.contains(actionButton)) {
-          return
-        }
-
-        const action = actionButton.getAttribute('data-ntp-action')
-        if (action === 'random-background') {
-          newTabPage.applyRandomBackground()
-          return
-        }
-
-        if (action === 'clear-background') {
-          newTabPage.clearBackground()
-          newTabPage.reloadBackground()
-          return
-        }
-
-        if (action === 'reset-personalization') {
-          newTabPage.resetPersonalizationPreferences()
-        }
-      })
-    }
-  },
   syncMaiSidebarA11y: function (isOpen) {
     if (!newTabPage.maiToggleButton) {
       return
@@ -553,6 +434,9 @@ const newTabPage = {
       newTabPage.maiSidebar.setAttribute('aria-hidden', 'true')
       document.body.classList.remove('ntp-mai-open')
       newTabPage.syncMaiSidebarA11y(false)
+      if (options.persist !== false) {
+        localStorage.setItem(MAI_SIDEBAR_STORAGE_KEY, 'false')
+      }
       return
     }
 
@@ -601,9 +485,6 @@ const newTabPage = {
       }
     })
 
-    settings.listen('maiSidebarOpenStartup', function (value) {
-      // Pas d'action immédiate requise, affecte le prochain démarrage
-    })
 
     newTabPage.maiToggleButton.addEventListener('click', function () {
       newTabPage.setMaiSidebarState(!newTabPage.isMaiSidebarOpen)
@@ -615,7 +496,9 @@ const newTabPage = {
       }
 
       newTabPage.setMaiSidebarState(false)
-      newTabPage.maiToggleButton.focus()
+      if (newTabPage.maiToggleButton) {
+        newTabPage.maiToggleButton.focus()
+      }
     })
 
     // Handle position setting
@@ -651,8 +534,8 @@ const newTabPage = {
     newTabPage.historyList.textContent = ''
 
     try {
-      const showFavorites = settings.get('ntpShowFavorites') !== false && newTabPage.getBooleanPreference(SHOW_FAVORITES_STORAGE_KEY, true)
-      const showHistory = settings.get('ntpShowHistory') !== false && newTabPage.getBooleanPreference(SHOW_HISTORY_STORAGE_KEY, true)
+      const showFavorites = settings.get('ntpShowFavorites') !== false
+      const showHistory = settings.get('ntpShowHistory') !== false
 
       if (newTabPage.favoritesPanel) {
         newTabPage.favoritesPanel.hidden = !showFavorites
@@ -850,11 +733,9 @@ const newTabPage = {
     newTabPage.loadShortcuts()
     newTabPage.renderReminders()
     newTabPage.renderShortcuts()
-    newTabPage.applyDisplayPreferences()
     newTabPage.renderHistoryAndFavorites()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
-    newTabPage.bindPersonalizationControls()
     newTabPage.bindMaiSidebarControls()
 
     settings.listen('liquidGlassAnimations', function (value) {

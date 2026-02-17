@@ -702,8 +702,9 @@ usageStatisticsCheckbox.addEventListener('change', function (e) {
 
 /* default search engine setting */
 
-var searchEngineDropdown = document.getElementById('default-search-engine')
-var searchEngineInput = document.getElementById('custom-search-engine')
+var searchEngineChoiceSelect = document.getElementById('search-engine-choice')
+var maiSidebarEnabledCheckbox = document.getElementById('checkbox-mai-sidebar-enabled')
+var maiSidebarPositionSelect = document.getElementById('mai-sidebar-position')
 
 function normalizeSearchEngineOptions (value) {
   var defaults = {
@@ -789,34 +790,6 @@ function normalizeManualSearchEngines (value) {
   return result
 }
 
-function rebuildSearchEngineDropdown (activeEngine, isCustomURL) {
-  empty(searchEngineDropdown)
-
-  var optionsFragment = document.createDocumentFragment()
-
-  for (var searchEngine in searchEngines) {
-    var item = document.createElement('option')
-    item.value = searchEngines[searchEngine].name
-    item.textContent = searchEngines[searchEngine].name
-
-    if (!isCustomURL && searchEngines[searchEngine].name === activeEngine) {
-      item.setAttribute('selected', 'true')
-    }
-
-    optionsFragment.appendChild(item)
-  }
-
-  var customOption = document.createElement('option')
-  customOption.value = 'custom'
-  customOption.textContent = 'Personnalisé'
-  if (isCustomURL) {
-    customOption.setAttribute('selected', 'true')
-  }
-  optionsFragment.appendChild(customOption)
-
-  searchEngineDropdown.appendChild(optionsFragment)
-}
-
 function renderManualEngineList (items) {
   empty(manualEngineList)
 
@@ -888,53 +861,63 @@ function setupManualSearchEngineManagement () {
   settings.listen('customSearchEngines', function (value) {
     var safeItems = normalizeManualSearchEngines(value)
     renderManualEngineList(safeItems)
+  })
+}
 
-    var currentValue = searchEngineDropdown.value
-    var isCustomURL = currentValue === 'custom'
-    var fallbackEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
-    var activeEngine = !isCustomURL && currentValue ? currentValue : fallbackEngine
+settings.onLoad(function () {
+  var activeEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
+  setupManualSearchEngineManagement()
 
-    rebuildSearchEngineDropdown(activeEngine, isCustomURL)
+  if (searchEngineChoiceSelect) {
+    if (searchEngines[activeEngine]) {
+      searchEngineChoiceSelect.value = activeEngine
+    }
 
-    if (isCustomURL) {
-      searchEngineDropdown.value = 'custom'
-    } else if (searchEngines[activeEngine]) {
-      searchEngineDropdown.value = activeEngine
-    } else if (searchEngines[fallbackEngine]) {
-      searchEngineDropdown.value = fallbackEngine
-    } else {
-      searchEngineDropdown.selectedIndex = 0
+    settings.get('searchEngine', function (value) {
+      if (value && value.name && searchEngines[value.name]) {
+        searchEngineChoiceSelect.value = value.name
+      }
+    })
+  }
+})
+
+if (searchEngineChoiceSelect) {
+  searchEngineChoiceSelect.addEventListener('change', function () {
+    if (searchEngines[this.value]) {
+      settings.set('searchEngine', { name: this.value })
     }
   })
 }
 
-searchEngineInput.setAttribute('placeholder', l('customSearchEngineDescription'))
-
-settings.onLoad(function () {
-  var activeEngine = currentSearchEngine && currentSearchEngine.name ? currentSearchEngine.name : 'DuckDuckGo'
-  var isCustomURL = !!currentSearchEngine.custom
-
-  if (currentSearchEngine.custom) {
-    searchEngineInput.hidden = false
-    searchEngineInput.value = currentSearchEngine.searchURL
+settings.get('maiSidebarEnabled', function (value) {
+  if (maiSidebarEnabledCheckbox) {
+    maiSidebarEnabledCheckbox.checked = value !== false
   }
-
-  rebuildSearchEngineDropdown(activeEngine, isCustomURL)
-  setupManualSearchEngineManagement()
-
-  settings.get('searchEngine', function (value) {
-    if (value && value.name) {
-      searchEngineDropdown.value = value.name
-      searchEngineInput.hidden = true
-    }
-
-    if (value && value.url) {
-      searchEngineDropdown.value = 'custom'
-      searchEngineInput.hidden = false
-      searchEngineInput.value = value.url
-    }
-  })
 })
+
+if (maiSidebarEnabledCheckbox) {
+  maiSidebarEnabledCheckbox.addEventListener('change', function () {
+    settings.set('maiSidebarEnabled', this.checked)
+  })
+}
+
+function normalizeMaiSidebarPosition (value) {
+  return value === 'left' ? 'left' : 'right'
+}
+
+settings.get('maiSidebarPosition', function (value) {
+  if (maiSidebarPositionSelect) {
+    maiSidebarPositionSelect.value = normalizeMaiSidebarPosition(value)
+  }
+})
+
+if (maiSidebarPositionSelect) {
+  maiSidebarPositionSelect.addEventListener('change', function () {
+    var normalized = normalizeMaiSidebarPosition(this.value)
+    this.value = normalized
+    settings.set('maiSidebarPosition', normalized)
+  })
+}
 
 settings.get('searchEngineOptions', function (value) {
   var safeOptions = normalizeSearchEngineOptions(value)
@@ -946,20 +929,18 @@ settings.get('searchEngineOptions', function (value) {
   searchTimeRangeSelect.value = safeOptions.timeRange
 })
 
-searchEngineDropdown.addEventListener('change', function () {
-  if (this.value === 'custom') {
-    searchEngineInput.hidden = false
-  } else {
-    searchEngineInput.hidden = true
-    settings.set('searchEngine', { name: this.value })
+settings.listen('customSearchEngines', function () {
+  if (!searchEngineChoiceSelect) {
+    return
   }
-})
 
-searchEngineInput.addEventListener('input', function () {
-  settings.set('searchEngine', {
-    url: this.value,
-    suggestionsURL: (manualEngineSuggestURLInput && manualEngineSuggestURLInput.value) ? manualEngineSuggestURLInput.value.trim() : ''
-  })
+  var selectedValue = searchEngineChoiceSelect.value
+  var availableEngines = Object.keys(searchEngines)
+
+  if (!availableEngines.includes(selectedValue)) {
+    var fallback = currentSearchEngine && searchEngines[currentSearchEngine.name] ? currentSearchEngine.name : 'DuckDuckGo'
+    searchEngineChoiceSelect.value = searchEngines[fallback] ? fallback : availableEngines[0]
+  }
 })
 
 searchRegionSelect.addEventListener('change', saveSearchEngineOptions)
