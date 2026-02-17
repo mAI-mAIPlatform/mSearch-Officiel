@@ -1,0 +1,95 @@
+name: Dependency Upgrade Issue Creator
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  check-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install dependencies (no modification)
+        run: npm ci
+
+      - name: 🔍 Generate outdated.json
+        run: |
+          npm outdated --json > outdated.json || echo "{}" > outdated.json
+
+      - name: 📝 Create structured issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const outdated = JSON.parse(fs.readFileSync('outdated.json', 'utf8'));
+
+            if (!outdated || Object.keys(outdated).length === 0) {
+              console.log("No outdated dependencies 🎉");
+              return;
+            }
+
+            // Récupérer les issues ouvertes avec label Ajouts
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              labels: "Ajouts"
+            });
+
+            for (const [name, info] of Object.entries(outdated)) {
+
+              const title = `Nécessité de mise à niveau d'une dépendance : ${name}`;
+
+              const alreadyExists = existingIssues.data.some(
+                issue => issue.title === title
+              );
+
+              if (alreadyExists) {
+                console.log(`Issue already exists for ${name} ⏭`);
+                continue;
+              }
+
+              const current = info.current || "Inconnue";
+              const stable = info.wanted || "Inconnue";
+              const experimental = info.latest || "Inconnue";
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: `
+## Nom de la dépendance à mettre à niveau
+${name}
+
+## Version actuelle
+${current}
+
+## Nouvelle version (stable)
+${stable}
+
+## Nouvelle version (expérimentale)
+${experimental}
+`,
+                assignees: ["mAI-mAIPlatform"],
+                labels: ["Ajouts"]
+              });
+
+              console.log(`Created issue for ${name} 🚀`);
+            }
