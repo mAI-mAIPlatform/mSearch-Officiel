@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
+    <title>Signets</title>
+    <link rel="stylesheet" href="../pagebase.css" />
+    <style>
+      body { margin: 0; padding: 1rem; background: radial-gradient(circle at top, #28345f, #111629 68%); color: #f7faff; font-family: Inter, sans-serif; }
+      .glass { backdrop-filter: blur(18px) saturate(160%); background: rgba(18,24,43,.5); border: 1px solid rgba(255,255,255,.22); border-radius: 18px; box-shadow: 0 14px 32px rgba(0,0,0,.28); }
+      .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 1rem; }
+      .header { padding: 1rem 1.2rem; }
+      .header h1 { margin: 0 0 .2rem; font-size: 1.5rem; }
+      .header p { margin: 0; opacity: .85; }
+      .create { padding: .9rem; display: grid; grid-template-columns: 1fr 1fr auto; gap: .6rem; }
+      input,button { border-radius: 10px; border: 1px solid rgba(255,255,255,.25); background: rgba(7,12,26,.42); color: #fff; padding: .6rem .75rem; }
+      button { cursor: pointer; }
+      ul { list-style: none; margin: 0; padding: .8rem; display: grid; gap: .5rem; }
+      li { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: .5rem; align-items: center; padding: .6rem; border-radius: 12px; background: rgba(8,13,31,.35); border: 1px solid rgba(255,255,255,.14); }
+      .url { opacity: .8; font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .empty { padding: 1rem; opacity: .9; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="header glass"><h1>Signets</h1><p>Organiser, créer et supprimer vos favoris.</p></section>
+      <section class="create glass">
+        <input id="title" placeholder="Titre" />
+        <input id="url" placeholder="URL (https://...)" />
+        <button id="add">Ajouter</button>
+      </section>
+      <section class="glass"><ul id="list"></ul></section>
+    </main>
+    <script src="bookmarks.js"></script>
+  </body>
+</html>

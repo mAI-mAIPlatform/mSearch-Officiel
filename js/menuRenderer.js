@@ -8,6 +8,7 @@ var modalMode = require('modalMode.js')
 var findinpage = require('findinpage.js')
 var PDFViewer = require('pdfViewer.js')
 var tabEditor = require('navbar/tabEditor.js')
+var searchbar = require('searchbar/searchbar.js')
 var readerView = require('readerView.js')
 var taskOverlay = require('taskOverlay/taskOverlay.js')
 
@@ -55,11 +56,11 @@ module.exports = {
     })
 
     ipc.on('showBookmarks', function () {
-      tabEditor.show(tabs.getSelected(), '!bookmarks ')
+      searchbar.events.emit('url-selected', { url: 'min://app/pages/bookmarks/index.html', background: false })
     })
 
     ipc.on('showHistory', function () {
-      tabEditor.show(tabs.getSelected(), '!history ')
+      searchbar.events.emit('url-selected', { url: 'min://app/pages/history/index.html', background: false })
     })
 
     ipc.on('addTab', function (e, data) {

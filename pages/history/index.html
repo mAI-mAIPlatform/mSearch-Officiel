@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
+    <title>Historique</title>
+    <link rel="stylesheet" href="../pagebase.css" />
+    <style>
+      body { margin: 0; padding: 1rem; background: radial-gradient(circle at top, #243255, #101525 68%); color: #f7faff; font-family: Inter, sans-serif; }
+      .glass { backdrop-filter: blur(18px) saturate(160%); background: rgba(18,24,43,.5); border: 1px solid rgba(255,255,255,.22); border-radius: 18px; box-shadow: 0 14px 32px rgba(0,0,0,.28); }
+      .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 1rem; }
+      .header { padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: .8rem; }
+      h1 { margin: 0 0 .2rem; font-size: 1.5rem; }
+      p { margin: 0; opacity: .85; }
+      button { border-radius: 10px; border: 1px solid rgba(255,255,255,.25); background: rgba(7,12,26,.42); color: #fff; padding: .6rem .75rem; cursor: pointer; }
+      ul { list-style: none; margin: 0; padding: .8rem; display: grid; gap: .5rem; }
+      li { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: .5rem; align-items: center; padding: .6rem; border-radius: 12px; background: rgba(8,13,31,.35); border: 1px solid rgba(255,255,255,.14); }
+      .meta { opacity: .8; font-size: .85rem; }
+      .empty { padding: 1rem; opacity: .9; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="header glass">
+        <div><h1>Historique</h1><p>Visualiser et gérer l’historique récent.</p></div>
+        <button id="clear">Tout supprimer</button>
+      </section>
+      <section class="glass"><ul id="list"></ul></section>
+    </main>
+    <script src="history.js"></script>
+  </body>
+</html>
