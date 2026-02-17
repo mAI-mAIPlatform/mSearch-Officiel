@@ -12,43 +12,47 @@ on:
 jobs:
   check-dependencies:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       issues: write
 
     steps:
-      - name: 📥 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: 📦 Install dependencies (no modification)
+      - name: Install dependencies
         run: npm ci
 
-      - name: 🔍 Generate outdated.json
+      - name: Generate outdated.json
         run: |
           npm outdated --json > outdated.json || echo "{}" > outdated.json
 
-      - name: 📝 Create structured issues
+      - name: Create structured issues
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
+            const fs = require("fs");
 
-            const outdated = JSON.parse(fs.readFileSync('outdated.json', 'utf8'));
+            const outdated = JSON.parse(
+              fs.readFileSync("outdated.json", "utf8")
+            );
 
             if (!outdated || Object.keys(outdated).length === 0) {
-              console.log("No outdated dependencies 🎉");
+              console.log("No outdated dependencies");
               return;
             }
 
-            // Récupérer les issues ouvertes avec label Ajouts
+            const { owner, repo } = context.repo;
+
             const existingIssues = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner,
+              repo,
               state: "open",
               labels: "Ajouts"
             });
@@ -62,7 +66,7 @@ jobs:
               );
 
               if (alreadyExists) {
-                console.log(`Issue already exists for ${name} ⏭`);
+                console.log(`Issue already exists for ${name}`);
                 continue;
               }
 
@@ -70,26 +74,24 @@ jobs:
               const stable = info.wanted || "Inconnue";
               const experimental = info.latest || "Inconnue";
 
+              const body =
+                "## Nom de la dépendance à mettre à niveau\n" +
+                name + "\n\n" +
+                "## Version actuelle\n" +
+                current + "\n\n" +
+                "## Nouvelle version (stable)\n" +
+                stable + "\n\n" +
+                "## Nouvelle version (expérimentale)\n" +
+                experimental;
+
               await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: title,
-                body: `
-## Nom de la dépendance à mettre à niveau
-${name}
-
-## Version actuelle
-${current}
-
-## Nouvelle version (stable)
-${stable}
-
-## Nouvelle version (expérimentale)
-${experimental}
-`,
+                owner,
+                repo,
+                title,
+                body,
                 assignees: ["mAI-mAIPlatform"],
                 labels: ["Ajouts"]
               });
 
-              console.log(`Created issue for ${name} 🚀`);
+              console.log(`Created issue for ${name}`);
             }
