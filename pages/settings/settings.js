@@ -18,6 +18,8 @@ var searchRegionSelect = document.getElementById('search-region')
 var searchLanguageSelect = document.getElementById('search-language')
 var searchSafeModeSelect = document.getElementById('search-safe-mode')
 var searchExtraParamsInput = document.getElementById('search-extra-params')
+var searchResultsPerPageSelect = document.getElementById('search-results-per-page')
+var searchTimeRangeSelect = document.getElementById('search-time-range')
 var manualEngineNameInput = document.getElementById('manual-engine-name')
 var manualEngineURLInput = document.getElementById('manual-engine-url')
 var manualEngineSuggestURLInput = document.getElementById('manual-engine-suggest-url')
@@ -41,6 +43,9 @@ var ntpShortcutsSizeSelect = document.getElementById('select-ntp-shortcuts-size'
 var ntpShowHistoryCheckbox = document.getElementById('checkbox-ntp-show-history')
 var ntpShowFavoritesCheckbox = document.getElementById('checkbox-ntp-show-favorites')
 var ntpFixTitleOverlapCheckbox = document.getElementById('checkbox-ntp-fix-title-overlap')
+var uiDensitySelect = document.getElementById('ui-density-select')
+var uiMotionIntensitySelect = document.getElementById('ui-motion-intensity-select')
+var uiSurfaceReflectionsCheckbox = document.getElementById('checkbox-ui-surface-reflections')
 
 function showRestartRequiredBanner () {
   banner.hidden = false
@@ -598,6 +603,71 @@ fontSpacingSlider.addEventListener('input', function () {
   updateFontDisplay()
 })
 
+
+/* experience settings */
+
+function normalizeUIDensity (value) {
+  var allowed = ['comfortable', 'compact', 'spacious']
+  return allowed.indexOf(value) !== -1 ? value : 'comfortable'
+}
+
+function normalizeUIMotionIntensity (value) {
+  var allowed = ['soft', 'normal', 'vivid']
+  return allowed.indexOf(value) !== -1 ? value : 'normal'
+}
+
+
+function applyExperienceClasses (density, motion, surfaceReflections) {
+  document.body.classList.remove('ui-density-comfortable', 'ui-density-compact', 'ui-density-spacious')
+  document.body.classList.remove('ui-motion-soft', 'ui-motion-normal', 'ui-motion-vivid')
+
+  document.body.classList.add('ui-density-' + density)
+  document.body.classList.add('ui-motion-' + motion)
+  document.body.classList.toggle('ui-surface-reflections-off', surfaceReflections === false)
+}
+
+function syncExperiencePreview () {
+  applyExperienceClasses(
+    normalizeUIDensity(uiDensitySelect.value),
+    normalizeUIMotionIntensity(uiMotionIntensitySelect.value),
+    uiSurfaceReflectionsCheckbox.checked
+  )
+}
+
+settings.get('uiDensity', function (value) {
+  uiDensitySelect.value = normalizeUIDensity(value)
+  syncExperiencePreview()
+})
+
+uiDensitySelect.addEventListener('change', function () {
+  var normalized = normalizeUIDensity(this.value)
+  this.value = normalized
+  settings.set('uiDensity', normalized)
+  syncExperiencePreview()
+})
+
+settings.get('uiMotionIntensity', function (value) {
+  uiMotionIntensitySelect.value = normalizeUIMotionIntensity(value)
+  syncExperiencePreview()
+})
+
+uiMotionIntensitySelect.addEventListener('change', function () {
+  var normalized = normalizeUIMotionIntensity(this.value)
+  this.value = normalized
+  settings.set('uiMotionIntensity', normalized)
+  syncExperiencePreview()
+})
+
+settings.get('uiSurfaceReflections', function (value) {
+  uiSurfaceReflectionsCheckbox.checked = value !== false
+  syncExperiencePreview()
+})
+
+uiSurfaceReflectionsCheckbox.addEventListener('change', function () {
+  settings.set('uiSurfaceReflections', this.checked)
+  syncExperiencePreview()
+})
+
 /* update notifications setting */
 
 var updateNotificationsCheckbox = document.getElementById('checkbox-update-notifications')
@@ -640,7 +710,9 @@ function normalizeSearchEngineOptions (value) {
     region: 'fr-FR',
     language: 'fr',
     safeMode: 'moderate',
-    extraParams: ''
+    extraParams: '',
+    resultsPerPage: 'default',
+    timeRange: 'any'
   }
 
   if (!value || typeof value !== 'object') {
@@ -651,7 +723,9 @@ function normalizeSearchEngineOptions (value) {
     region: value.region || defaults.region,
     language: value.language || defaults.language,
     safeMode: value.safeMode || defaults.safeMode,
-    extraParams: typeof value.extraParams === 'string' ? value.extraParams.trim() : ''
+    extraParams: typeof value.extraParams === 'string' ? value.extraParams.trim() : '',
+    resultsPerPage: ['default', '10', '20', '50'].includes(String(value.resultsPerPage)) ? String(value.resultsPerPage) : defaults.resultsPerPage,
+    timeRange: ['any', 'day', 'week', 'month', 'year'].includes(String(value.timeRange)) ? String(value.timeRange) : defaults.timeRange
   }
 }
 
@@ -660,7 +734,9 @@ function saveSearchEngineOptions () {
     region: searchRegionSelect.value,
     language: searchLanguageSelect.value,
     safeMode: searchSafeModeSelect.value,
-    extraParams: (searchExtraParamsInput.value || '').trim()
+    extraParams: (searchExtraParamsInput.value || '').trim(),
+    resultsPerPage: searchResultsPerPageSelect.value,
+    timeRange: searchTimeRangeSelect.value
   })
 }
 
@@ -866,6 +942,8 @@ settings.get('searchEngineOptions', function (value) {
   searchLanguageSelect.value = safeOptions.language
   searchSafeModeSelect.value = safeOptions.safeMode
   searchExtraParamsInput.value = safeOptions.extraParams
+  searchResultsPerPageSelect.value = safeOptions.resultsPerPage
+  searchTimeRangeSelect.value = safeOptions.timeRange
 })
 
 searchEngineDropdown.addEventListener('change', function () {
@@ -888,6 +966,8 @@ searchRegionSelect.addEventListener('change', saveSearchEngineOptions)
 searchLanguageSelect.addEventListener('change', saveSearchEngineOptions)
 searchSafeModeSelect.addEventListener('change', saveSearchEngineOptions)
 searchExtraParamsInput.addEventListener('input', saveSearchEngineOptions)
+searchResultsPerPageSelect.addEventListener('change', saveSearchEngineOptions)
+searchTimeRangeSelect.addEventListener('change', saveSearchEngineOptions)
 
 /* key map settings */
 
@@ -1040,57 +1120,6 @@ proxyTypeInput.addEventListener('change', e => {
 })
 
 proxyInputs.forEach(item => item.addEventListener('change', e => setProxy(e.target.name, e.target.value)))
-
-/* mAI settings */
-
-var maiSidebarEnabledCheckbox = document.getElementById('checkbox-mai-sidebar-enabled')
-var maiSidebarOpenStartupCheckbox = document.getElementById('checkbox-mai-sidebar-open-startup')
-
-settings.get('maiSidebarEnabled', function (value) {
-  maiSidebarEnabledCheckbox.checked = value !== false
-})
-
-maiSidebarEnabledCheckbox.addEventListener('change', function () {
-  settings.set('maiSidebarEnabled', this.checked)
-})
-
-settings.get('maiSidebarOpenStartup', function (value) {
-  maiSidebarOpenStartupCheckbox.checked = value === true
-})
-
-maiSidebarOpenStartupCheckbox.addEventListener('change', function () {
-  settings.set('maiSidebarOpenStartup', this.checked)
-})
-
-var maiSidebarGlobalCheckbox = document.getElementById('checkbox-mai-sidebar-global')
-var maiSidebarPositionSelect = document.getElementById('select-mai-sidebar-position')
-
-function normalizeMaiSidebarPosition (value) {
-  return value === 'left' ? 'left' : 'right'
-}
-
-settings.get('maiSidebarGlobal', function (value) {
-  maiSidebarGlobalCheckbox.checked = value !== false
-})
-
-maiSidebarGlobalCheckbox.addEventListener('change', function () {
-  settings.set('maiSidebarGlobal', this.checked)
-})
-
-settings.get('maiSidebarPosition', function (value) {
-  var normalized = normalizeMaiSidebarPosition(value)
-  maiSidebarPositionSelect.value = normalized
-
-  if (value !== normalized) {
-    settings.set('maiSidebarPosition', normalized)
-  }
-})
-
-maiSidebarPositionSelect.addEventListener('change', function () {
-  var normalized = normalizeMaiSidebarPosition(this.value)
-  this.value = normalized
-  settings.set('maiSidebarPosition', normalized)
-})
 
 settings.get('customBangs', (value) => {
   const bangslist = document.getElementById('custom-bangs')

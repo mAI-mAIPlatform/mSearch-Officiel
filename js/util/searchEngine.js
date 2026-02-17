@@ -13,7 +13,9 @@ var defaultSearchOptions = {
   region: 'fr-FR',
   language: 'fr',
   safeMode: 'moderate',
-  extraParams: ''
+  extraParams: '',
+  resultsPerPage: 'default',
+  timeRange: 'any'
 }
 
 var searchEngines = {
@@ -168,7 +170,9 @@ function normalizeSearchOptions (value) {
     region: value.region || defaultSearchOptions.region,
     language: value.language || defaultSearchOptions.language,
     safeMode: value.safeMode || defaultSearchOptions.safeMode,
-    extraParams: typeof value.extraParams === 'string' ? value.extraParams.trim() : ''
+    extraParams: typeof value.extraParams === 'string' ? value.extraParams.trim() : '',
+    resultsPerPage: ['default', '10', '20', '50'].includes(String(value.resultsPerPage)) ? String(value.resultsPerPage) : defaultSearchOptions.resultsPerPage,
+    timeRange: ['any', 'day', 'week', 'month', 'year'].includes(String(value.timeRange)) ? String(value.timeRange) : defaultSearchOptions.timeRange
   }
 }
 
@@ -200,6 +204,8 @@ function getEngineSpecificParams (engineName, options, isSuggestionURL) {
   var region = options.region || defaultSearchOptions.region
   var language = options.language || defaultSearchOptions.language
   var safeMode = options.safeMode || defaultSearchOptions.safeMode
+  var resultsPerPage = options.resultsPerPage || defaultSearchOptions.resultsPerPage
+  var timeRange = options.timeRange || defaultSearchOptions.timeRange
   var params = {}
 
   if (engineName === 'DuckDuckGo') {
@@ -237,6 +243,31 @@ function getEngineSpecificParams (engineName, options, isSuggestionURL) {
     params.safe = safeMode
   } else if (engineName === 'Wikipedia' && language !== 'all') {
     params.uselang = language.toLowerCase()
+  }
+
+
+  if (resultsPerPage !== 'default') {
+    if (engineName === 'Google') {
+      params.num = resultsPerPage
+    } else if (engineName === 'Bing') {
+      params.count = resultsPerPage
+    } else if (engineName === 'DuckDuckGo') {
+      params.dc = resultsPerPage
+    }
+  }
+
+  if (timeRange !== 'any') {
+    if (engineName === 'Google') {
+      var qdrMap = { day: 'd', week: 'w', month: 'm', year: 'y' }
+      if (qdrMap[timeRange]) {
+        params.tbs = 'qdr:' + qdrMap[timeRange]
+      }
+    } else if (engineName === 'Bing') {
+      var bingMap = { day: 'd', week: 'w', month: 'm', year: 'y' }
+      if (bingMap[timeRange]) {
+        params.filters = 'ex1:"ez' + bingMap[timeRange] + '"'
+      }
+    }
   }
 
   return params

@@ -23,7 +23,7 @@
         <a href="#privacy-settings-container">Confidentialité</a>
         <a href="#appearance-settings-container">Apparence</a>
         <a href="#newtab-settings-container">Nouvel onglet</a>
-        <a href="#mai-settings-container">mAI</a>
+        <a href="#experience-settings-container">Expérience</a>
         <a href="#additional-settings-container">Fonctions</a>
         <a href="#search-engine-settings-container">Recherche</a>
         <a href="#password-autofill-container">Mots de passe</a>
@@ -268,35 +268,31 @@
           </div>
         </div>
 
-        <div class="settings-container liquid-glass-panel" id="mai-settings-container">
-          <h3>mAI</h3>
-          <p class="settings-section-description">Contrôlez la visibilité, la position et le comportement de la barre mAI.</p>
-          <div class="setting-section">
-            <input type="checkbox" id="checkbox-mai-sidebar-enabled" />
-            <label for="checkbox-mai-sidebar-enabled"
-              >Activer la barre latérale mAI</label
-            >
-          </div>
-          <div class="setting-section">
-            <input type="checkbox" id="checkbox-mai-sidebar-open-startup" />
-            <label for="checkbox-mai-sidebar-open-startup"
-              >Ouvrir la barre latérale au démarrage</label
-            >
-          </div>
-          <div class="setting-section">
-            <input type="checkbox" id="checkbox-mai-sidebar-global" />
-            <label for="checkbox-mai-sidebar-global"
-              >Afficher sur tous les sites</label
-            >
-          </div>
-          <div class="setting-section">
-            <label for="select-mai-sidebar-position"
-              >Position de la barre latérale</label
-            >
-            <select id="select-mai-sidebar-position">
-              <option value="right">Droite</option>
-              <option value="left">Gauche</option>
+        <div class="settings-container liquid-glass-panel" id="experience-settings-container">
+          <h3>Expérience Liquid Glass</h3>
+          <p class="settings-section-description">Affinez la densité visuelle, les animations et la fluidité de l’interface.</p>
+
+          <div class="setting-section search-option-row">
+            <label for="ui-density-select">Densité d’interface</label>
+            <select id="ui-density-select">
+              <option value="comfortable">Confortable</option>
+              <option value="compact">Compacte</option>
+              <option value="spacious">Aérée</option>
             </select>
+          </div>
+
+          <div class="setting-section search-option-row">
+            <label for="ui-motion-intensity-select">Intensité des animations</label>
+            <select id="ui-motion-intensity-select">
+              <option value="soft">Douce</option>
+              <option value="normal">Normale</option>
+              <option value="vivid">Vive</option>
+            </select>
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-ui-surface-reflections" />
+            <label for="checkbox-ui-surface-reflections">Reflets Liquid Glass renforcés</label>
           </div>
         </div>
 
@@ -581,6 +577,27 @@
               id="search-extra-params"
               placeholder="ex: ref=msearch&source=app"
             />
+          </div>
+
+          <div class="search-option-row">
+            <label for="search-results-per-page">Résultats par page</label>
+            <select id="search-results-per-page">
+              <option value="default">Par défaut du moteur</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+
+          <div class="search-option-row">
+            <label for="search-time-range">Période prioritaire</label>
+            <select id="search-time-range">
+              <option value="any">Toutes dates</option>
+              <option value="day">24h</option>
+              <option value="week">7 jours</option>
+              <option value="month">30 jours</option>
+              <option value="year">12 mois</option>
+            </select>
           </div>
           <div
             class="settings-info-subheading"
