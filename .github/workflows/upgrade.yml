@@ -1,4 +1,4 @@
-name: Dependency Upgrade Issue Creator
+name: Mises à niveau des dépendances
 
 on:
   workflow_dispatch:
@@ -26,8 +26,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Generate package-lock if missing
+        run: npm install --package-lock-only --ignore-scripts
 
       - name: Generate outdated.json
         run: |
