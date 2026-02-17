@@ -629,3 +629,62 @@ body.ntp-density-compact .ntp-widget-card {
     color: #fff;
     text-align: left;
 }
+
+
+#ntp-keywords-panel {
+    min-height: 220px;
+}
+
+#ntp-keywords-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 220px;
+    overflow: auto;
+}
+
+.ntp-panel-title-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ntp-widget-controls {
+    margin-top: 0.35rem;
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.ntp-widget-control {
+    border-radius: 999px;
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(7, 12, 28, 0.55);
+    color: #fff;
+}
+
+.ntp-widget-control:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+body:not(.ntp-reduced-motion) #ntp-main-shell,
+body:not(.ntp-reduced-motion) .ntp-panel,
+body:not(.ntp-reduced-motion) .ntp-widget-card,
+body:not(.ntp-reduced-motion) .ntp-action {
+    animation: ntpFadeIn 320ms ease;
+}
+
+@keyframes ntpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

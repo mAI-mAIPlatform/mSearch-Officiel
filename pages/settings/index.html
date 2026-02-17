@@ -108,7 +108,53 @@
 
           <div id="content-type-blocking"></div>
 
+          
           <div class="setting-section">
+            <h4>Temps d’écran</h4>
+            <input type="checkbox" id="checkbox-screen-time-enabled" />
+            <label for="checkbox-screen-time-enabled">Activer les limites de temps d’écran</label>
+          </div>
+
+          <div class="setting-section screen-time-grid">
+            <div class="search-option-row">
+              <label for="input-screen-time-weekly-hours">Limite hebdomadaire (heures)</label>
+              <input id="input-screen-time-weekly-hours" type="number" min="1" max="168" step="1" value="35" />
+            </div>
+            <div class="search-option-row">
+              <label for="input-screen-time-monthly-hours">Limite mensuelle (heures)</label>
+              <input id="input-screen-time-monthly-hours" type="number" min="1" max="744" step="1" value="140" />
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <input type="checkbox" id="checkbox-screen-time-pin-lock" />
+            <label for="checkbox-screen-time-pin-lock">Verrouiller les limites par code PIN</label>
+          </div>
+
+          <div class="setting-section">
+            <h4>Cookies et historique intelligent</h4>
+            <input type="checkbox" id="checkbox-cookie-controls-enabled" />
+            <label for="checkbox-cookie-controls-enabled">Activer la gestion avancée des cookies</label>
+          </div>
+
+          <div class="setting-section search-option-row">
+            <label for="select-cookie-policy">Politique cookies</label>
+            <select id="select-cookie-policy">
+              <option value="balanced">Équilibrée</option>
+              <option value="strict">Stricte</option>
+              <option value="custom">Personnalisée</option>
+            </select>
+          </div>
+
+          <div class="setting-section search-option-row">
+            <label for="select-history-smart-mode">Historique intelligent</label>
+            <select id="select-history-smart-mode">
+              <option value="adaptive">Adaptatif</option>
+              <option value="private-first">Confidentialité renforcée</option>
+              <option value="off">Désactivé</option>
+            </select>
+          </div>
+<div class="setting-section">
             <input type="checkbox" id="checkbox-clear-history-on-startup" />
             <label for="checkbox-clear-history-on-startup"
               >Nettoyer l'historique au démarrage</label

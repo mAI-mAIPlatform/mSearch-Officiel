@@ -11,6 +11,7 @@ const SHORTCUTS_STORAGE_KEY = 'msearch.ntp.shortcuts'
 const THEME_STORAGE_KEY = 'msearch.ntp.theme'
 const RANDOM_BG_STORAGE_KEY = 'msearch.ntp.randomBackground'
 const MAI_SIDEBAR_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
+const WIDGETS_STORAGE_KEY = 'msearch.ntp.widgets'
 const MAX_REMINDERS = 12
 
 const themes = {
@@ -129,8 +130,11 @@ const newTabPage = {
   subtitle: document.getElementById('ntp-subtitle'),
   dateOutput: document.getElementById('ntp-date'),
   timeOutput: document.getElementById('ntp-time'),
-  actionButtons: document.querySelectorAll('#ntp-quick-actions [data-ntp-action], #ntp-widget-grid [data-ntp-action]'),
+  actionButtons: document.querySelectorAll('#ntp-quick-actions [data-ntp-action]'),
   widgetsPanel: document.getElementById('ntp-widgets-panel'),
+  widgetGrid: document.getElementById('ntp-widget-grid'),
+  keywordsList: document.getElementById('ntp-keywords-list'),
+  resetWidgetsButton: document.getElementById('ntp-reset-widgets-button'),
   favoritesPanel: document.getElementById('ntp-favorites-panel'),
   historyPanel: document.getElementById('ntp-history-panel'),
   maiSidebar: document.getElementById('ntp-mai-sidebar'),
@@ -139,6 +143,7 @@ const newTabPage = {
   blobInstance: null,
   reminders: [],
   shortcuts: [],
+  widgets: [],
   clockTimer: null,
   historyRefreshTimer: null,
   isMaiSidebarOpen: false,
@@ -197,6 +202,15 @@ const newTabPage = {
     const safeTheme = themes[themeId] ? themeId : 'aurora'
     document.body.setAttribute('data-ntp-theme', safeTheme)
     localStorage.setItem(THEME_STORAGE_KEY, safeTheme)
+
+    if (newTabPage.resetWidgetsButton) {
+      newTabPage.resetWidgetsButton.addEventListener('click', function () {
+        newTabPage.widgets = newTabPage.getDefaultWidgets()
+        newTabPage.saveWidgets()
+        newTabPage.renderWidgets()
+      })
+    }
+
     if (newTabPage.themeSelector) {
       newTabPage.themeSelector.value = safeTheme
     }
@@ -291,6 +305,192 @@ const newTabPage = {
     })
 
     newTabPage.shortcutsList.appendChild(fragment)
+  },
+
+  getDefaultWidgets: function () {
+    return [
+      { id: 'weather', action: 'open-weather', icon: 'carbon:cloudy', title: 'Météo', subtitle: 'Prévisions locales' },
+      { id: 'news', action: 'open-news', icon: 'carbon:newspaper', title: 'Actualités', subtitle: 'Les titres du jour' },
+      { id: 'agenda', action: 'open-agenda', icon: 'carbon:calendar', title: 'Agenda', subtitle: 'Voir le planning' },
+      { id: 'notes', action: 'open-notes', icon: 'carbon:notebook', title: 'Notes', subtitle: 'Note flottante rapide' },
+      { id: 'clock', action: 'show-clock', icon: 'carbon:time', title: 'Horloge', subtitle: 'Heure locale instantanée' },
+      { id: 'timer', action: 'open-timer', icon: 'carbon:timer', title: 'Minuteur', subtitle: 'Lancer un compte à rebours' },
+      { id: 'analytics', action: 'open-analysis', icon: 'carbon:chart-line', title: 'Analyses', subtitle: 'Tendances et statistiques' }
+    ]
+  },
+  loadWidgets: function () {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(WIDGETS_STORAGE_KEY) || '[]')
+      var defaults = newTabPage.getDefaultWidgets()
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        newTabPage.widgets = defaults
+      } else {
+        var allowed = new Set(defaults.map(item => item.id))
+        newTabPage.widgets = parsed.filter(item => item && allowed.has(item.id)).map(function (item) {
+          return defaults.find(d => d.id === item.id)
+        }).filter(Boolean)
+        if (newTabPage.widgets.length === 0) {
+          newTabPage.widgets = defaults
+        }
+      }
+    } catch (e) {
+      newTabPage.widgets = newTabPage.getDefaultWidgets()
+    }
+  },
+  saveWidgets: function () {
+    localStorage.setItem(WIDGETS_STORAGE_KEY, JSON.stringify(newTabPage.widgets.map(function (item) {
+      return { id: item.id }
+    })))
+  },
+  renderWidgets: function () {
+    if (!newTabPage.widgetGrid) {
+      return
+    }
+
+    newTabPage.widgetGrid.textContent = ''
+
+    if (newTabPage.widgets.length === 0) {
+      var emptyState = document.createElement('p')
+      emptyState.className = 'ntp-empty-state'
+      emptyState.textContent = 'Aucun widget. Utilisez Réinitialiser pour restaurer la grille.'
+      newTabPage.widgetGrid.appendChild(emptyState)
+      return
+    }
+
+    var fragment = document.createDocumentFragment()
+
+    newTabPage.widgets.forEach(function (widget, index) {
+      var button = document.createElement('button')
+      button.className = 'ntp-widget-card'
+      button.setAttribute('data-ntp-action', widget.action)
+
+      var icon = document.createElement('i')
+      icon.className = 'i ' + widget.icon
+
+      var title = document.createElement('strong')
+      title.textContent = widget.title
+
+      var subtitle = document.createElement('span')
+      subtitle.textContent = widget.subtitle
+
+      var controls = document.createElement('div')
+      controls.className = 'ntp-widget-controls'
+
+      var moveLeft = document.createElement('button')
+      moveLeft.className = 'ntp-widget-control i carbon:arrow-left'
+      moveLeft.setAttribute('aria-label', 'Déplacer à gauche')
+      moveLeft.disabled = index === 0
+      moveLeft.addEventListener('click', function (event) {
+        event.stopPropagation()
+        if (index === 0) {
+          return
+        }
+        var current = newTabPage.widgets[index]
+        newTabPage.widgets[index] = newTabPage.widgets[index - 1]
+        newTabPage.widgets[index - 1] = current
+        newTabPage.saveWidgets()
+        newTabPage.renderWidgets()
+      })
+
+      var moveRight = document.createElement('button')
+      moveRight.className = 'ntp-widget-control i carbon:arrow-right'
+      moveRight.setAttribute('aria-label', 'Déplacer à droite')
+      moveRight.disabled = index === newTabPage.widgets.length - 1
+      moveRight.addEventListener('click', function (event) {
+        event.stopPropagation()
+        if (index === newTabPage.widgets.length - 1) {
+          return
+        }
+        var current = newTabPage.widgets[index]
+        newTabPage.widgets[index] = newTabPage.widgets[index + 1]
+        newTabPage.widgets[index + 1] = current
+        newTabPage.saveWidgets()
+        newTabPage.renderWidgets()
+      })
+
+      var remove = document.createElement('button')
+      remove.className = 'ntp-widget-control i carbon:close'
+      remove.setAttribute('aria-label', 'Supprimer le widget')
+      remove.addEventListener('click', function (event) {
+        event.stopPropagation()
+        newTabPage.widgets.splice(index, 1)
+        newTabPage.saveWidgets()
+        newTabPage.renderWidgets()
+      })
+
+      controls.appendChild(moveLeft)
+      controls.appendChild(moveRight)
+      controls.appendChild(remove)
+
+      button.appendChild(icon)
+      button.appendChild(title)
+      button.appendChild(subtitle)
+      button.appendChild(controls)
+      fragment.appendChild(button)
+    })
+
+    newTabPage.widgetGrid.appendChild(fragment)
+    newTabPage.bindWidgetActions()
+  },
+  renderSmartKeywords: async function () {
+    if (!newTabPage.keywordsList) {
+      return
+    }
+
+    newTabPage.keywordsList.textContent = ''
+
+    try {
+      var historyItems = await places.getAllInRange(Date.now() - (14 * 24 * 60 * 60 * 1000), Date.now(), 120)
+      var tokens = {}
+      historyItems.forEach(function (item) {
+        var src = ((item.title || '') + ' ' + (item.url || '')).toLowerCase()
+        src.split(/[^a-z0-9àâçéèêëîïôûùüÿñæœ-]+/i).forEach(function (word) {
+          if (!word || word.length < 4 || /^https?$/.test(word) || word.includes('www')) {
+            return
+          }
+          tokens[word] = (tokens[word] || 0) + 1
+        })
+      })
+
+      var top = Object.keys(tokens).map(function (word) {
+        return { word: word, count: tokens[word] }
+      }).sort(function (a, b) {
+        return b.count - a.count
+      }).slice(0, 8)
+
+      if (top.length === 0) {
+        var emptyItem = document.createElement('li')
+        emptyItem.className = 'ntp-empty-state'
+        emptyItem.textContent = 'Pas assez de données pour extraire des mots clés.'
+        newTabPage.keywordsList.appendChild(emptyItem)
+        return
+      }
+
+      top.forEach(function (entry) {
+        var li = document.createElement('li')
+        li.className = 'ntp-list-item'
+
+        var keywordButton = document.createElement('button')
+        keywordButton.className = 'ntp-link-button'
+        keywordButton.textContent = entry.word
+        keywordButton.addEventListener('click', function () {
+          searchbar.events.emit('url-selected', { url: entry.word, background: false })
+        })
+
+        var meta = document.createElement('span')
+        meta.className = 'ntp-item-meta'
+        meta.textContent = String(entry.count) + ' vues'
+
+        li.appendChild(keywordButton)
+        li.appendChild(meta)
+        newTabPage.keywordsList.appendChild(li)
+      })
+    } catch (e) {
+      var errorItem = document.createElement('li')
+      errorItem.className = 'ntp-empty-state'
+      errorItem.textContent = 'Extraction de mots clés indisponible.'
+      newTabPage.keywordsList.appendChild(errorItem)
+    }
   },
   normalizeURL: function (value) {
     const trimmed = (value || '').trim()
@@ -659,45 +859,82 @@ const newTabPage = {
       newTabPage.setBackgroundSource(url)
     })
   },
+  handleNtpAction: function (action) {
+    const tabId = tabs.getSelected()
+
+    if (action === 'open-search') {
+      tabEditor.show(tabId)
+      return
+    }
+
+    if (action === 'open-history') {
+      tabEditor.show(tabId, '!history ')
+      return
+    }
+
+    if (action === 'open-favorites') {
+      tabEditor.show(tabId, '!bookmarks ')
+      return
+    }
+
+    if (action === 'open-weather') {
+      searchbar.events.emit('url-selected', { url: 'https://www.meteofrance.com/previsions-meteo-france', background: false })
+      return
+    }
+
+    if (action === 'open-news') {
+      searchbar.events.emit('url-selected', { url: 'https://news.google.com/?hl=fr&gl=FR&ceid=FR:fr', background: false })
+      return
+    }
+
+    if (action === 'open-agenda') {
+      searchbar.events.emit('url-selected', { url: 'https://calendar.google.com', background: false })
+      return
+    }
+
+    if (action === 'open-notes') {
+      document.body.dispatchEvent(new CustomEvent('productivityhub:open-notes'))
+      return
+    }
+
+    if (action === 'show-clock') {
+      alert('Heure locale : ' + new Date().toLocaleTimeString('fr-FR'))
+      return
+    }
+
+    if (action === 'open-timer') {
+      var seconds = parseInt(window.prompt('Durée du minuteur (en minutes)', '15'), 10)
+      if (!Number.isInteger(seconds) || seconds <= 0) {
+        return
+      }
+      setTimeout(function () {
+        alert('Minuteur terminé (' + seconds + ' min).')
+      }, seconds * 60 * 1000)
+      return
+    }
+
+    if (action === 'open-analysis') {
+      searchbar.events.emit('url-selected', { url: 'min://app/pages/settings/index.html#search-engine-settings-container', background: false })
+    }
+  },
+  bindWidgetActions: function () {
+    if (!newTabPage.widgetGrid) {
+      return
+    }
+
+    var buttons = newTabPage.widgetGrid.querySelectorAll('[data-ntp-action]')
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var action = button.getAttribute('data-ntp-action')
+        newTabPage.handleNtpAction(action)
+      })
+    })
+  },
   bindQuickActions: function () {
     newTabPage.actionButtons.forEach((button) => {
       button.addEventListener('click', function () {
         const action = button.getAttribute('data-ntp-action')
-        const tabId = tabs.getSelected()
-
-        if (action === 'open-search') {
-          tabEditor.show(tabId)
-          return
-        }
-
-        if (action === 'open-history') {
-          tabEditor.show(tabId, '!history ')
-          return
-        }
-
-        if (action === 'open-favorites') {
-          tabEditor.show(tabId, '!bookmarks ')
-          return
-        }
-
-        if (action === 'open-weather') {
-          searchbar.events.emit('url-selected', { url: 'https://www.meteofrance.com/previsions-meteo-france', background: false })
-          return
-        }
-
-        if (action === 'open-news') {
-          searchbar.events.emit('url-selected', { url: 'https://news.google.com/?hl=fr&gl=FR&ceid=FR:fr', background: false })
-          return
-        }
-
-        if (action === 'open-agenda') {
-          searchbar.events.emit('url-selected', { url: 'https://calendar.google.com', background: false })
-          return
-        }
-
-        if (action === 'open-notes') {
-          document.body.dispatchEvent(new CustomEvent('productivityhub:open-notes'))
-        }
+        newTabPage.handleNtpAction(action)
       })
     })
   },
@@ -731,9 +968,12 @@ const newTabPage = {
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
     newTabPage.loadShortcuts()
+    newTabPage.loadWidgets()
     newTabPage.renderReminders()
     newTabPage.renderShortcuts()
+    newTabPage.renderWidgets()
     newTabPage.renderHistoryAndFavorites()
+    newTabPage.renderSmartKeywords()
     newTabPage.bindQuickActions()
     newTabPage.bindSearch()
     newTabPage.bindMaiSidebarControls()
@@ -778,6 +1018,15 @@ const newTabPage = {
       newTabPage.randomBackgroundButton.hidden = settings.get('ntpRandomBackgroundEnabled') === false
       newTabPage.randomBackgroundButton.addEventListener('click', function () {
         newTabPage.applyRandomBackground()
+      })
+    }
+
+
+    if (newTabPage.resetWidgetsButton) {
+      newTabPage.resetWidgetsButton.addEventListener('click', function () {
+        newTabPage.widgets = newTabPage.getDefaultWidgets()
+        newTabPage.saveWidgets()
+        newTabPage.renderWidgets()
       })
     }
 
@@ -837,6 +1086,7 @@ const newTabPage = {
 
     searchbar.events.on('url-selected', function () {
       newTabPage.scheduleHistoryRefresh()
+      newTabPage.renderSmartKeywords()
     })
 
     newTabPage.updateLiveHeader()

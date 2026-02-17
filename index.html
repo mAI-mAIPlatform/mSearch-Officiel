@@ -269,29 +269,13 @@
             <section id="ntp-widgets-panel" class="ntp-panel" aria-label="Widgets rapides">
               <div class="ntp-panel-title-row">
                 <h2>Widgets rapides</h2>
+                <div class="ntp-panel-title-actions">
+                  <button id="ntp-reset-widgets-button" class="ntp-subtle-button" aria-label="Réinitialiser les widgets">
+                    <i class="i carbon:reset"></i>
+                  </button>
+                </div>
               </div>
-              <div id="ntp-widget-grid">
-                <button class="ntp-widget-card" data-ntp-action="open-weather">
-                  <i class="i carbon:cloudy"></i>
-                  <strong>Météo</strong>
-                  <span>Prévisions locales</span>
-                </button>
-                <button class="ntp-widget-card" data-ntp-action="open-news">
-                  <i class="i carbon:newspaper"></i>
-                  <strong>Actualités</strong>
-                  <span>Les titres du jour</span>
-                </button>
-                <button class="ntp-widget-card" data-ntp-action="open-agenda">
-                  <i class="i carbon:calendar"></i>
-                  <strong>Agenda</strong>
-                  <span>Voir le planning</span>
-                </button>
-                <button class="ntp-widget-card" data-ntp-action="open-notes">
-                  <i class="i carbon:notebook"></i>
-                  <strong>Notes</strong>
-                  <span>Note flottante rapide</span>
-                </button>
-              </div>
+              <div id="ntp-widget-grid"></div>
             </section>
 
             <div id="ntp-grid">
@@ -323,6 +307,13 @@
                   <h2>Historique récent</h2>
                 </div>
                 <ul id="ntp-history-list"></ul>
+              </section>
+
+              <section class="ntp-panel" id="ntp-keywords-panel">
+                <div class="ntp-panel-title-row">
+                  <h2>Extraction intelligente des mots clés</h2>
+                </div>
+                <ul id="ntp-keywords-list"></ul>
               </section>
             </div>
 
