@@ -654,28 +654,7 @@ openEphemeralTabButton.addEventListener('click', function () {
 
 
 if (updatesCurrentVersionInput) {
-  const resolveAppVersion = function () {
-    if (window.globalArgs && window.globalArgs['app-version']) {
-      return window.globalArgs['app-version']
-    }
-
-    if (window.globalArgs && window.globalArgs.appVersion) {
-      return window.globalArgs.appVersion
-    }
-
-    if (typeof process !== 'undefined' && Array.isArray(process.argv)) {
-      for (var i = 0; i < process.argv.length; i++) {
-        var arg = process.argv[i]
-        if (typeof arg === 'string' && arg.startsWith('--app-version=')) {
-          return arg.slice('--app-version='.length)
-        }
-      }
-    }
-
-    return 'version non disponible'
-  }
-
-  updatesCurrentVersionInput.value = String(resolveAppVersion())
+  updatesCurrentVersionInput.value = '26.7.8'
 }
 
 if (openUpdateLinkButton) {
@@ -1369,6 +1348,59 @@ async function sha256 (message) {
 }
 
 const PersonalData = {
+  sanitizeText: function (value, maxLen) {
+    const normalized = typeof value === 'string' ? value.trim() : ''
+    if (!normalized) {
+      return ''
+    }
+    if (!maxLen || normalized.length <= maxLen) {
+      return normalized
+    }
+    return normalized.slice(0, maxLen)
+  },
+  isStrongPin: function (pin) {
+    if (!/^\d{4,12}$/.test(pin)) {
+      return false
+    }
+
+    if (/^(\d)\1+$/.test(pin)) {
+      return false
+    }
+
+    if ('0123456789'.includes(pin) || '9876543210'.includes(pin)) {
+      return false
+    }
+
+    return true
+  },
+  sanitizeCardNumber: function (value) {
+    return String(value || '').replace(/[^\d]/g, '').slice(0, 19)
+  },
+  isValidExpiry: function (value) {
+    const clean = String(value || '').trim()
+    if (!/^(0[1-9]|1[0-2])\/(\d{2})$/.test(clean)) {
+      return false
+    }
+
+    const now = new Date()
+    const parts = clean.split('/')
+    const month = parseInt(parts[0], 10)
+    const year = 2000 + parseInt(parts[1], 10)
+    const expiryDate = new Date(year, month, 0, 23, 59, 59, 999)
+    return expiryDate >= new Date(now.getFullYear(), now.getMonth(), 1)
+  },
+  isValidPhone: function (value) {
+    if (!value) {
+      return true
+    }
+    return /^\+?[\d\s().-]{6,20}$/.test(value)
+  },
+  isValidEmail: function (value) {
+    if (!value) {
+      return true
+    }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+  },
   updatePinUI: function () {
     const hasPin = !!localStorage.getItem('msearch.security.pinHash')
     document.getElementById('setup-pin-button').hidden = hasPin
@@ -1387,13 +1419,28 @@ const PersonalData = {
     addresses.forEach(addr => {
       const li = document.createElement('li')
       li.className = 'data-list-item'
-      li.innerHTML = `
-        <div class="data-list-content">
-          <span class="data-list-title">${addr.name || 'Sans nom'}</span>
-          <span class="data-list-subtitle">${addr.address}, ${addr.city}</span>
-        </div>
-        <button class="settings-action-button delete-data-btn" data-id="${addr.id}" data-type="address">Supprimer</button>
-      `
+
+      const content = document.createElement('div')
+      content.className = 'data-list-content'
+
+      const title = document.createElement('span')
+      title.className = 'data-list-title'
+      title.textContent = addr.name || 'Sans nom'
+
+      const subtitle = document.createElement('span')
+      subtitle.className = 'data-list-subtitle'
+      subtitle.textContent = `${addr.address || ''}, ${addr.city || ''}`
+
+      const button = document.createElement('button')
+      button.className = 'settings-action-button delete-data-btn'
+      button.textContent = 'Supprimer'
+      button.setAttribute('data-id', String(addr.id || ''))
+      button.setAttribute('data-type', 'address')
+
+      content.appendChild(title)
+      content.appendChild(subtitle)
+      li.appendChild(content)
+      li.appendChild(button)
       list.appendChild(li)
     })
   },
@@ -1410,13 +1457,28 @@ const PersonalData = {
       const last4 = card.number ? card.number.slice(-4) : '????'
       const li = document.createElement('li')
       li.className = 'data-list-item'
-      li.innerHTML = `
-        <div class="data-list-content">
-          <span class="data-list-title">${card.name || 'Carte'}</span>
-          <span class="data-list-subtitle">•••• ${last4} (Exp: ${card.expiry})</span>
-        </div>
-        <button class="settings-action-button delete-data-btn" data-id="${card.id}" data-type="card">Supprimer</button>
-      `
+
+      const content = document.createElement('div')
+      content.className = 'data-list-content'
+
+      const title = document.createElement('span')
+      title.className = 'data-list-title'
+      title.textContent = card.name || 'Carte'
+
+      const subtitle = document.createElement('span')
+      subtitle.className = 'data-list-subtitle'
+      subtitle.textContent = '•••• ' + last4 + ' (Exp: ' + (card.expiry || '') + ')'
+
+      const button = document.createElement('button')
+      button.className = 'settings-action-button delete-data-btn'
+      button.textContent = 'Supprimer'
+      button.setAttribute('data-id', String(card.id || ''))
+      button.setAttribute('data-type', 'card')
+
+      content.appendChild(title)
+      content.appendChild(subtitle)
+      li.appendChild(content)
+      li.appendChild(button)
       list.appendChild(li)
     })
   },
@@ -1527,6 +1589,11 @@ document.getElementById('personal-data-save').addEventListener('click', async (e
       alert('Les codes PIN ne correspondent pas.')
       return
     }
+
+    if (!PersonalData.isStrongPin(data.pin1)) {
+      alert('PIN trop faible. Utilisez 4 à 12 chiffres, non répétitifs et non séquentiels.')
+      return
+    }
   }
 
   if (type === 'pin-change' || type === 'pin-remove') {
@@ -1555,8 +1622,43 @@ document.getElementById('personal-data-save').addEventListener('click', async (e
 
   // Data Logic
   if (type === 'card') {
+    data.name = PersonalData.sanitizeText(data.name, 80)
+    data.number = PersonalData.sanitizeCardNumber(data.number)
+    data.expiry = PersonalData.sanitizeText(data.expiry, 5)
+    data.cvv = String(data.cvv || '').replace(/[^\d]/g, '').slice(0, 4)
+
     if (!PersonalData.luhnCheck(data.number)) {
       alert('Numéro de carte invalide.')
+      return
+    }
+
+    if (!PersonalData.isValidExpiry(data.expiry)) {
+      alert('Date d’expiration invalide. Utilisez le format MM/YY.')
+      return
+    }
+
+    if (data.cvv && !/^\d{3,4}$/.test(data.cvv)) {
+      alert('CVV invalide.')
+      return
+    }
+  }
+
+  if (type === 'address') {
+    data.name = PersonalData.sanitizeText(data.name, 120)
+    data.address = PersonalData.sanitizeText(data.address, 200)
+    data.city = PersonalData.sanitizeText(data.city, 120)
+    data.zip = PersonalData.sanitizeText(data.zip, 20)
+    data.country = PersonalData.sanitizeText(data.country, 120)
+    data.phone = PersonalData.sanitizeText(data.phone, 30)
+    data.email = PersonalData.sanitizeText(data.email, 120)
+
+    if (!PersonalData.isValidPhone(data.phone)) {
+      alert('Numéro de téléphone invalide.')
+      return
+    }
+
+    if (!PersonalData.isValidEmail(data.email)) {
+      alert('Adresse email invalide.')
       return
     }
   }
@@ -1568,6 +1670,8 @@ document.getElementById('personal-data-save').addEventListener('click', async (e
     PersonalData.renderAddresses()
   } else if (type === 'card') {
     const list = JSON.parse(localStorage.getItem('msearch.autofill.cards') || '[]')
+    // Ne jamais persister le CVV : donnée sensible strictement temporaire.
+    delete data.cvv
     list.push(data)
     localStorage.setItem('msearch.autofill.cards', JSON.stringify(list))
     PersonalData.renderCards()
