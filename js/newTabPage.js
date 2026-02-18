@@ -14,6 +14,23 @@ const MAI_SIDEBAR_STORAGE_KEY = 'msearch.ntp.maiSidebarOpen'
 const WIDGETS_STORAGE_KEY = 'msearch.ntp.widgets'
 const MAX_REMINDERS = 12
 
+const WIDGET_ICON_CHOICES = [
+  'carbon:launch',
+  'carbon:flash',
+  'carbon:star',
+  'carbon:bookmark',
+  'carbon:calendar',
+  'carbon:time',
+  'carbon:timer',
+  'carbon:notebook',
+  'carbon:cloudy',
+  'carbon:newspaper',
+  'carbon:chart-line',
+  'carbon:search',
+  'carbon:home',
+  'carbon:earth-filled'
+]
+
 const themes = {
   aurora: 'linear-gradient(120deg, rgba(49, 87, 255, 0.45), rgba(65, 230, 180, 0.25), rgba(203, 124, 255, 0.35))',
   ocean: 'linear-gradient(120deg, rgba(6, 80, 204, 0.5), rgba(44, 167, 210, 0.25), rgba(15, 42, 100, 0.45))',
@@ -335,6 +352,18 @@ const newTabPage = {
       { id: 'analytics', action: 'open-analysis', icon: 'carbon:chart-line', title: 'Analyses', subtitle: 'Tendances et statistiques' }
     ]
   },
+  sanitizeWidgetIcon: function (icon) {
+    var safe = String(icon || '').trim()
+    if (!safe) {
+      return 'carbon:flash'
+    }
+
+    if (/^carbon:[a-z0-9-]+$/i.test(safe)) {
+      return safe.toLowerCase()
+    }
+
+    return 'carbon:flash'
+  },
   sanitizeWidget: function (item) {
     if (!item || typeof item !== 'object') {
       return null
@@ -350,7 +379,7 @@ const newTabPage = {
     var normalized = {
       id: item.id || fallbackId,
       action: action,
-      icon: item.icon || 'carbon:flash',
+      icon: newTabPage.sanitizeWidgetIcon(item.icon),
       title: title,
       subtitle: (item.subtitle || '').trim()
     }
@@ -420,11 +449,12 @@ const newTabPage = {
       text: 'Ajouter un widget rapide',
       values: [
         { placeholder: 'Titre du widget', id: 'title', type: 'text' },
-        { placeholder: 'URL de destination (https://...)', id: 'url', type: 'text' }
+        { placeholder: 'URL de destination (https://...)', id: 'url', type: 'text' },
+        { placeholder: 'Icône (ex: carbon:launch). Choix: ' + WIDGET_ICON_CHOICES.join(', '), id: 'icon', type: 'text' }
       ],
       ok: 'Créer',
       cancel: 'Annuler',
-      height: 240
+      height: 300
     })
 
     if (!result || !result.title || !result.url) {
@@ -434,7 +464,7 @@ const newTabPage = {
     var widget = newTabPage.sanitizeWidget({
       id: 'custom-' + Date.now(),
       action: 'open-url',
-      icon: 'carbon:launch',
+      icon: result.icon || 'carbon:launch',
       title: result.title,
       subtitle: 'Widget personnalisé',
       url: result.url
@@ -498,7 +528,7 @@ const newTabPage = {
       }
 
       var icon = document.createElement('i')
-      icon.className = 'i ' + widget.icon
+      icon.className = 'i ' + newTabPage.sanitizeWidgetIcon(widget.icon)
 
       var title = document.createElement('strong')
       title.textContent = widget.title
