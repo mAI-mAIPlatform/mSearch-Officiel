@@ -100,24 +100,33 @@ function sendIPCToWindow (window, action, data) {
     return
   }
 
+  const safeSend = function (targetWindow) {
+    const contents = getWindowWebContents(targetWindow)
+    if (!contents || contents.isDestroyed()) {
+      console.warn('ignoring message ' + action + ' sent to destroyed webContents')
+      return
+    }
+    contents.send(action, data || {})
+  }
+
   if (window && getWindowWebContents(window).isLoadingMainFrame()) {
     // immediately after a did-finish-load event, isLoading can still be true,
     // so wait a bit to confirm that the page is really loading
     setTimeout(function() {
       if (getWindowWebContents(window).isLoadingMainFrame()) {
         getWindowWebContents(window).once('did-finish-load', function () {
-          getWindowWebContents(window).send(action, data || {})
+          safeSend(window)
         })
       } else {
-         getWindowWebContents(window).send(action, data || {})
+        safeSend(window)
       }
     }, 0)
   } else if (window) {
-    getWindowWebContents(window).send(action, data || {})
+    safeSend(window)
   } else {
     var window = createWindow()
     getWindowWebContents(window).once('did-finish-load', function () {
-      getWindowWebContents(window).send(action, data || {})
+      safeSend(window)
     })
   }
 }
@@ -477,7 +486,10 @@ ipc.on('tab-state-change', function(e, events) {
 ipc.on('request-tab-state', function(e) {
   const otherWindow = windows.getAll().find(w => getWindowWebContents(w).id !== e.sender.id)
   if (!otherWindow) {
-    throw new Error('secondary window doesn\'t exist as source for tab state')
+    e.returnValue = {
+      error: 'secondary window doesn\'t exist as source for tab state'
+    }
+    return
   }
   ipc.once('return-tab-state', function(e2, data) {
     e.returnValue = data
@@ -505,6 +517,10 @@ app.once('ready', function() {
 })
 
 ipc.on('places-connect', function (e) {
+  if (!placesWindow || placesWindow.isDestroyed()) {
+    console.warn('dropping places-connect: places service window is unavailable')
+    return
+  }
   placesWindow.webContents.postMessage('places-connect', null, e.ports)
 })
 
@@ -530,11 +546,24 @@ app.on('ready', function() {
       }
     })
   
-    translateWindow.loadURL(translatePage)
+    translateWindow.loadURL(translatePage).catch(function (err) {
+      console.error('failed to load translation service window', err)
+      if (!translateWindow.isDestroyed()) {
+        translateWindow.destroy()
+      }
+    })
     // translateWindow.webContents.openDevTools({mode: 'detach'})
 
     translateWindow.webContents.once('did-finish-load', function() {
       translateWindow.webContents.postMessage('page-translation-session-create', null, e.ports)
     })
   })
+})
+
+process.on('uncaughtException', function (error) {
+  console.error('uncaught exception in main process', error)
+})
+
+process.on('unhandledRejection', function (error) {
+  console.error('unhandled rejection in main process', error)
 })

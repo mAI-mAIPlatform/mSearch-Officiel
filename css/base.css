@@ -281,3 +281,19 @@ body.dynamic-theme-enabled.dynamic-theme-night {
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
 }
+
+
+/* Reusable liquid-glass surface for modern UI containers */
+.liquid-glass-surface {
+  background: color-mix(in srgb, var(--glass-bg) 88%, transparent);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(16px) saturate(145%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass-surface {
+    background: color-mix(in srgb, var(--glass-bg) 96%, white 4%);
+  }
+}

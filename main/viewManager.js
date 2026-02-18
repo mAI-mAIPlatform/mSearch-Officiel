@@ -234,7 +234,12 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
     }
   })
 
-  view.setBounds(JSON.parse(boundsString))
+  try {
+    view.setBounds(JSON.parse(boundsString))
+  } catch (err) {
+    console.warn('Invalid view bounds payload, using safe fallback', err)
+    view.setBounds({ x: 0, y: 0, width: 1024, height: 768 })
+  }
 
   viewMap[id] = view
 
@@ -479,6 +484,8 @@ ipc.on('getCapture', function (e, data) {
     }
     img = img.resize({ width: data.width, height: data.height })
     e.sender.send('captureData', { id: data.id, url: img.toDataURL() })
+  }).catch(function (err) {
+    console.warn('failed to capture view image', err)
   })
 })
 
@@ -486,10 +493,13 @@ ipc.on('saveViewCapture', function (e, data) {
   var view = viewMap[data.id]
   if (!view) {
     // view could have been destroyed
+    return
   }
 
   view.webContents.capturePage().then(function (image) {
     view.webContents.downloadURL(image.toDataURL())
+  }).catch(function (err) {
+    console.warn('failed to save view capture', err)
   })
 })
 
