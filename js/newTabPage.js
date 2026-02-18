@@ -1017,6 +1017,16 @@ const newTabPage = {
         newTabPage.handleNtpAction(action)
       })
     })
+
+    // Les boutons "Voir tout" des panneaux Favoris / Historique ne sont pas
+    // dans #ntp-quick-actions : on les branche explicitement ici.
+    const panelActionButtons = document.querySelectorAll('#ntp-grid .ntp-panel [data-ntp-action]')
+    panelActionButtons.forEach((button) => {
+      button.addEventListener('click', function () {
+        const action = button.getAttribute('data-ntp-action')
+        newTabPage.handleNtpAction(action)
+      })
+    })
   },
   bindSearch: function () {
     if (!newTabPage.searchForm || !newTabPage.searchInput) {

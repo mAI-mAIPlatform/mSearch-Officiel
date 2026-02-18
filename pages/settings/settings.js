@@ -38,6 +38,8 @@ var multiViewMaxViewsInput = document.getElementById('multi-view-max-views')
 var gestureShortcutsCheckbox = document.getElementById('checkbox-gesture-shortcuts')
 var gestureWorkspaceCheckbox = document.getElementById('checkbox-gesture-workspace')
 var openEphemeralTabButton = document.getElementById('button-open-ephemeral-tab')
+var updatesCurrentVersionInput = document.getElementById('updates-current-version')
+var openUpdateLinkButton = document.getElementById('button-open-update-link')
 var ntpRandomBackgroundCheckbox = document.getElementById('checkbox-ntp-random-background')
 var ntpShortcutsSizeSelect = document.getElementById('select-ntp-shortcuts-size')
 var ntpShowHistoryCheckbox = document.getElementById('checkbox-ntp-show-history')
@@ -649,6 +651,18 @@ gestureWorkspaceCheckbox.addEventListener('change', function () {
 openEphemeralTabButton.addEventListener('click', function () {
   postMessage({ message: 'open-ephemeral-tab', url: 'min://newtab' })
 })
+
+
+if (updatesCurrentVersionInput) {
+  const appVersion = (window.globalArgs && window.globalArgs['app-version']) || 'version non disponible'
+  updatesCurrentVersionInput.value = String(appVersion)
+}
+
+if (openUpdateLinkButton) {
+  openUpdateLinkButton.addEventListener('click', function () {
+    window.open('https://gemini.google.com/share/231346c724a6', '_blank', 'noopener')
+  })
+}
 
 settings.get('ntpRandomBackgroundEnabled', function (value) {
   ntpRandomBackgroundCheckbox.checked = value !== false
