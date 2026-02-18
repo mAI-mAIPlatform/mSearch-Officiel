@@ -147,6 +147,31 @@ const newTabPage = {
   clockTimer: null,
   historyRefreshTimer: null,
   isMaiSidebarOpen: false,
+  getWidgetGridColumns: function () {
+    if (!newTabPage.widgetGrid) {
+      return 1
+    }
+
+    var computed = window.getComputedStyle(newTabPage.widgetGrid)
+    var templateColumns = computed.getPropertyValue('grid-template-columns').trim()
+
+    if (!templateColumns || templateColumns === 'none') {
+      return 1
+    }
+
+    return Math.max(1, templateColumns.split(' ').length)
+  },
+  moveWidget: function (fromIndex, toIndex) {
+    if (fromIndex < 0 || toIndex < 0 || fromIndex >= newTabPage.widgets.length || toIndex >= newTabPage.widgets.length || fromIndex === toIndex) {
+      return
+    }
+
+    var moved = newTabPage.widgets[fromIndex]
+    newTabPage.widgets[fromIndex] = newTabPage.widgets[toIndex]
+    newTabPage.widgets[toIndex] = moved
+    newTabPage.saveWidgets()
+    newTabPage.renderWidgets()
+  },
   setBackgroundVisualState: function (hasBackground) {
     if (!newTabPage.background || !newTabPage.deleteBackground || !newTabPage.backgroundOverlay) {
       return
@@ -202,20 +227,6 @@ const newTabPage = {
     const safeTheme = themes[themeId] ? themeId : 'aurora'
     document.body.setAttribute('data-ntp-theme', safeTheme)
     localStorage.setItem(THEME_STORAGE_KEY, safeTheme)
-
-    if (newTabPage.addWidgetButton) {
-      newTabPage.addWidgetButton.addEventListener('click', function () {
-        newTabPage.promptAddWidget()
-      })
-    }
-
-    if (newTabPage.resetWidgetsButton) {
-      newTabPage.resetWidgetsButton.addEventListener('click', function () {
-        newTabPage.widgets = newTabPage.getDefaultWidgets()
-        newTabPage.saveWidgets()
-        newTabPage.renderWidgets()
-      })
-    }
 
     if (newTabPage.themeSelector) {
       newTabPage.themeSelector.value = safeTheme
@@ -478,6 +489,7 @@ const newTabPage = {
     var fragment = document.createDocumentFragment()
 
     newTabPage.widgets.forEach(function (widget, index) {
+      var columnCount = newTabPage.getWidgetGridColumns()
       var button = document.createElement('button')
       button.className = 'ntp-widget-card'
       button.setAttribute('data-ntp-action', widget.action)
@@ -503,14 +515,7 @@ const newTabPage = {
       moveLeft.disabled = index === 0
       moveLeft.addEventListener('click', function (event) {
         event.stopPropagation()
-        if (index === 0) {
-          return
-        }
-        var current = newTabPage.widgets[index]
-        newTabPage.widgets[index] = newTabPage.widgets[index - 1]
-        newTabPage.widgets[index - 1] = current
-        newTabPage.saveWidgets()
-        newTabPage.renderWidgets()
+        newTabPage.moveWidget(index, index - 1)
       })
 
       var moveRight = document.createElement('button')
@@ -519,14 +524,25 @@ const newTabPage = {
       moveRight.disabled = index === newTabPage.widgets.length - 1
       moveRight.addEventListener('click', function (event) {
         event.stopPropagation()
-        if (index === newTabPage.widgets.length - 1) {
-          return
-        }
-        var current = newTabPage.widgets[index]
-        newTabPage.widgets[index] = newTabPage.widgets[index + 1]
-        newTabPage.widgets[index + 1] = current
-        newTabPage.saveWidgets()
-        newTabPage.renderWidgets()
+        newTabPage.moveWidget(index, index + 1)
+      })
+
+      var moveUp = document.createElement('button')
+      moveUp.className = 'ntp-widget-control i carbon:arrow-up'
+      moveUp.setAttribute('aria-label', 'Déplacer vers le haut')
+      moveUp.disabled = index - columnCount < 0
+      moveUp.addEventListener('click', function (event) {
+        event.stopPropagation()
+        newTabPage.moveWidget(index, index - columnCount)
+      })
+
+      var moveDown = document.createElement('button')
+      moveDown.className = 'ntp-widget-control i carbon:arrow-down'
+      moveDown.setAttribute('aria-label', 'Déplacer vers le bas')
+      moveDown.disabled = index + columnCount >= newTabPage.widgets.length
+      moveDown.addEventListener('click', function (event) {
+        event.stopPropagation()
+        newTabPage.moveWidget(index, index + columnCount)
       })
 
       if (widget.action === 'open-url') {
@@ -552,6 +568,8 @@ const newTabPage = {
 
       controls.appendChild(moveLeft)
       controls.appendChild(moveRight)
+      controls.appendChild(moveUp)
+      controls.appendChild(moveDown)
       controls.appendChild(remove)
 
       button.appendChild(icon)

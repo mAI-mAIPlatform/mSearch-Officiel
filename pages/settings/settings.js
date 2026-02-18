@@ -654,8 +654,28 @@ openEphemeralTabButton.addEventListener('click', function () {
 
 
 if (updatesCurrentVersionInput) {
-  const appVersion = (window.globalArgs && window.globalArgs['app-version']) || 'version non disponible'
-  updatesCurrentVersionInput.value = String(appVersion)
+  const resolveAppVersion = function () {
+    if (window.globalArgs && window.globalArgs['app-version']) {
+      return window.globalArgs['app-version']
+    }
+
+    if (window.globalArgs && window.globalArgs.appVersion) {
+      return window.globalArgs.appVersion
+    }
+
+    if (typeof process !== 'undefined' && Array.isArray(process.argv)) {
+      for (var i = 0; i < process.argv.length; i++) {
+        var arg = process.argv[i]
+        if (typeof arg === 'string' && arg.startsWith('--app-version=')) {
+          return arg.slice('--app-version='.length)
+        }
+      }
+    }
+
+    return 'version non disponible'
+  }
+
+  updatesCurrentVersionInput.value = String(resolveAppVersion())
 }
 
 if (openUpdateLinkButton) {
