@@ -67,6 +67,49 @@ body:not(.is-ntp) #ntp-content {
     background: linear-gradient(120deg, rgba(49, 87, 255, 0.45), rgba(65, 230, 180, 0.25), rgba(203, 124, 255, 0.35));
 }
 
+
+#ntp-liquid-glass-orbs {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.ntp-orb {
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0.55;
+    mix-blend-mode: screen;
+}
+
+.ntp-orb-1 {
+    width: clamp(180px, 26vw, 360px);
+    height: clamp(180px, 26vw, 360px);
+    top: 8%;
+    left: -4%;
+    background: radial-gradient(circle at 35% 30%, rgba(121, 189, 255, 0.95), rgba(121, 189, 255, 0));
+}
+
+.ntp-orb-2 {
+    width: clamp(160px, 24vw, 320px);
+    height: clamp(160px, 24vw, 320px);
+    bottom: 16%;
+    right: 2%;
+    background: radial-gradient(circle at 40% 35%, rgba(171, 140, 255, 0.92), rgba(171, 140, 255, 0));
+}
+
+.ntp-orb-3 {
+    width: clamp(120px, 18vw, 260px);
+    height: clamp(120px, 18vw, 260px);
+    top: 42%;
+    right: 28%;
+    background: radial-gradient(circle at 45% 35%, rgba(107, 247, 210, 0.88), rgba(107, 247, 210, 0));
+}
+
+
 #ntp-main-shell {
     position: relative;
     z-index: 1;
@@ -661,6 +704,39 @@ body.ntp-density-compact .ntp-widget-card {
     gap: 0.4rem;
 }
 
+
+.ntp-widget-toolbar {
+    margin-bottom: 0.7rem;
+}
+
+.ntp-widget-filter-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: min(100%, 20rem);
+    border-radius: 999px;
+    padding: 0.4rem 0.7rem;
+    background: rgba(8, 13, 31, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#ntp-widget-filter {
+    border: none;
+    background: transparent;
+    color: #fff;
+    width: 100%;
+    min-height: 1.5rem;
+}
+
+#ntp-widget-filter:focus {
+    outline: none;
+}
+
+#ntp-widget-filter::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
 .ntp-widget-controls {
     margin-top: 0.35rem;
     display: inline-flex;
@@ -688,6 +764,20 @@ body:not(.ntp-reduced-motion) .ntp-action {
     animation: ntpFadeIn 320ms ease;
 }
 
+
+body:not(.ntp-reduced-motion) .ntp-orb-1 {
+    animation: ntpOrbFloatOne 9s ease-in-out infinite alternate;
+}
+
+body:not(.ntp-reduced-motion) .ntp-orb-2 {
+    animation: ntpOrbFloatTwo 11s ease-in-out infinite alternate;
+}
+
+body:not(.ntp-reduced-motion) .ntp-orb-3 {
+    animation: ntpOrbFloatThree 10s ease-in-out infinite alternate;
+}
+
+
 @keyframes ntpFadeIn {
     from {
         opacity: 0;
@@ -697,5 +787,36 @@ body:not(.ntp-reduced-motion) .ntp-action {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+
+@keyframes ntpOrbFloatOne {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(26px, -20px, 0) scale(1.08);
+    }
+}
+
+@keyframes ntpOrbFloatTwo {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(-22px, 18px, 0) scale(1.06);
+    }
+}
+
+@keyframes ntpOrbFloatThree {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(14px, -16px, 0) scale(1.07);
     }
 }

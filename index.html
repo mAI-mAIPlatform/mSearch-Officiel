@@ -217,6 +217,11 @@
       <div id="ntp-content">
           <img id="ntp-background" hidden>
           <div id="ntp-gradient-overlay"></div>
+          <div id="ntp-liquid-glass-orbs" aria-hidden="true">
+            <span class="ntp-orb ntp-orb-1"></span>
+            <span class="ntp-orb ntp-orb-2"></span>
+            <span class="ntp-orb ntp-orb-3"></span>
+          </div>
           <div id="ntp-main-shell">
             <header id="ntp-header">
               <h1>mSearch</h1>
@@ -277,6 +282,12 @@
                     <i class="i carbon:reset"></i>
                   </button>
                 </div>
+              </div>
+              <div class="ntp-widget-toolbar">
+                <label for="ntp-widget-filter" class="ntp-widget-filter-wrap">
+                  <i class="i carbon:search"></i>
+                  <input id="ntp-widget-filter" type="search" placeholder="Filtrer les widgets" autocomplete="off" aria-label="Filtrer les widgets rapides">
+                </label>
               </div>
               <div id="ntp-widget-grid"></div>
             </section>
