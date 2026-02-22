@@ -15,6 +15,7 @@ const productivityHub = {
     productivityHub.initializeTabFreezing()
     productivityHub.initializeSmartHistoryBang()
     productivityHub.initializeDownloadSuggestions()
+    productivityHub.initializeWorkflowMode()
   },
   createNotesLayer: function () {
     const layer = document.createElement('div')
@@ -205,9 +206,56 @@ const productivityHub = {
         return
       }
 
-      const extension = info.path.split('.').pop().toLowerCase()
+      const extension = info.path.includes('.') ? info.path.split('.').pop().toLowerCase() : ''
       if (['pdf', 'doc', 'docx', 'txt'].includes(extension)) {
         console.info('[productivityHub] Suggestion: classer ce document dans “Documents”.', info.path)
+      }
+    })
+  },
+  initializeWorkflowMode: function () {
+    function applyWorkflowMode () {
+      const mode = settings.get('workflowMode') || 'work'
+      const autoFocus = settings.get('modeAutoFocus') === true
+      const blockDistractions = settings.get('modeBlockDistractions') === true
+      const customDomains = Array.isArray(settings.get('distractionSites'))
+        ? settings.get('distractionSites')
+        : ['youtube.com', 'x.com', 'reddit.com']
+
+      const modePresets = {
+        work: ['youtube.com', 'x.com', 'facebook.com'],
+        study: ['tiktok.com', 'instagram.com', 'x.com'],
+        'deep-focus': ['youtube.com', 'reddit.com', 'x.com', 'news.ycombinator.com'],
+        relax: [],
+        custom: customDomains
+      }
+
+      const activeDomains = mode === 'custom' ? customDomains : (modePresets[mode] || modePresets.work)
+      document.body.dataset.workflowMode = mode
+
+      if (autoFocus) {
+        document.body.classList.add('is-focus-mode')
+      }
+
+      if (!blockDistractions || !activeDomains.length) {
+        return
+      }
+
+      tabs.get().forEach(function (tab) {
+        if (!tab || !tab.url) {
+          return
+        }
+        const lowerURL = tab.url.toLowerCase()
+        const isDistracting = activeDomains.some(domain => lowerURL.includes(domain))
+        if (isDistracting) {
+          tabs.update(tab.id, { muted: true })
+        }
+      })
+    }
+
+    applyWorkflowMode()
+    settings.listen(function (changedKey) {
+      if (['workflowMode', 'modeAutoFocus', 'modeBlockDistractions', 'distractionSites'].includes(changedKey)) {
+        applyWorkflowMode()
       }
     })
   }

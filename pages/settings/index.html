@@ -337,6 +337,48 @@
           <h3>Expérience Liquid Glass</h3>
           <p class="settings-section-description">Affinez la densité visuelle, les animations et la fluidité de l’interface.</p>
 
+          <div class="mode-grid" role="group" aria-label="Modes d'usage">
+            <label class="mode-card" for="workflow-mode-select">
+              <span class="mode-card-title">Mode d’usage principal</span>
+              <span class="mode-card-subtitle">Adapte visuellement l’interface et les garde-fous.</span>
+              <select id="workflow-mode-select">
+                <option value="work">Travail</option>
+                <option value="study">Études</option>
+                <option value="deep-focus">Deep Focus</option>
+                <option value="relax">Détente</option>
+                <option value="custom">Personnalisé</option>
+              </select>
+            </label>
+
+            <label class="mode-card" for="checkbox-mode-block-distractions">
+              <span class="mode-card-title">Anti-distraction intelligent</span>
+              <span class="mode-card-subtitle">Masque ou freine les sites définis comme distractifs.</span>
+              <span class="mode-card-control">
+                <input type="checkbox" id="checkbox-mode-block-distractions" />
+                <span>Activer le filtrage anti-distraction</span>
+              </span>
+            </label>
+
+            <label class="mode-card" for="checkbox-mode-auto-focus">
+              <span class="mode-card-title">Focus automatique</span>
+              <span class="mode-card-subtitle">Active le mode focus au démarrage selon le mode choisi.</span>
+              <span class="mode-card-control">
+                <input type="checkbox" id="checkbox-mode-auto-focus" />
+                <span>Entrer automatiquement en focus</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="setting-section">
+            <label for="input-distraction-sites">Sites à filtrer (séparés par des virgules)</label>
+            <textarea
+              id="input-distraction-sites"
+              rows="2"
+              placeholder="ex: youtube.com, x.com, reddit.com"
+              spellcheck="false"
+            ></textarea>
+          </div>
+
           <div class="setting-section search-option-row">
             <label for="ui-density-select">Densité d’interface</label>
             <select id="ui-density-select">

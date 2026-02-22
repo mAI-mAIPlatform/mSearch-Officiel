@@ -384,6 +384,72 @@ body.dark-mode #add-custom-bang {
   padding-bottom: 0.75rem;
 }
 
+.liquid-glass-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: -30% -10% auto;
+  height: 180px;
+  background: radial-gradient(circle at 15% 35%, rgba(125, 211, 252, 0.35), transparent 55%),
+    radial-gradient(circle at 78% 12%, rgba(196, 181, 253, 0.28), transparent 52%);
+  pointer-events: none;
+}
+
+.settings-section-description {
+  margin-top: -0.2rem;
+  margin-bottom: 1rem;
+  opacity: 0.82;
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid rgba(125, 211, 252, 0.5);
+  border-radius: 14px;
+  padding: 0.75rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(219, 234, 254, 0.5));
+  backdrop-filter: blur(14px) saturate(145%);
+  -webkit-backdrop-filter: blur(14px) saturate(145%);
+}
+
+.mode-card-title {
+  font-weight: 600;
+}
+
+.mode-card-subtitle {
+  font-size: 0.88rem;
+  opacity: 0.78;
+}
+
+.mode-card-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.92rem;
+}
+
+#input-distraction-sites {
+  width: min(100%, 36rem);
+  min-height: 4.6rem;
+}
+
+body.dark-mode .mode-card {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.55));
+}
+
 body.dark-mode .settings-container {
   background: rgba(15, 23, 42, 0.4);
   border-color: rgba(148, 163, 184, 0.34);

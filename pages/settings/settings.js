@@ -48,6 +48,10 @@ var ntpFixTitleOverlapCheckbox = document.getElementById('checkbox-ntp-fix-title
 var uiDensitySelect = document.getElementById('ui-density-select')
 var uiMotionIntensitySelect = document.getElementById('ui-motion-intensity-select')
 var uiSurfaceReflectionsCheckbox = document.getElementById('checkbox-ui-surface-reflections')
+var workflowModeSelect = document.getElementById('workflow-mode-select')
+var modeBlockDistractionsCheckbox = document.getElementById('checkbox-mode-block-distractions')
+var modeAutoFocusCheckbox = document.getElementById('checkbox-mode-auto-focus')
+var distractionSitesInput = document.getElementById('input-distraction-sites')
 var screenTimeEnabledCheckbox = document.getElementById('checkbox-screen-time-enabled')
 var screenTimeWeeklyHoursInput = document.getElementById('input-screen-time-weekly-hours')
 var screenTimeMonthlyHoursInput = document.getElementById('input-screen-time-monthly-hours')
@@ -243,28 +247,30 @@ clearHistoryOnStartupCheckbox.addEventListener('change', function (e) {
 
 
 function requestPinValidationIfNeeded (onSuccess) {
-  if (settings.get('screenTimePinProtected') !== true) {
-    onSuccess()
-    return
-  }
-
-  var storedPinHash = localStorage.getItem('msearch.security.pinHash')
-  if (!storedPinHash) {
-    onSuccess()
-    return
-  }
-
-  var provided = window.prompt('Code PIN requis pour modifier le temps d’écran')
-  if (!provided) {
-    return
-  }
-
-  sha256(provided).then(function (hash) {
-    if (hash !== storedPinHash) {
-      alert('Code PIN incorrect.')
+  settings.get('screenTimePinProtected', function (pinProtected) {
+    if (pinProtected !== true) {
+      onSuccess()
       return
     }
-    onSuccess()
+
+    var storedPinHash = localStorage.getItem('msearch.security.pinHash')
+    if (!storedPinHash) {
+      onSuccess()
+      return
+    }
+
+    var provided = window.prompt('Code PIN requis pour modifier le temps d’écran')
+    if (!provided) {
+      return
+    }
+
+    sha256(provided).then(function (hash) {
+      if (hash !== storedPinHash) {
+        alert('Code PIN incorrect.')
+        return
+      }
+      onSuccess()
+    })
   })
 }
 
@@ -376,6 +382,67 @@ historySmartModeSelect.addEventListener('change', function () {
   var normalized = normalizeHistorySmartMode(this.value)
   this.value = normalized
   settings.set('historySmartMode', normalized)
+})
+
+/* workflow modes and distractions settings */
+
+function normalizeWorkflowMode (value) {
+  return ['work', 'study', 'deep-focus', 'relax', 'custom'].includes(value) ? value : 'work'
+}
+
+function normalizeDistractionDomains (value) {
+  if (!value) {
+    return []
+  }
+
+  return value.split(',').map(item => item.trim().replace('http://', '').replace('https://', '').replace(/\/.*$/, '').toLowerCase()).filter(Boolean)
+}
+
+settings.get('workflowMode', function (value) {
+  var normalized = normalizeWorkflowMode(value)
+  workflowModeSelect.value = normalized
+  if (normalized !== value) {
+    settings.set('workflowMode', normalized)
+  }
+})
+
+workflowModeSelect.addEventListener('change', function () {
+  var normalized = normalizeWorkflowMode(this.value)
+  this.value = normalized
+  settings.set('workflowMode', normalized)
+})
+
+settings.get('modeBlockDistractions', function (value) {
+  modeBlockDistractionsCheckbox.checked = value === true
+})
+
+modeBlockDistractionsCheckbox.addEventListener('change', function () {
+  settings.set('modeBlockDistractions', this.checked)
+})
+
+settings.get('modeAutoFocus', function (value) {
+  modeAutoFocusCheckbox.checked = value === true
+})
+
+modeAutoFocusCheckbox.addEventListener('change', function () {
+  settings.set('modeAutoFocus', this.checked)
+})
+
+settings.get('distractionSites', function (value) {
+  if (Array.isArray(value) && value.length) {
+    distractionSitesInput.value = value.join(', ')
+    return
+  }
+  distractionSitesInput.value = 'youtube.com, x.com, reddit.com'
+  if (!Array.isArray(value)) {
+    settings.set('distractionSites', ['youtube.com', 'x.com', 'reddit.com'])
+  }
+})
+
+distractionSitesInput.addEventListener('change', function () {
+  var normalized = normalizeDistractionDomains(this.value)
+  this.value = normalized.join(', ')
+  settings.set('distractionSites', normalized)
 })
 
 /* dark mode setting */
