@@ -276,7 +276,16 @@ const newTabPage = {
     try {
       const raw = localStorage.getItem(SHORTCUTS_STORAGE_KEY)
       if (raw) {
-        newTabPage.shortcuts = JSON.parse(raw)
+        const parsed = JSON.parse(raw)
+        const sanitizedShortcuts = Array.isArray(parsed)
+          ? parsed.map(item => newTabPage.sanitizeShortcut(item)).filter(Boolean)
+          : []
+
+        newTabPage.shortcuts = sanitizedShortcuts
+
+        if (!Array.isArray(parsed) || sanitizedShortcuts.length !== parsed.length) {
+          newTabPage.saveShortcuts()
+        }
       } else {
         newTabPage.shortcuts = [
           { title: 'Téléchargements', url: 'min://downloads' },
@@ -302,7 +311,19 @@ const newTabPage = {
     // Ensure we handle the new 10/12 options if they come as strings
     max = parseInt(max, 10)
 
-    const visibleShortcuts = newTabPage.shortcuts.slice(0, max)
+    const visibleShortcuts = []
+
+    newTabPage.shortcuts.forEach(function (item, index) {
+      const sanitizedShortcut = newTabPage.sanitizeShortcut(item)
+      if (!sanitizedShortcut || visibleShortcuts.length >= max) {
+        return
+      }
+
+      visibleShortcuts.push({
+        shortcut: sanitizedShortcut,
+        index: index
+      })
+    })
 
     if (visibleShortcuts.length === 0) {
       const emptyState = document.createElement('li')
@@ -314,7 +335,8 @@ const newTabPage = {
 
     const fragment = document.createDocumentFragment()
 
-    visibleShortcuts.forEach(function (shortcut, index) {
+    visibleShortcuts.forEach(function (entry) {
+      const shortcut = entry.shortcut
       const item = document.createElement('li')
       item.className = 'ntp-list-item ntp-shortcut-item'
 
@@ -331,7 +353,7 @@ const newTabPage = {
       removeButton.setAttribute('aria-label', 'Supprimer le raccourci')
       removeButton.addEventListener('click', function (e) {
         e.stopPropagation()
-        newTabPage.shortcuts.splice(index, 1)
+        newTabPage.shortcuts.splice(entry.index, 1)
         newTabPage.saveShortcuts()
         newTabPage.renderShortcuts()
       })
@@ -342,6 +364,47 @@ const newTabPage = {
     })
 
     newTabPage.shortcutsList.appendChild(fragment)
+  },
+  sanitizeShortcut: function (item) {
+    if (!item || typeof item !== 'object') {
+      return null
+    }
+
+    var normalizedURL = newTabPage.normalizeURL(item.url || '')
+    if (!newTabPage.isValidShortcutURL(normalizedURL)) {
+      return null
+    }
+
+    var normalizedTitle = String(item.title || '').trim()
+    if (normalizedTitle.length > 120) {
+      normalizedTitle = normalizedTitle.slice(0, 120)
+    }
+
+    return {
+      title: normalizedTitle,
+      url: normalizedURL
+    }
+  },
+  isValidShortcutURL: function (value) {
+    if (!value || typeof value !== 'string') {
+      return false
+    }
+
+    var trimmed = value.trim()
+    if (!trimmed) {
+      return false
+    }
+
+    if (trimmed.startsWith('about:') || trimmed.startsWith('min://')) {
+      return true
+    }
+
+    try {
+      var parsed = new URL(trimmed)
+      return Boolean(parsed.protocol)
+    } catch (e) {
+      return false
+    }
   },
 
   getDefaultWidgets: function () {
@@ -771,6 +834,29 @@ const newTabPage = {
     }
     return raw !== 'false'
   },
+  isSettingEnabled: function (settingKey, defaultValue) {
+    var value = settings.get(settingKey)
+
+    if (value === undefined || value === null) {
+      return defaultValue
+    }
+
+    if (typeof value === 'boolean') {
+      return value
+    }
+
+    if (typeof value === 'string') {
+      var normalized = value.trim().toLowerCase()
+      if (normalized === 'true') {
+        return true
+      }
+      if (normalized === 'false') {
+        return false
+      }
+    }
+
+    return defaultValue
+  },
   sanitizeDisplayPreference: function (storageKey, allowedValues, defaultValue) {
     const raw = localStorage.getItem(storageKey)
     if (!raw) {
@@ -798,8 +884,7 @@ const newTabPage = {
     }
 
     // Si la sidebar est désactivée globalement, on force la fermeture et le masquage
-    const enabledValue = settings.get('maiSidebarEnabled')
-    const isEnabled = enabledValue !== false && enabledValue !== 'false'
+    const isEnabled = newTabPage.isSettingEnabled('maiSidebarEnabled', true)
     if (!isEnabled) {
       newTabPage.isMaiSidebarOpen = false
       newTabPage.maiSidebar.hidden = true
@@ -831,15 +916,14 @@ const newTabPage = {
     }
 
     // Initialisation : gestion de l'état activé/désactivé et ouverture au démarrage
-    const enabledValue = settings.get('maiSidebarEnabled')
-    const isEnabled = enabledValue !== false && enabledValue !== 'false'
+    const isEnabled = newTabPage.isSettingEnabled('maiSidebarEnabled', true)
     newTabPage.maiToggleButton.hidden = !isEnabled
 
     if (!isEnabled) {
       newTabPage.setMaiSidebarState(false)
     } else {
-      const openOnStartup = settings.get('maiSidebarOpenStartup')
-      if (openOnStartup === true) {
+      const openOnStartup = newTabPage.isSettingEnabled('maiSidebarOpenStartup', false)
+      if (openOnStartup) {
         newTabPage.setMaiSidebarState(true, { persist: false })
       } else {
         const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
@@ -848,13 +932,30 @@ const newTabPage = {
     }
 
     settings.listen('maiSidebarEnabled', function (value) {
-      var nextEnabled = value !== false && value !== 'false'
+      var nextEnabled = (function () {
+        if (typeof value === 'boolean') {
+          return value
+        }
+
+        if (typeof value === 'string') {
+          var normalized = value.trim().toLowerCase()
+          if (normalized === 'true') {
+            return true
+          }
+          if (normalized === 'false') {
+            return false
+          }
+        }
+
+        return true
+      })()
       newTabPage.maiToggleButton.hidden = !nextEnabled
       if (!nextEnabled) {
         newTabPage.setMaiSidebarState(false)
       } else {
-        newTabPage.setMaiSidebarState(false, { persist: false })
-        newTabPage.maiSidebar.hidden = false
+        const openOnStartup = newTabPage.isSettingEnabled('maiSidebarOpenStartup', false)
+        const storedState = newTabPage.getBooleanPreference(MAI_SIDEBAR_STORAGE_KEY, false)
+        newTabPage.setMaiSidebarState(openOnStartup ? true : storedState, { persist: false })
       }
     })
 
@@ -889,7 +990,21 @@ const newTabPage = {
 
     // Handle global visibility setting
     const applyGlobalSidebarVisibility = function (value) {
-      document.body.classList.toggle('mai-sidebar-restricted', value === false)
+      var isEnabled = value
+      if (typeof value === 'string') {
+        var normalized = value.trim().toLowerCase()
+        if (normalized === 'true') {
+          isEnabled = true
+        } else if (normalized === 'false') {
+          isEnabled = false
+        }
+      }
+
+      if (typeof isEnabled !== 'boolean') {
+        isEnabled = true
+      }
+
+      document.body.classList.toggle('mai-sidebar-restricted', !isEnabled)
     }
 
     applyGlobalSidebarVisibility(settings.get('maiSidebarGlobal'))
@@ -907,8 +1022,8 @@ const newTabPage = {
     newTabPage.historyList.textContent = ''
 
     try {
-      const showFavorites = settings.get('ntpShowFavorites') !== false
-      const showHistory = settings.get('ntpShowHistory') !== false
+      const showFavorites = newTabPage.isSettingEnabled('ntpShowFavorites', true)
+      const showHistory = newTabPage.isSettingEnabled('ntpShowHistory', true)
 
       if (newTabPage.favoritesPanel) {
         newTabPage.favoritesPanel.hidden = !showFavorites
@@ -1010,7 +1125,7 @@ const newTabPage = {
     }
 
     const randomBg = localStorage.getItem(RANDOM_BG_STORAGE_KEY)
-    if (randomBg && settings.get('ntpRandomBackgroundEnabled') !== false) {
+    if (randomBg && newTabPage.isSettingEnabled('ntpRandomBackgroundEnabled', true)) {
       newTabPage.setBackgroundSource(randomBg)
       return
     }
@@ -1167,10 +1282,10 @@ const newTabPage = {
       return
     }
 
-    if (settings.get('ntpFixTitleOverlap') !== false) {
+    if (newTabPage.isSettingEnabled('ntpFixTitleOverlap', true)) {
       document.body.classList.remove('has-overlay-ntp-title')
     }
-    document.body.classList.toggle('ntp-reduced-motion', settings.get('liquidGlassAnimations') === false)
+    document.body.classList.toggle('ntp-reduced-motion', !newTabPage.isSettingEnabled('liquidGlassAnimations', true))
     newTabPage.applyTheme(newTabPage.getSelectedTheme())
     newTabPage.reloadBackground()
     newTabPage.loadReminders()
@@ -1185,7 +1300,23 @@ const newTabPage = {
     newTabPage.bindMaiSidebarControls()
 
     settings.listen('liquidGlassAnimations', function (value) {
-      document.body.classList.toggle('ntp-reduced-motion', value === false)
+      var reducedMotion = value
+      if (typeof value === 'string') {
+        var normalized = value.trim().toLowerCase()
+        if (normalized === 'true') {
+          reducedMotion = false
+        } else if (normalized === 'false') {
+          reducedMotion = true
+        }
+      } else {
+        reducedMotion = value === false
+      }
+
+      if (typeof reducedMotion !== 'boolean') {
+        reducedMotion = false
+      }
+
+      document.body.classList.toggle('ntp-reduced-motion', reducedMotion)
     })
 
     if (newTabPage.picker) {
@@ -1221,7 +1352,7 @@ const newTabPage = {
     }
 
     if (newTabPage.randomBackgroundButton) {
-      newTabPage.randomBackgroundButton.hidden = settings.get('ntpRandomBackgroundEnabled') === false
+      newTabPage.randomBackgroundButton.hidden = !newTabPage.isSettingEnabled('ntpRandomBackgroundEnabled', true)
       newTabPage.randomBackgroundButton.addEventListener('click', function () {
         newTabPage.applyRandomBackground()
       })
