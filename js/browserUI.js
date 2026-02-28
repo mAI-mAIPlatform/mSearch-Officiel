@@ -34,6 +34,12 @@ options
 */
 function addTab (tabId = tabs.add(), options = {}) {
   const tabData = tabs.get(tabId)
+  if (!tabData) {
+    return
+  }
+
+  const selectedTabId = tabs.getSelected()
+  const selectedTabData = selectedTabId ? tabs.get(selectedTabId) : null
   const isEphemeral = tabData && tabData.ephemeral
   /*
   adding a new tab should destroy the current one if either:
@@ -41,8 +47,13 @@ function addTab (tabId = tabs.add(), options = {}) {
   * The current tab is empty, and the new tab has a URL
   */
 
-  if (!options.openInBackground && !tabs.get(tabs.getSelected()).url && ((!tabs.get(tabs.getSelected()).private && tabs.get(tabId).private) || tabs.get(tabId).url)) {
-    destroyTab(tabs.getSelected())
+  if (
+    !options.openInBackground &&
+    selectedTabData &&
+    !selectedTabData.url &&
+    ((!selectedTabData.private && tabData.private) || tabData.url)
+  ) {
+    destroyTab(selectedTabId)
   }
 
   if (isEphemeral) {
@@ -79,8 +90,16 @@ function moveTabRight (tabId = tabs.getSelected()) {
 function destroyTask (id) {
   var task = tasks.get(id)
 
+  if (!task || !task.tabs || typeof task.tabs.forEach !== 'function') {
+    return
+  }
+
   task.tabs.forEach(function (tab) {
-    webviews.destroy(tab.id)
+    try {
+      webviews.destroy(tab.id)
+    } catch (e) {
+      console.error('failed to destroy tab webview during task teardown', tab && tab.id, e)
+    }
   })
 
   tasks.destroy(id)
@@ -124,12 +143,12 @@ function closeTask (taskId) {
 
 /* destroys a tab, and either switches to the next tab or creates a new one */
 
-function closeTab (tabId) {
+function closeTab (tabId, options = {}) {
   if (!tabs.has(tabId)) {
     return
   }
   /* disabled in focus mode */
-  if (focusMode.enabled()) {
+  if (focusMode.enabled() && options.force !== true) {
     focusMode.warn()
     return
   }
@@ -275,7 +294,8 @@ webviews.bindEvent('new-tab', function (tabId, url, openInForeground) {
 })
 
 webviews.bindIPC('close-window', function (tabId, args) {
-  closeTab(tabId)
+  const options = args && args[0] && typeof args[0] === 'object' ? args[0] : {}
+  closeTab(tabId, options)
 })
 
 ipc.on('set-file-view', function (e, data) {

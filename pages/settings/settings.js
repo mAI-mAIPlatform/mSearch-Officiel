@@ -73,6 +73,35 @@ settings.get('restartNow', (value) => {
   }
 })
 
+function normalizeBooleanSetting (value, defaultValue = true) {
+  if (value === undefined || value === null) {
+    return defaultValue
+  }
+
+  if (typeof value === 'string') {
+    var lowered = value.trim().toLowerCase()
+    if (['false', '0', 'off', 'no'].includes(lowered)) {
+      return false
+    }
+    if (['true', '1', 'on', 'yes'].includes(lowered)) {
+      return true
+    }
+    return defaultValue
+  }
+
+  if (typeof value === 'number') {
+    if (value === 0) {
+      return false
+    }
+    if (value === 1) {
+      return true
+    }
+    return defaultValue
+  }
+
+  return Boolean(value)
+}
+
 /* content blocking settings */
 
 var trackingLevelContainer = document.getElementById('tracking-level-container')
@@ -772,7 +801,7 @@ if (openUpdateLinkButton) {
 }
 
 settings.get('ntpRandomBackgroundEnabled', function (value) {
-  ntpRandomBackgroundCheckbox.checked = value !== false
+  ntpRandomBackgroundCheckbox.checked = normalizeBooleanSetting(value, true)
 })
 
 ntpRandomBackgroundCheckbox.addEventListener('change', function () {
@@ -796,7 +825,7 @@ ntpShortcutsSizeSelect.addEventListener('change', function () {
 })
 
 settings.get('ntpShowHistory', function (value) {
-  ntpShowHistoryCheckbox.checked = value !== false
+  ntpShowHistoryCheckbox.checked = normalizeBooleanSetting(value, true)
 })
 
 ntpShowHistoryCheckbox.addEventListener('change', function () {
@@ -804,7 +833,7 @@ ntpShowHistoryCheckbox.addEventListener('change', function () {
 })
 
 settings.get('ntpShowFavorites', function (value) {
-  ntpShowFavoritesCheckbox.checked = value !== false
+  ntpShowFavoritesCheckbox.checked = normalizeBooleanSetting(value, true)
 })
 
 ntpShowFavoritesCheckbox.addEventListener('change', function () {
@@ -812,7 +841,7 @@ ntpShowFavoritesCheckbox.addEventListener('change', function () {
 })
 
 settings.get('ntpFixTitleOverlap', function (value) {
-  ntpFixTitleOverlapCheckbox.checked = value !== false
+  ntpFixTitleOverlapCheckbox.checked = normalizeBooleanSetting(value, true)
 })
 
 ntpFixTitleOverlapCheckbox.addEventListener('change', function () {
@@ -835,7 +864,7 @@ dynamicThemeCheckbox.addEventListener('change', function () {
 })
 
 settings.get('liquidGlassAnimations', function (value) {
-  liquidGlassAnimationsCheckbox.checked = value !== false
+  liquidGlassAnimationsCheckbox.checked = normalizeBooleanSetting(value, true)
 })
 
 liquidGlassAnimationsCheckbox.addEventListener('change', function () {
@@ -927,7 +956,7 @@ uiMotionIntensitySelect.addEventListener('change', function () {
 })
 
 settings.get('uiSurfaceReflections', function (value) {
-  uiSurfaceReflectionsCheckbox.checked = value !== false
+  uiSurfaceReflectionsCheckbox.checked = normalizeBooleanSetting(value, true)
   syncExperiencePreview()
 })
 
@@ -1159,7 +1188,7 @@ if (searchEngineChoiceSelect) {
 
 settings.get('maiSidebarEnabled', function (value) {
   if (maiSidebarEnabledCheckbox) {
-    maiSidebarEnabledCheckbox.checked = value !== false
+    maiSidebarEnabledCheckbox.checked = normalizeBooleanSetting(value, true)
   }
 })
 

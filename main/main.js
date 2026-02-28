@@ -73,6 +73,19 @@ if (settings.get('userSelectedLanguage')) {
 
 const browserPage = 'min://app/index.html'
 
+function isAllowedBrowserNavigation (url) {
+  if (url === browserPage) {
+    return true
+  }
+
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'min:' && parsed.pathname === '/index.html'
+  } catch (e) {
+    return false
+  }
+}
+
 var mainMenu = null
 var secondaryMenu = null
 var isFocusMode = false
@@ -257,7 +270,8 @@ function createWindowWithBounds (bounds, customArgs) {
   const mainView = new WebContentsView({
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
+      webSecurity: true,
       nodeIntegrationInWorker: true, // used by ProcessSpawner
       additionalArguments: [
         '--user-data-path=' + userDataPath,
@@ -381,9 +395,17 @@ function createWindowWithBounds (bounds, customArgs) {
 
   // prevent remote pages from being loaded using drag-and-drop, since they would have node access
   mainView.webContents.on('will-navigate', function (e, url) {
-    if (url !== browserPage) {
+    if (!isAllowedBrowserNavigation(url)) {
       e.preventDefault()
     }
+  })
+
+  mainView.webContents.setWindowOpenHandler(function () {
+    return { action: 'deny' }
+  })
+
+  mainView.webContents.on('will-attach-webview', function (e) {
+    e.preventDefault()
   })
 
   mainView.webContents.on('before-input-event', function(e, input) {
@@ -543,8 +565,9 @@ app.once('ready', function() {
     height: 300,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: true
     }
   })
 
