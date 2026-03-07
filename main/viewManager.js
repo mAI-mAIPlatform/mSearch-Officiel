@@ -232,6 +232,11 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
       width: 400,
       height: 200
     }, function (result) {
+      if (!result || typeof result !== 'object') {
+        callback()
+        return
+      }
+
       // resend request with auth credentials
       callback(result.username, result.password)
     })
@@ -239,8 +244,25 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
 
   // show an "open in app" prompt for external protocols
 
+  function isSafeExternalURL (url) {
+    if (typeof url !== 'string' || url.length === 0 || url.length > 2048) {
+      return false
+    }
+
+    // Reject control characters and whitespace around the URL to avoid protocol spoofing or parsing inconsistencies.
+    if (/[\u0000-\u001f\u007f]/.test(url) || url.trim() !== url) {
+      return false
+    }
+
+    return true
+  }
+
   function handleExternalProtocol (e, url, isInPlace, isMainFrame, frameProcessId, frameRoutingId) {
     var knownProtocols = ['http', 'https', 'file', 'min', 'about', 'data', 'javascript', 'chrome'] // TODO anything else?
+    if (!isSafeExternalURL(url)) {
+      return
+    }
+
     if (!knownProtocols.includes(url.split(':')[0])) {
       var externalApp = app.getApplicationNameForProtocol(url)
       if (externalApp) {
@@ -258,7 +280,9 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
           })
 
           if (result === 0) {
-            electron.shell.openExternal(url)
+            electron.shell.openExternal(url).catch(function () {
+              // no-op: avoid crashing on invalid or blocked protocols
+            })
           }
         }
       }
