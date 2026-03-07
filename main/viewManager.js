@@ -29,7 +29,6 @@ function getDefaultViewWebPreferences () {
   )
 }
 
-
 function getAntiFingerprintingLevel () {
   const level = settings.get('fingerprintingProtectionLevel')
   if (level === 'off' || level === 'strict') {
@@ -233,13 +232,26 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
       height: 200
     }, function (result) {
       // resend request with auth credentials
-      callback(result.username, result.password)
+      if (result) {
+        callback(result.username, result.password)
+      } else {
+        callback()
+      }
     })
   })
 
   // show an "open in app" prompt for external protocols
 
+  function isSafeExternalURL (url) {
+    if (!url) return false
+    if (url.length > 2048) return false
+    // eslint-disable-next-line no-control-regex
+    if (/[\u0000-\u001F\u007F-\u009F\s]/.test(url)) return false
+    return true
+  }
+
   function handleExternalProtocol (e, url, isInPlace, isMainFrame, frameProcessId, frameRoutingId) {
+    if (!isSafeExternalURL(url)) return
     var knownProtocols = ['http', 'https', 'file', 'min', 'about', 'data', 'javascript', 'chrome'] // TODO anything else?
     if (!knownProtocols.includes(url.split(':')[0])) {
       var externalApp = app.getApplicationNameForProtocol(url)
@@ -258,7 +270,9 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
           })
 
           if (result === 0) {
-            electron.shell.openExternal(url)
+            electron.shell.openExternal(url).catch((err) => {
+              console.warn('Failed to open external URL', err)
+            })
           }
         }
       }
