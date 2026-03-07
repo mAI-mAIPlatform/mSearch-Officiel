@@ -394,16 +394,8 @@ body.dark-mode #add-custom-bang {
   position: absolute;
   inset: -30% -10% auto;
   height: 180px;
-  background: radial-gradient(
-      circle at 15% 35%,
-      rgba(125, 211, 252, 0.35),
-      transparent 55%
-    ),
-    radial-gradient(
-      circle at 78% 12%,
-      rgba(196, 181, 253, 0.28),
-      transparent 52%
-    );
+  background: radial-gradient(circle at 15% 35%, rgba(125, 211, 252, 0.35), transparent 55%),
+    radial-gradient(circle at 78% 12%, rgba(196, 181, 253, 0.28), transparent 52%);
   pointer-events: none;
 }
 
@@ -427,11 +419,7 @@ body.dark-mode #add-custom-bang {
   border: 1px solid rgba(125, 211, 252, 0.5);
   border-radius: 14px;
   padding: 0.75rem;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(219, 234, 254, 0.5)
-  );
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(219, 234, 254, 0.5));
   backdrop-filter: blur(14px) saturate(145%);
   -webkit-backdrop-filter: blur(14px) saturate(145%);
 }
@@ -459,11 +447,7 @@ body.dark-mode #add-custom-bang {
 
 body.dark-mode .mode-card {
   border-color: rgba(56, 189, 248, 0.45);
-  background: linear-gradient(
-    145deg,
-    rgba(15, 23, 42, 0.7),
-    rgba(30, 41, 59, 0.55)
-  );
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.55));
 }
 
 body.dark-mode .settings-container {
@@ -545,6 +529,7 @@ body.dark-mode .search-engine-custom-card {
   flex: 0 0 auto;
 }
 
+
 @media all and (max-width: 720px) {
   .search-option-row {
     flex-direction: column;
@@ -557,6 +542,7 @@ body.dark-mode .search-engine-custom-card {
   .search-option-input-group {
     width: 100%;
   }
+
 }
 
 /* Personal Data Section */
@@ -611,7 +597,7 @@ body.dark-mode .data-list-item {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -625,7 +611,7 @@ body.dark-mode .data-list-item {
   border-radius: 12px;
   width: 90%;
   max-width: 450px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 body.dark-mode .modal-content {
@@ -652,6 +638,7 @@ body.dark-mode .modal-content {
   gap: 0.8rem;
 }
 
+
 .settings-section-description {
   margin: -0.2rem 0 0.6rem;
   opacity: 0.78;
@@ -659,21 +646,13 @@ body.dark-mode .modal-content {
 }
 
 .liquid-glass-panel {
-  background: color-mix(
-    in srgb,
-    rgba(255, 255, 255, 0.62) 70%,
-    rgba(186, 230, 253, 0.35)
-  );
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.62) 70%, rgba(186, 230, 253, 0.35));
   border-color: rgba(56, 189, 248, 0.42);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 body.dark-mode .liquid-glass-panel {
-  background: color-mix(
-    in srgb,
-    rgba(15, 23, 42, 0.4) 74%,
-    rgba(8, 47, 73, 0.34)
-  );
+  background: color-mix(in srgb, rgba(15, 23, 42, 0.4) 74%, rgba(8, 47, 73, 0.34));
   border-color: rgba(56, 189, 248, 0.55);
 }
 
@@ -716,9 +695,11 @@ body.ui-motion-vivid .settings-action-button {
 body:not(.ui-surface-reflections-off) .liquid-glass-panel,
 body:not(.ui-surface-reflections-off) .settings-sidebar,
 body:not(.ui-surface-reflections-off) .search-engine-custom-card {
-  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.14),
+  box-shadow:
+    0 8px 20px rgba(56, 189, 248, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
+
 
 #mai-settings-container {
   border: 1px solid rgba(125, 211, 252, 0.45);
@@ -732,6 +713,7 @@ body.dark-mode #mai-settings-container {
   background: rgba(15, 23, 42, 0.35);
   border-color: rgba(56, 189, 248, 0.6);
 }
+
 
 .screen-time-grid {
   display: grid;
@@ -758,11 +740,7 @@ body.dark-mode #privacy-settings-container {
 
 /* Liquid Glass style blocks */
 .liquid-glass-card {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.62),
-    rgba(255, 255, 255, 0.35)
-  );
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.35));
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 14px;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);

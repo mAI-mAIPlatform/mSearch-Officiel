@@ -109,56 +109,33 @@
 
           <div id="content-type-blocking"></div>
 
+
           <div class="setting-section">
             <h4>Temps d’écran</h4>
             <input type="checkbox" id="checkbox-screen-time-enabled" />
-            <label for="checkbox-screen-time-enabled"
-              >Activer les limites de temps d’écran</label
-            >
+            <label for="checkbox-screen-time-enabled">Activer les limites de temps d’écran</label>
           </div>
 
           <div class="setting-section screen-time-grid">
             <div class="search-option-row">
-              <label for="input-screen-time-weekly-hours"
-                >Limite hebdomadaire (heures)</label
-              >
-              <input
-                id="input-screen-time-weekly-hours"
-                type="number"
-                min="1"
-                max="168"
-                step="1"
-                value="35"
-              />
+              <label for="input-screen-time-weekly-hours">Limite hebdomadaire (heures)</label>
+              <input id="input-screen-time-weekly-hours" type="number" min="1" max="168" step="1" value="35" />
             </div>
             <div class="search-option-row">
-              <label for="input-screen-time-monthly-hours"
-                >Limite mensuelle (heures)</label
-              >
-              <input
-                id="input-screen-time-monthly-hours"
-                type="number"
-                min="1"
-                max="744"
-                step="1"
-                value="140"
-              />
+              <label for="input-screen-time-monthly-hours">Limite mensuelle (heures)</label>
+              <input id="input-screen-time-monthly-hours" type="number" min="1" max="744" step="1" value="140" />
             </div>
           </div>
 
           <div class="setting-section">
             <input type="checkbox" id="checkbox-screen-time-pin-lock" />
-            <label for="checkbox-screen-time-pin-lock"
-              >Verrouiller les limites par code PIN</label
-            >
+            <label for="checkbox-screen-time-pin-lock">Verrouiller les limites par code PIN</label>
           </div>
 
           <div class="setting-section">
             <h4>Cookies et historique intelligent</h4>
             <input type="checkbox" id="checkbox-cookie-controls-enabled" />
-            <label for="checkbox-cookie-controls-enabled"
-              >Activer la gestion avancée des cookies</label
-            >
+            <label for="checkbox-cookie-controls-enabled">Activer la gestion avancée des cookies</label>
           </div>
 
           <div class="setting-section search-option-row">
@@ -171,30 +148,23 @@
           </div>
 
           <div class="setting-section search-option-row">
-            <label for="select-history-smart-mode"
-              >Historique intelligent</label
-            >
+            <label for="select-history-smart-mode">Historique intelligent</label>
             <select id="select-history-smart-mode">
               <option value="adaptive">Adaptatif</option>
               <option value="private-first">Confidentialité renforcée</option>
               <option value="off">Désactivé</option>
             </select>
           </div>
-          <div class="setting-section">
+<div class="setting-section">
             <input type="checkbox" id="checkbox-clear-history-on-startup" />
             <label for="checkbox-clear-history-on-startup"
               >Nettoyer l'historique au démarrage</label
             >
           </div>
 
-          <div
-            class="setting-section liquid-glass-card"
-            id="privacy-advanced-protection"
-          >
+          <div class="setting-section liquid-glass-card" id="privacy-advanced-protection">
             <h4>Protection avancée (anti-fingerprinting)</h4>
-            <label for="select-fingerprinting-protection"
-              >Niveau de protection</label
-            >
+            <label for="select-fingerprinting-protection">Niveau de protection</label>
             <select id="select-fingerprinting-protection">
               <option value="off">Désactivée</option>
               <option value="balanced">Équilibrée (Canvas + Audio)</option>
@@ -204,24 +174,14 @@
 
           <div class="setting-section">
             <input type="checkbox" id="checkbox-https-upgrade-enabled" />
-            <label for="checkbox-https-upgrade-enabled"
-              >Forcer HTTPS par défaut (upgrade HTTP → HTTPS)</label
-            >
+            <label for="checkbox-https-upgrade-enabled">Forcer HTTPS par défaut (upgrade HTTP → HTTPS)</label>
           </div>
 
           <div class="setting-section">
-            <label for="input-tab-hibernation-timeout"
-              >Mise en veille des onglets inactifs (minutes)</label
-            >
-            <input
-              id="input-tab-hibernation-timeout"
-              type="number"
-              min="1"
-              max="240"
-              step="1"
-              value="30"
-            />
+            <label for="input-tab-hibernation-timeout">Mise en veille des onglets inactifs (minutes)</label>
+            <input id="input-tab-hibernation-timeout" type="number" min="1" max="240" step="1" value="30" />
           </div>
+
         </div>
 
         <div class="settings-container" id="appearance-settings-container">
@@ -302,9 +262,7 @@
 
           <div class="setting-section" id="liquid-glass-section">
             <input type="checkbox" id="checkbox-liquid-glass-animations" />
-            <label for="checkbox-liquid-glass-animations"
-              >Animations Liquid Glass</label
-            >
+            <label for="checkbox-liquid-glass-animations">Animations Liquid Glass</label>
           </div>
 
           <div class="setting-section" id="font-preferences-section">
@@ -384,15 +342,11 @@
 
           <div class="setting-section">
             <input type="checkbox" id="checkbox-mai-sidebar-enabled" />
-            <label for="checkbox-mai-sidebar-enabled"
-              >Activer la sidebar mAI</label
-            >
+            <label for="checkbox-mai-sidebar-enabled">Activer la sidebar mAI</label>
           </div>
 
           <div class="setting-section search-option-row">
-            <label for="mai-sidebar-position"
-              >Emplacement de la sidebar mAI</label
-            >
+            <label for="mai-sidebar-position">Emplacement de la sidebar mAI</label>
             <select id="mai-sidebar-position">
               <option value="right">Droite</option>
               <option value="left">Gauche</option>
@@ -400,22 +354,14 @@
           </div>
         </div>
 
-        <div
-          class="settings-container liquid-glass-panel"
-          id="experience-settings-container"
-        >
+        <div class="settings-container liquid-glass-panel" id="experience-settings-container">
           <h3>Expérience Liquid Glass</h3>
-          <p class="settings-section-description">
-            Affinez la densité visuelle, les animations et la fluidité de
-            l’interface.
-          </p>
+          <p class="settings-section-description">Affinez la densité visuelle, les animations et la fluidité de l’interface.</p>
 
           <div class="mode-grid" role="group" aria-label="Modes d'usage">
             <label class="mode-card" for="workflow-mode-select">
               <span class="mode-card-title">Mode d’usage principal</span>
-              <span class="mode-card-subtitle"
-                >Adapte visuellement l’interface et les garde-fous.</span
-              >
+              <span class="mode-card-subtitle">Adapte visuellement l’interface et les garde-fous.</span>
               <select id="workflow-mode-select">
                 <option value="work">Travail</option>
                 <option value="study">Études</option>
@@ -427,9 +373,7 @@
 
             <label class="mode-card" for="checkbox-mode-block-distractions">
               <span class="mode-card-title">Anti-distraction intelligent</span>
-              <span class="mode-card-subtitle"
-                >Masque ou freine les sites définis comme distractifs.</span
-              >
+              <span class="mode-card-subtitle">Masque ou freine les sites définis comme distractifs.</span>
               <span class="mode-card-control">
                 <input type="checkbox" id="checkbox-mode-block-distractions" />
                 <span>Activer le filtrage anti-distraction</span>
@@ -438,9 +382,7 @@
 
             <label class="mode-card" for="checkbox-mode-auto-focus">
               <span class="mode-card-title">Focus automatique</span>
-              <span class="mode-card-subtitle"
-                >Active le mode focus au démarrage selon le mode choisi.</span
-              >
+              <span class="mode-card-subtitle">Active le mode focus au démarrage selon le mode choisi.</span>
               <span class="mode-card-control">
                 <input type="checkbox" id="checkbox-mode-auto-focus" />
                 <span>Entrer automatiquement en focus</span>
@@ -449,9 +391,7 @@
           </div>
 
           <div class="setting-section">
-            <label for="input-distraction-sites"
-              >Sites à filtrer (séparés par des virgules)</label
-            >
+            <label for="input-distraction-sites">Sites à filtrer (séparés par des virgules)</label>
             <textarea
               id="input-distraction-sites"
               rows="2"
@@ -470,9 +410,7 @@
           </div>
 
           <div class="setting-section search-option-row">
-            <label for="ui-motion-intensity-select"
-              >Intensité des animations</label
-            >
+            <label for="ui-motion-intensity-select">Intensité des animations</label>
             <select id="ui-motion-intensity-select">
               <option value="soft">Douce</option>
               <option value="normal">Normale</option>
@@ -482,9 +420,7 @@
 
           <div class="setting-section">
             <input type="checkbox" id="checkbox-ui-surface-reflections" />
-            <label for="checkbox-ui-surface-reflections"
-              >Reflets Liquid Glass renforcés</label
-            >
+            <label for="checkbox-ui-surface-reflections">Reflets Liquid Glass renforcés</label>
           </div>
         </div>
 
@@ -670,32 +606,19 @@
           </div>
         </div>
 
-        <div
-          class="settings-container liquid-glass-panel"
-          id="updates-settings-container"
-        >
+
+        <div class="settings-container liquid-glass-panel" id="updates-settings-container">
           <h3>Mises à jour</h3>
-          <p class="settings-section-description">
-            Consultez la version installée et accédez au lien de mise à jour.
-          </p>
+          <p class="settings-section-description">Consultez la version installée et accédez au lien de mise à jour.</p>
 
           <div class="setting-section search-option-row">
             <label for="updates-current-version">Version actuelle</label>
-            <input
-              id="updates-current-version"
-              type="text"
-              readonly
-              value="Chargement…"
-            />
+            <input id="updates-current-version" type="text" readonly value="Chargement…" />
           </div>
 
           <div class="setting-section">
-            <button id="button-open-update-link" class="settings-action-button">
-              Mettre à jour
-            </button>
-            <span class="settings-info-subheading" style="margin-left: 0.5em"
-              >Ouvre la page de mise à jour officielle.</span
-            >
+            <button id="button-open-update-link" class="settings-action-button">Mettre à jour</button>
+            <span class="settings-info-subheading" style="margin-left: 0.5em">Ouvre la page de mise à jour officielle.</span>
           </div>
         </div>
 
@@ -759,12 +682,8 @@
               ></span>
             </div>
             <ul id="manual-engine-list"></ul>
-            <div
-              class="settings-info-subheading"
-              style="margin-top: 0.5em; opacity: 0.7"
-            >
-              Ajoutez vos propres moteurs de recherche pour une expérience
-              personnalisée.
+            <div class="settings-info-subheading" style="margin-top: 0.5em; opacity: 0.7;">
+              Ajoutez vos propres moteurs de recherche pour une expérience personnalisée.
             </div>
           </div>
 
@@ -867,72 +786,31 @@
 
           <div class="setting-section liquid-glass-card personal-data-vault">
             <h4>Coffre-fort local chiffré</h4>
-            <p class="settings-section-description">
-              Toutes les données d’autofill sont chiffrées localement (AES-GCM)
-              et déverrouillées uniquement après ré-authentification PIN.
-            </p>
+            <p class="settings-section-description">Toutes les données d’autofill sont chiffrées localement (AES-GCM) et déverrouillées uniquement après ré-authentification PIN.</p>
             <div id="pin-setup-section">
-              <button id="setup-pin-button" class="settings-action-button">
-                Configurer un code PIN
-              </button>
-              <button
-                id="change-pin-button"
-                class="settings-action-button"
-                hidden
-              >
-                Changer le code PIN
-              </button>
-              <button
-                id="remove-pin-button"
-                class="settings-action-button"
-                hidden
-              >
-                Supprimer le code PIN
-              </button>
-              <button
-                id="unlock-sensitive-data-button"
-                class="settings-action-button"
-              >
-                Déverrouiller les données sensibles
-              </button>
-              <button
-                id="lock-sensitive-data-button"
-                class="settings-action-button"
-                hidden
-              >
-                Verrouiller immédiatement
-              </button>
+              <button id="setup-pin-button" class="settings-action-button">Configurer un code PIN</button>
+              <button id="change-pin-button" class="settings-action-button" hidden>Changer le code PIN</button>
+              <button id="remove-pin-button" class="settings-action-button" hidden>Supprimer le code PIN</button>
+              <button id="unlock-sensitive-data-button" class="settings-action-button">Déverrouiller les données sensibles</button>
+              <button id="lock-sensitive-data-button" class="settings-action-button" hidden>Verrouiller immédiatement</button>
             </div>
-            <div
-              id="personal-data-lock-status"
-              class="sensitive-status-text"
-            ></div>
+            <div id="personal-data-lock-status" class="sensitive-status-text"></div>
           </div>
 
           <div class="setting-section sensitive-data-wrapper">
-            <div
-              id="personal-data-mask"
-              class="sensitive-data-mask liquid-glass-card"
-            >
+            <div id="personal-data-mask" class="sensitive-data-mask liquid-glass-card">
               <div>Données masquées</div>
-              <small
-                >Déverrouillez avec votre code PIN pour afficher les cartes et
-                adresses.</small
-              >
+              <small>Déverrouillez avec votre code PIN pour afficher les cartes et adresses.</small>
             </div>
             <h4>Adresses</h4>
             <ul id="addresses-list" class="data-list"></ul>
-            <button id="add-address-button" class="settings-action-button">
-              Ajouter une adresse
-            </button>
+            <button id="add-address-button" class="settings-action-button">Ajouter une adresse</button>
           </div>
 
           <div class="setting-section sensitive-data-wrapper">
             <h4>Cartes de paiement</h4>
             <ul id="cards-list" class="data-list"></ul>
-            <button id="add-card-button" class="settings-action-button">
-              Ajouter une carte
-            </button>
+            <button id="add-card-button" class="settings-action-button">Ajouter une carte</button>
           </div>
         </div>
 
@@ -1017,9 +895,7 @@
         <form id="personal-data-form"></form>
         <div class="modal-actions">
           <button id="personal-data-cancel">Annuler</button>
-          <button id="personal-data-save" class="settings-action-button">
-            Enregistrer
-          </button>
+          <button id="personal-data-save" class="settings-action-button">Enregistrer</button>
         </div>
       </div>
     </div>

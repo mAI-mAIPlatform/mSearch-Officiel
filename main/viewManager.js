@@ -234,6 +234,8 @@ function createView (existingViewId, id, webPreferences, boundsString, events) {
       // resend request with auth credentials
       if (result) {
         callback(result.username, result.password)
+      } else {
+        callback()
       }
     })
   })

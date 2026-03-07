@@ -245,6 +245,7 @@ function getEngineSpecificParams (engineName, options, isSuggestionURL) {
     params.uselang = language.toLowerCase()
   }
 
+
   if (resultsPerPage !== 'default') {
     if (engineName === 'Google') {
       params.num = resultsPerPage
