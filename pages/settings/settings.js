@@ -757,7 +757,7 @@ openEphemeralTabButton.addEventListener('click', function () {
 
 
 if (updatesCurrentVersionInput) {
-  updatesCurrentVersionInput.value = '26.7.8'
+  updatesCurrentVersionInput.value = '26.8.1'
 }
 
 if (openUpdateLinkButton) {
